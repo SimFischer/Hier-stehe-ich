@@ -1,6 +1,6 @@
 # Plan „Hier stehe ich“ (Phase 1)
 
-Stand: 13.11.2026 · Grundlage: `KONZEPT.md` · Status: **wartet auf Freigabe für Phase 2**
+Stand: 13.11.2026 · Grundlage: `KONZEPT.md` · Status: **Phase 2 umgesetzt**, Abweichungen vom Plan stehen in Abschnitt 10
 
 Dieser Plan legt fest, was gebaut wird, bevor Code entsteht. Abschnitt 9 enthält die Fragen, die ich nicht allein entscheiden will. Zu jeder Frage steht mein Vorschlag; ohne Rückmeldung baue ich nach dem Vorschlag.
 
@@ -300,3 +300,15 @@ Der Code speichert den Stand am Beginn der laufenden Station, nicht den Zwischen
 
 15. **Adresse.** Das Repository heißt `Hier-stehe-ich`, die Seite läge unter `simfischer.github.io/Hier-stehe-ich/`. Soll es so bleiben? GitHub Pages musst du in den Repository-Einstellungen einmal einschalten.
 16. **Töne.** Der Glockenschlag gliedert den Marktplatz. Vorschlag: wenige, im Browser erzeugte Töne, abschaltbar, beim Start aus. Keine Musik.
+
+## 10. Abweichungen in Phase 2
+
+Beim Bauen und Testen hat sich einiges anders ergeben als geplant.
+
+- **Dateien:** Jedes Rätsel ist eine Datei in `js/puzzles/` (Regeln oben, Anzeige unten) statt eines Ordners mit zwei Dateien. Die Engine hat weniger, dafür größere Dateien: `state`, `code`, `save`, `szenen`, `fenster`, `raetsel`, `ui`, `platzhalter`. Die Rätseldaten stehen gesammelt in `data/puzzles.js`, die Bedientexte in `data/ui.js`.
+- **Druckwelle:** Mit den geplanten Regeln gewann auch zufälliges Tippen fast immer. Jetzt gilt: zwei Knotenpunkte (Leipzig, Nürnberg), die nicht direkt verbunden sind; nur Knotenpunkte drucken nach; pro Woche ein deutsches Blatt; in einer deutschen Stadt hören über vier Wochen immer mehr Menschen davon. Stufen: ab 50 und ab 90 von 100. In der Simulation erreicht sorgfältiges Spiel immer Stufe 3, zufälliges meist Stufe 2, nur Latein immer Stufe 1.
+- **Marktplatz und Verhör** blieben wie geplant. Zufälliges Tippen landet dort in rund neun von zehn Fällen auf Stufe 1.
+- **Fortsetzungscode:** Das Alphabet lässt nur O, 0, I und 1 weg. L bleibt, sonst wären es 31 statt 32 Zeichen.
+- **Zeit:** Die Texte waren mit rund 3500 gelesenen Wörtern länger als das Budget von 2400. Nach Kürzungen und mit 130 statt 110 Wörtern pro Minute liegt die Schätzung bei 45 Minuten. Hotspots, die man für den Kernpfad nicht braucht, sind als `optional` markiert und zählen halb. Verlässlich wird die Zahl erst nach einer Erprobung.
+- **Noch nicht in Phase 2:** Töne (Frage 16), der Einbau fertiger Bilder und die Prüfung von Druck und Teilen am iPad.
+- **Offene Fragen:** Alle 16 Fragen aus Abschnitt 9 sind nach den dortigen Vorschlägen umgesetzt.

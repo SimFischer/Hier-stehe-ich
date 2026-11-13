@@ -1,0 +1,11 @@
+{
+  "name": "hier-stehe-ich",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Luther-Lernspiel für den evangelischen Religionsunterricht, Klasse 7",
+  "scripts": {
+    "start": "node tools/serve.js",
+    "test": "node --test"
+  }
+}

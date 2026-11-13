@@ -1,0 +1,9 @@
+/* Druck: Nur die Flugschrift kommt aufs Papier (oder ins PDF). */
+@page { size: A4 portrait; margin: 15mm; }
+body { background: #fff !important; overflow: visible !important; }
+#app, #meldung, dialog { display: none !important; }
+#druck { display: grid !important; place-items: center; min-height: 250mm; }
+#druck .flugblatt { width: 150mm; height: auto; max-height: none; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+#druck .flugblatt h3 { font-size: 30pt; }
+#druck .flugblatt ul { font-size: 15pt; }
+#druck .flugblatt .fb-kopf, #druck .flugblatt .fb-fuss { font-size: 12pt; }

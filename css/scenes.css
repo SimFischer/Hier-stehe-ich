@@ -1,0 +1,160 @@
+/* Szenen, Hotspots und die einzelnen Rätsel. */
+
+/* Hotspots: x/y bezeichnen den unteren Mittelpunkt */
+.hotspot { position: absolute; transform: translate(-50%, -100%); display: grid; justify-items: center; gap: 2px; min-width: var(--tipp); min-height: var(--tipp); padding: 0; background: transparent; border: 0; cursor: pointer; }
+.hotspot .marke { width: 26px; height: 26px; border: 3px solid var(--tinte); border-radius: 50%; background: var(--ocker); box-shadow: 0 0 0 4px rgba(248, 241, 223, 0.8); animation: puls 2.4s infinite; }
+.hotspot.erledigt .marke { background: var(--pergament); animation: none; }
+.hotspot.zu .marke { background: var(--pergament-dunkel); border-style: dashed; animation: none; }
+.hotspot.art-raetsel:not(.zu) .marke { background: var(--rot); border-radius: 4px; transform: rotate(45deg); }
+.hotspot .figur, .markt-figur .figur, .ratgeber-knopf .figur { display: block; width: clamp(54px, 9vh, 92px); aspect-ratio: 3 / 5; }
+.figur svg { width: 100%; height: 100%; display: block; }
+.schild { padding: 1px var(--ab-2); background: var(--pergament-hell); border: var(--rand); border-radius: var(--rund); font-size: var(--text-klein); font-weight: bold; white-space: nowrap; }
+.hotspot:disabled { opacity: 0.75; }
+@keyframes puls { 50% { box-shadow: 0 0 0 9px rgba(248, 241, 223, 0.35); } }
+
+/* Zuordnen */
+.zuord { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: var(--ab-4); flex: 1; min-height: 0; }
+.zu-teile { display: flex; flex-direction: column; gap: var(--ab-2); }
+.teil { text-align: left; background: #fff; font-size: var(--text-klein); line-height: 1.3; }
+.zu-ziele { display: grid; gap: var(--ab-2); align-content: start; }
+.zu-ziele.layout-bild { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; align-content: stretch; padding: var(--ab-2); background: var(--pergament-dunkel); border: 3px double var(--tinte); }
+.zu-ziele.layout-zwei { grid-template-columns: 1fr 1fr; align-content: stretch; }
+.ziel { display: flex; flex-direction: column; gap: var(--ab-1); text-align: left; background: var(--pergament-hell); border-style: dashed; font-size: var(--text-klein); line-height: 1.3; opacity: 1; }
+.ziel:disabled { opacity: 1; cursor: default; }
+.ziel:not(:disabled) { border-style: solid; background: var(--ocker-hell); }
+.ziel-kopf { display: grid; }
+.ziel-kopf em { color: var(--tinte-weich); }
+.ziel .gelegt { padding: 2px var(--ab-2); background: var(--gruen-hell); border: 2px solid var(--gruen); border-radius: var(--rund); font-weight: bold; }
+.ziel .gelegt::before { content: "✓ "; }
+.ziel.falsch { animation: wackeln 0.35s; border-color: var(--rot); }
+@keyframes wackeln { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+/* Waage */
+.waage { position: relative; flex: 1; min-height: 190px; max-height: 300px; }
+.waage-fuss { position: absolute; left: 50%; bottom: 0; width: 14px; height: 72%; margin-left: -7px; background: var(--tinte); }
+.waage-fuss::after { content: ""; position: absolute; bottom: 0; left: -60px; width: 134px; height: 12px; background: var(--tinte); border-radius: 4px; }
+.waage-balken { position: absolute; left: 12%; right: 12%; top: 26%; height: 10px; background: var(--tinte); border-radius: 5px; transform: rotate(var(--winkel)); transition: transform 0.7s cubic-bezier(0.3, 1.5, 0.5, 1); }
+.schale { position: absolute; top: 10px; width: min(34%, 230px); min-height: 84px; display: grid; place-items: center; padding: var(--ab-2); text-align: center; border: var(--rand); border-top: 0; border-radius: 0 0 60px 60px; background: var(--ocker-hell); font-size: var(--text-klein); font-weight: bold; transform: rotate(calc(var(--winkel) * -1)); transition: transform 0.7s; }
+.schale.links { left: -4%; background: #6f675c; color: #fff; min-height: 110px; }
+.schale.rechts { right: -4%; }
+
+/* Standbild */
+.stand { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: var(--ab-4); flex: 1; min-height: 0; }
+.buehne { position: relative; min-height: 240px; border: 3px double var(--tinte); background: linear-gradient(#e9dcb9 68%, #b79f73 68%); overflow: hidden; }
+.stand-figur { position: absolute; bottom: 6%; width: 30%; display: grid; justify-items: center; transition: left 0.5s, right 0.5s, transform 0.5s; }
+.stand-figur svg { width: 100%; height: auto; }
+.stand-figur span { font-size: var(--text-klein); font-weight: bold; background: var(--pergament-hell); padding: 0 var(--ab-2); border-radius: var(--rund); }
+.stand-figur.luther { left: 8%; }
+.stand-figur.gott { right: 8%; }
+.abstand-mittel .luther { left: 18%; } .abstand-mittel .gott { right: 18%; }
+.abstand-nah .luther { left: 26%; } .abstand-nah .gott { right: 26%; }
+.stand-figur.gott.blick-ab svg { transform: scaleX(-1); opacity: 0.8; }
+.stand-figur.gott.blick-ab::after { content: "↷"; position: absolute; top: 0; right: 0; font-size: 1.5rem; }
+.stand-rechts { display: flex; flex-direction: column; gap: var(--ab-2); min-height: 0; }
+.strophe { margin: 0; padding: var(--ab-2) var(--ab-3); background: #fff; border-left: 6px solid var(--rot); }
+.regler { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ab-2) var(--ab-4); }
+.stand-rueck { margin: 0; padding: 0; list-style: none; font-size: var(--text-klein); display: grid; gap: 2px; }
+.stand-rueck li::before { content: "? "; font-weight: bold; }
+.stand-rueck li.gut::before { content: "✓ "; color: var(--gruen); }
+.stand-rueck li.offen { color: var(--rot-dunkel); }
+
+/* Marktplatz */
+.markt-feld { position: relative; flex: 1; min-height: 230px; border: 3px double var(--tinte); background: linear-gradient(#b7ab92 82%, #9d917a 82%); overflow: hidden; }
+/* Jede Figur hat ihre eigene Spalte. Je weiter oben, desto näher am Kasten. */
+.markt-kasten { position: absolute; left: 50%; top: 3%; transform: translateX(-50%); width: 34%; height: 15%; display: grid; place-items: center; background: #7a5a38; border: 3px solid var(--tinte); border-radius: 6px; }
+.markt-kasten span { font-size: var(--text-klein); font-weight: bold; background: var(--pergament-hell); padding: 0 var(--ab-2); border-radius: var(--rund); }
+.markt-figur { position: absolute; left: calc(10% + var(--i) * 14.2%); bottom: calc(3% + var(--pos) * 15%); transform: translateX(-50%); display: grid; justify-items: center; gap: 1px; padding: 0; background: transparent; border: 0; cursor: pointer; transition: bottom 0.8s, opacity 0.5s; min-width: var(--tipp); }
+.markt-figur .figur { width: clamp(34px, 5.6vh, 54px); }
+.markt-figur.gewaehlt .schild { background: var(--ocker); }
+.markt-figur .zustand { font-size: 0.875rem; background: var(--nacht); color: var(--pergament); padding: 0 var(--ab-2); border-radius: var(--rund); white-space: nowrap; }
+.markt-figur:disabled { opacity: 1; }
+.markt-figur.st-nachdenklich { bottom: 3%; }
+.markt-figur.st-nachdenklich .zustand { background: var(--gruen); }
+.markt-figur.st-nachdenklich .zustand::before { content: "✓ "; }
+.markt-figur.st-gekauft .zustand { background: var(--rot-dunkel); }
+.markt-statist { position: absolute; width: clamp(24px, 3.6vh, 34px); aspect-ratio: 3 / 5; left: calc(86% + var(--i) * 2.6%); top: calc(22% + var(--i) * 5%); opacity: 0.8; transition: top 1s, opacity 1s; }
+.markt-statist.weg { opacity: 0; }
+.markt-statist svg { width: 100%; height: 100%; }
+.markt-unten { display: grid; gap: var(--ab-2); min-height: 9.5em; align-content: start; }
+.markt-unten p { margin: 0; }
+.antwort.gut { color: var(--gruen); font-weight: bold; }
+.antwort.gut::before { content: "✓ "; }
+.glocke { font-style: italic; }
+.glocke::before { content: "🔔 "; font-style: normal; }
+
+/* Druckwelle */
+.reich-rahmen { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: var(--ab-4); flex: 1; min-height: 0; }
+.reich { position: relative; min-height: 300px; border: 3px double var(--tinte); background: radial-gradient(circle at 40% 55%, #f3e9cf, #dccba4); }
+.reich-linien, .reich-linien svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+svg .linie { stroke: var(--tinte-weich); stroke-width: 0.5; stroke-dasharray: 1.5 1.2; }
+svg .linie.aktiv { stroke: var(--rot); stroke-width: 1.1; stroke-dasharray: none; }
+.stadt { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 1px; min-width: var(--tipp); min-height: var(--tipp); padding: 0; background: transparent; border: 0; cursor: pointer; }
+.stadt .punkt { display: grid; place-items: center; width: 30px; height: 30px; border: 3px solid var(--tinte); border-radius: 50%; background: #fff; font-weight: bold; font-size: var(--text-klein); transition: background 0.5s, transform 0.3s; }
+.stadt.knoten .punkt { width: 38px; height: 38px; border-radius: 6px; outline: 3px solid var(--tinte); outline-offset: 2px; }
+.stadt.f-latein .punkt { background: var(--ocker-hell); }
+.stadt.f-deutsch .punkt { background: var(--rot); color: #fff; }
+.stadt.f-deutsch.v1 .punkt { background: #c98474; }
+.stadt.f-deutsch.v2 .punkt { background: #b65f4c; }
+.stadt .name { font-size: 0.875rem; font-weight: bold; background: rgba(248, 241, 223, 0.9); padding: 0 4px; border-radius: 3px; white-space: nowrap; }
+.stadt.gewaehlt .punkt { transform: scale(1.2); box-shadow: 0 0 0 4px var(--blau); }
+.stadt:not(.erreichbar) { opacity: 0.55; }
+.stadt:disabled { opacity: 1; cursor: default; }
+.reich-seite { display: flex; flex-direction: column; gap: var(--ab-2); min-height: 0; }
+.reich-seite p, .reich-seite h3 { margin: 0; }
+.reich-seite > .knopf:last-child { margin-top: auto; }
+.regeln { margin: 0; padding-left: 1.1em; font-size: var(--text-klein); color: var(--tinte-weich); }
+
+/* Verhör */
+.saal { display: flex; justify-content: center; gap: var(--ab-2); padding: var(--ab-2); background: #6d5435; border: 3px double var(--tinte); }
+.saal .kopf { display: block; min-height: 0; width: clamp(28px, 6vw, 54px); transition: transform 0.4s; }
+.saal .kopf svg { width: 100%; height: auto; display: block; }
+.saal .kopf.nickt { transform: translateY(-5px); }
+.verhoer-mitte { display: grid; gap: var(--ab-3); align-content: start; justify-items: start; flex: 1; }
+.verhoer-mitte .hand, .verhoer-mitte .einwand { justify-self: stretch; }
+.verhoer-mitte p { margin: 0; }
+.einwand { font-size: var(--text-gross); padding: var(--ab-3) var(--ab-4); background: #fff; border: var(--rand); border-radius: var(--rund); }
+.urteil { font-weight: bold; padding: 2px var(--ab-3); border-radius: var(--rund); border: var(--rand); }
+.urteil.w-gut { background: var(--gruen-hell); } .urteil.w-gut::before { content: "✓✓ "; }
+.urteil.w-halb { background: var(--ocker-hell); } .urteil.w-halb::before { content: "✓ "; }
+.urteil.w-sonst { background: #f1d9d2; } .urteil.w-sonst::before { content: "✗ "; }
+.erinnerung { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ab-2); padding: var(--ab-2) var(--ab-3); background: var(--pergament); border: 2px dashed var(--tinte-weich); border-radius: var(--rund); }
+
+/* Übersetzung */
+.ratgeber { display: flex; justify-content: center; gap: var(--ab-4); }
+.ratgeber-knopf { display: flex; align-items: center; gap: var(--ab-2); min-height: var(--tipp); padding: var(--ab-1) var(--ab-3); background: var(--pergament); border: var(--rand); border-radius: var(--rund); cursor: pointer; font-size: var(--text-klein); font-weight: bold; }
+.ratgeber-knopf .figur { width: 26px; }
+.art-uebersetzung { gap: var(--ab-2); }
+.ratgeber-knopf.gefragt { background: var(--gruen-hell); }
+.ratgeber-knopf.gewaehlt { box-shadow: inset 0 0 0 3px var(--tinte); }
+.stimme { margin: 0; min-height: 1.5em; text-align: center; }
+blockquote.alt { font-style: italic; margin: 0; }
+blockquote.luther { border-left-color: var(--gruen); background: var(--gruen-hell); margin: 0; }
+
+/* Flugschrift */
+.fb { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--ab-4); flex: 1; min-height: 0; }
+.fb-form, .fb-rechts { display: flex; flex-direction: column; gap: var(--ab-2); min-height: 0; }
+.fb-form fieldset > input { flex-basis: 100%; }
+.fb-karten { width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ab-1); }
+.fb-karten .karte { padding: 2px var(--ab-2); border-left-width: 6px; min-height: 44px; line-height: 1.15; }
+.fb-karten .karte strong { font-size: 0.875rem; }
+.fb-vorschau { display: grid; place-items: start center; flex: 1; min-height: 0; }
+.flugblatt { height: 100%; max-height: 380px; aspect-ratio: 5 / 7; display: flex; flex-direction: column; align-items: center; gap: var(--ab-1); padding: 5%; text-align: center; background: var(--pergament); border: 4px double var(--tinte); box-shadow: var(--schatten); overflow: hidden; }
+.flugblatt .fb-kopf, .flugblatt .fb-fuss { margin: 0; font-style: italic; font-size: 0.7rem; }
+.flugblatt .fb-fuss { margin-top: auto; }
+.flugblatt h3 { font-size: 1.2rem; line-height: 1.1; margin: 0; overflow-wrap: anywhere; }
+.fb-bild { width: 34%; }
+.fb-bild svg { width: 100%; height: auto; display: block; }
+.flugblatt ul { margin: 0; padding: 0; list-style: none; font-size: 0.75rem; line-height: 1.25; display: grid; gap: 3px; }
+.flugblatt li::before { content: "❧ "; }
+
+/* Hochformat und schmale Fenster: Spalten untereinander */
+@media (orientation: portrait), (max-width: 760px) {
+  .zuord, .stand, .reich-rahmen, .fb { grid-template-columns: minmax(0, 1fr); }
+  .zu-teile { flex-direction: row; flex-wrap: wrap; }
+  .zu-teile .teil { flex: 1 1 45%; }
+  .reich { min-height: 46vh; }
+  .buehne { min-height: 30vh; }
+  .fb-karten { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .flugblatt { height: 340px; }
+  .hotspot .figur { width: clamp(48px, 9vw, 80px); }
+}

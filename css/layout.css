@@ -1,0 +1,87 @@
+/* Aufbau der Seite: Leiste, Zielzeile, Bühne mit Szene, Textband und Rätselblatt. Quer- und Hochformat. */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: var(--schrift); font-size: var(--text); line-height: var(--zeile); color: var(--tinte);
+  background: var(--nacht); overflow: hidden; -webkit-text-size-adjust: 100%; touch-action: manipulation;
+}
+[hidden] { display: none !important; }
+p { margin: 0 0 var(--ab-3); }
+h1, h2, h3 { margin: 0 0 var(--ab-2); line-height: 1.2; }
+h2 { font-size: var(--text-gross); }
+h3 { font-size: var(--text); }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: var(--fokus); outline-offset: 2px; }
+
+#app { height: 100vh; height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+
+/* Leiste */
+.leiste { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr); align-items: center; gap: var(--ab-3); padding: var(--ab-2) var(--ab-3); background: var(--nacht); color: var(--pergament); }
+.leiste nav { display: flex; gap: var(--ab-2); }
+.leisten-knopf { display: inline-flex; align-items: center; gap: var(--ab-2); min-height: var(--tipp); padding: 0 var(--ab-3); background: transparent; color: var(--pergament); border: 2px solid rgba(239, 227, 200, 0.45); border-radius: var(--rund); cursor: pointer; font-size: var(--text-klein); }
+.leisten-knopf svg { width: 24px; height: 24px; display: block; }
+.leisten-knopf .zahl { min-width: 1.6em; padding: 0 0.3em; border-radius: 1em; background: var(--ocker); color: var(--tinte); text-align: center; font-weight: bold; }
+#titel { display: grid; justify-items: center; min-width: 0; min-height: var(--tipp); padding: 0 var(--ab-4); background: transparent; border: 0; color: var(--pergament); cursor: pointer; }
+#titel strong { font-size: var(--text-gross); letter-spacing: 0.02em; }
+#ort { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: var(--text-klein); color: var(--ocker-hell); white-space: nowrap; }
+#ort strong { font-size: inherit; font-weight: normal; }
+#ort strong::after { content: " · "; white-space: pre; }
+#platten { display: flex; gap: 4px; justify-self: end; }
+.platte { display: grid; place-items: center; width: 30px; height: 34px; border: 2px dashed rgba(239, 227, 200, 0.5); border-radius: 3px; font-weight: bold; font-size: var(--text-klein); color: var(--tinte); }
+.platte.da { background: var(--ocker); border: 2px solid var(--pergament); }
+.platte.gross { width: auto; height: auto; padding: var(--ab-3) var(--ab-5); margin: 0 auto var(--ab-4); font-size: var(--text-gross); border-color: var(--tinte); box-shadow: var(--schatten); }
+
+#ziel { margin: 0; padding: var(--ab-2) var(--ab-4); background: var(--ocker); color: var(--tinte); font-size: var(--text-klein); font-weight: bold; text-align: center; min-height: 2.2em; }
+
+/* Bühne */
+#buehne { position: relative; min-height: 0; background: var(--nacht); overflow: hidden; }
+#szene { position: absolute; inset: 0; }
+#bild, #bild svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#hotspots { position: absolute; inset: 0; }
+#szene.blitz #bild { animation: blitz 0.9s ease-out; }
+@keyframes blitz { 0%, 30% { filter: brightness(3.2) contrast(0.7); } 45% { filter: brightness(1); } 55% { filter: brightness(2.4); } 100% { filter: none; } }
+
+#band {
+  position: absolute; left: var(--ab-4); right: var(--ab-4); bottom: var(--ab-4); max-height: 34%; overflow: auto;
+  padding: var(--ab-3) var(--ab-4); background: var(--pergament-hell); border: var(--rand); border-radius: var(--rund); box-shadow: var(--schatten);
+}
+#band:empty { display: none; }
+#band p:last-child { margin-bottom: 0; }
+#band .sprecher, .sprechblase .sprecher { display: block; color: var(--rot-dunkel); font-size: var(--text-klein); letter-spacing: 0.03em; }
+.sprecher em { font-weight: normal; color: var(--tinte-weich); }
+
+/* Rätselblatt: liegt über der ganzen Bühne */
+#blatt {
+  position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0;
+  background: linear-gradient(rgba(248, 241, 223, 0.93), rgba(248, 241, 223, 0.93)), var(--ort, none) center / cover; background-color: var(--pergament-hell);
+}
+.blatt-kopf { display: flex; justify-content: space-between; align-items: center; gap: var(--ab-3); padding: var(--ab-2) var(--ab-4); border-bottom: var(--rand); background: var(--pergament); }
+.blatt-kopf h2 { margin: 0; outline: none; }
+.blatt-koerper { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: var(--ab-3); padding: var(--ab-3) var(--ab-4); }
+.blatt-koerper > .fuss { margin-top: auto; }
+.hilfe-box { margin: 0 var(--ab-4) var(--ab-3); padding: var(--ab-2) var(--ab-3); background: var(--ocker-hell); border: var(--rand); border-radius: var(--rund); font-size: var(--text-klein); }
+
+/* Startseite */
+#start { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: var(--ab-4); overflow: auto;
+  background: radial-gradient(circle at 50% 30%, #4a3c2c, var(--nacht)); }
+.start-karte { width: min(100%, 640px); padding: var(--ab-6); text-align: center; background: var(--pergament-hell); border: 3px double var(--tinte); border-radius: var(--rund); box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5); }
+.start-karte h1 { font-size: clamp(2.2rem, 7vw, 3.4rem); }
+.start-karte .unter { font-size: var(--text-gross); font-style: italic; margin-bottom: var(--ab-5); }
+.start-karte .reihe { margin-bottom: var(--ab-3); }
+.start-karte details { margin: var(--ab-4) 0; text-align: left; }
+.start-karte summary { min-height: var(--tipp); padding-top: var(--ab-2); cursor: pointer; text-decoration: underline; }
+
+/* Hochformat: Szene oben im Format 4:3, Text darunter */
+@media (orientation: portrait) {
+  #buehne { display: flex; flex-direction: column; }
+  #szene { position: relative; inset: auto; flex: none; width: 100%; aspect-ratio: 4 / 3; max-height: 55%; }
+  #band { position: relative; inset: auto; flex: 1; max-height: none; margin: var(--ab-3); min-height: 0; }
+  .leiste { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .leisten-knopf span:nth-child(2) { display: none; }
+  #titel strong { font-size: var(--text); }
+}
+@media (max-width: 700px) {
+  .leisten-knopf span:nth-child(2) { display: none; }
+  .platte { width: 20px; height: 26px; font-size: 0.875rem; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

@@ -2,7 +2,7 @@
 
 Stand: 13.11.2026 · gehört zu `docs/PLAN.md`
 
-Bis die Bilder fertig sind, zeichnet das Spiel für jede Datei einen beschrifteten Platzhalter in den Farben des Stilrahmens. Fertige Bilder ersetzen die Platzhalter, sobald sie unter dem genannten Dateinamen in `assets/` liegen. Am Code ändert sich dabei nichts.
+Bis die Bilder fertig sind, zeichnet das Spiel einfache Platzhalter in den Farben des Stilrahmens (`js/engine/platzhalter.js`). Der Einbau der fertigen Bilder ist ein eigener kleiner Schritt, sobald sie unter den genannten Dateinamen in `assets/` liegen.
 
 ## Stilrahmen
 

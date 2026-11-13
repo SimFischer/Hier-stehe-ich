@@ -1,0 +1,46 @@
+// Start: baut das Grundgerüst der Seite und verbindet Engine und Daten.
+import { h, setzeInhalt } from './engine/ui.js';
+import { store, start, beiAenderung } from './engine/save.js';
+import { platten } from './engine/state.js';
+import { setzeStationHoerer } from './engine/szenen.js';
+import { zeigeKarte, zeigeBeutel, zeigeNotizbuch, zeigeMenue, zeigeAbschluss, zeigeStart } from './engine/fenster.js';
+import { game } from '../data/game.js';
+import { t } from '../data/ui.js';
+
+const ico = (pfad) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${pfad}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const leistenKnopf = (id, text, pfad, onclick) => h('button', { type: 'button', id, class: 'leisten-knopf', onclick }, h('span', { html: ico(pfad) }), h('span', {}, text));
+
+function zeichnePlatten() {
+  const p = platten(store.state);
+  const el = document.getElementById('platten');
+  el.setAttribute('aria-label', `${t.platten}: ${p.filter((x) => x.da).length} / ${p.length}`);
+  setzeInhalt(el, ...p.map((x) => h('span', { class: `platte${x.da ? ' da' : ''}`, title: x.da ? x.platte : '' }, x.da ? String(x.nr) : '')));
+  const beutel = document.querySelector('#beutel .zahl');
+  beutel.textContent = String(store.state.cards.length);
+}
+
+function aufbau() {
+  document.title = game.titel;
+  setzeInhalt(document.getElementById('app'), 
+    h('header', { class: 'leiste' },
+      h('nav', { 'aria-label': t.navigation },
+        leistenKnopf('karte', t.karte, 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14', zeigeKarte),
+        h('button', { type: 'button', id: 'beutel', class: 'leisten-knopf', onclick: zeigeBeutel },
+          h('span', { html: ico('M5 10h14l-1.2 10H6.2zM9 10V8a3 3 0 0 1 6 0v2') }), h('span', {}, t.beutel), h('span', { class: 'zahl' }, '0')),
+        leistenKnopf('notizbuch', t.notizbuch, 'M4 5c3-1 5.5-.8 8 1 2.5-1.8 5-2 8-1v14c-3-1-5.5-.8-8 1-2.5-1.8-5-2-8-1zM12 6v14', zeigeNotizbuch)),
+      h('button', { type: 'button', id: 'titel', 'aria-label': `${game.titel}, ${t.menue}`, onclick: zeigeMenue }, h('strong', {}, game.titel), h('span', { id: 'ort' })),
+      h('div', { id: 'platten', role: 'img' })),
+    h('p', { id: 'ziel', role: 'status', 'aria-live': 'polite' }),
+    h('main', { id: 'buehne' },
+      h('div', { id: 'szene' }, h('div', { id: 'bild', 'aria-hidden': 'true' }), h('div', { id: 'hotspots' })),
+      h('section', { id: 'band', 'aria-live': 'polite' }),
+      h('section', { id: 'blatt', hidden: true })),
+    h('section', { id: 'start', hidden: true }));
+}
+
+start();
+aufbau();
+beiAenderung(zeichnePlatten);
+zeichnePlatten();
+setzeStationHoerer(zeigeAbschluss);
+zeigeStart();
