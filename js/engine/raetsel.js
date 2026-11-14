@@ -3,7 +3,7 @@ import { h, setzeInhalt, knopf, fuelle } from './ui.js';
 import { store, aendere } from './save.js';
 import { raetselEnde, bonusEnde, gespraechEnde, gibKarte, szene } from './state.js';
 import { kannSprechen, liesVor, still } from './speech.js';
-import { szeneSvg } from './platzhalter.js';
+import { szeneUrl } from './bilder.js';
 import { game } from '../../data/game.js';
 import { puzzles } from '../../data/puzzles.js';
 import { bonus } from '../../data/bonus.js';
@@ -61,7 +61,7 @@ export function oeffneRaetsel(id, { beiEnde, bild }) {
       f.hilfe[f.i] = n; zeigeHilfe(n);
     }, 'still klein') : null;
     const ort = szene(schritt.szene) || bild;
-    blatt.style.setProperty('--ort', `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(szeneSvg(ort?.bild))}")`);
+    blatt.style.setProperty('--ort', `url("${szeneUrl(ort?.bild)}")`);
     setzeInhalt(blatt, 
       h('header', { class: 'blatt-kopf' },
         h('div', {}, h('span', { class: 'kicker' }, `${r.titel} · ${fuelle(t.schritt, { n: f.i + 1, von: r.schritte.length })}`), h('h2', { tabindex: '-1' }, schritt.titel || r.titel)),

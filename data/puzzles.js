@@ -18,12 +18,12 @@ export const puzzles = {
           { id: 'beter', label: 'Unten rechts', unter: 'Sie wollen von der Erde aus helfen.' }
         ],
         items: [
-          { id: 'i-feuer', text: 'Seelen in Flammen blicken nach oben', ziel: 'feuer' },
-          { id: 'i-tod', text: 'Ein Mensch auf dem Sterbebett', ziel: 'tod' },
-          { id: 'i-himmel', text: 'Eine goldene Stadt mit offenem Tor', ziel: 'himmel' },
-          { id: 'i-beter', text: 'Angehörige beten vor einem Altar', ziel: 'beter' },
-          { id: 'i-gericht', text: 'Christus als Richter auf dem Regenbogen', ziel: 'gericht' },
-          { id: 'i-hoelle', text: 'Ein dunkler Rachen verschlingt Gestalten', ziel: 'hoelle' }
+          { id: 'i-feuer', bild: 'wandbild-4', text: 'Seelen in Flammen blicken nach oben', ziel: 'feuer' },
+          { id: 'i-tod', bild: 'wandbild-1', text: 'Ein Mensch auf dem Sterbebett', ziel: 'tod' },
+          { id: 'i-himmel', bild: 'wandbild-3', text: 'Eine goldene Stadt mit offenem Tor', ziel: 'himmel' },
+          { id: 'i-beter', bild: 'wandbild-6', text: 'Angehörige beten vor einem Altar', ziel: 'beter' },
+          { id: 'i-gericht', bild: 'wandbild-2', text: 'Christus als Richter auf dem Regenbogen', ziel: 'gericht' },
+          { id: 'i-hoelle', bild: 'wandbild-5', text: 'Ein dunkler Rachen verschlingt Gestalten', ziel: 'hoelle' }
         ],
         hilfen: [
           'Lies den Satz unter jedem Platz. Er beschreibt, was dort zu sehen war.',
@@ -40,10 +40,10 @@ export const puzzles = {
           { id: 'z-abl', label: 'Ein Schreiben der Kirche, das Strafen erlässt.' }
         ],
         items: [
-          { id: 'i-abl', text: 'Ablassbrief', ziel: 'z-abl' },
-          { id: 'i-wall', text: 'Wallfahrt', ziel: 'z-wall' },
-          { id: 'i-heil', text: 'Heiligenverehrung', ziel: 'z-heil' },
-          { id: 'i-rel', text: 'Reliquien', ziel: 'z-rel' }
+          { id: 'i-abl', bild: 'weg-ablass', text: 'Ablassbrief', ziel: 'z-abl' },
+          { id: 'i-wall', bild: 'weg-wallfahrt', text: 'Wallfahrt', ziel: 'z-wall' },
+          { id: 'i-heil', bild: 'weg-heilige', text: 'Heiligenverehrung', ziel: 'z-heil' },
+          { id: 'i-rel', bild: 'weg-reliquien', text: 'Reliquien', ziel: 'z-rel' }
         ],
         hilfen: [
           'Denk an den Pilger und an das Kästchen auf dem Seitenaltar.',
@@ -62,13 +62,13 @@ export const puzzles = {
   waage: {
     id: 'waage', station: 's2', titel: 'Die Waage der Werke', lernziel: [1, 3],
     schritte: [
-      { art: 'waage', titel: 'Die Waage der Werke', last: 100, grenze: 70,
+      { art: 'waage', titel: 'Die Waage der Werke', last: 100, grenze: 70, lastBild: 'gewicht-suende',
         anweisung: 'Links liegt die Last der Sünden. Rechts legst du Bruder Martins gute Werke hinein. Bringst du die Waage ins Gleichgewicht?',
         werke: [
-          { id: 'fasten', label: 'Fasten', gewicht: 12, text: 'Bruder Martin fastet tagelang. Die Schale senkt sich ein wenig.' },
-          { id: 'beten', label: 'Beten', gewicht: 15, text: 'Sieben Gebetszeiten am Tag, auch nachts. Die Waage bewegt sich etwas.' },
-          { id: 'beichte', label: 'Beichte', gewicht: 18, text: 'Er beichtet stundenlang jede Kleinigkeit. Wieder ein Stück.' },
-          { id: 'wachen', label: 'Nachtwachen', gewicht: 10, text: 'Er wacht, bis ihm die Augen zufallen. Die Last bleibt schwerer.' }
+          { id: 'fasten', bild: 'werk-fasten', label: 'Fasten', gewicht: 12, text: 'Bruder Martin fastet tagelang. Die Schale senkt sich ein wenig.' },
+          { id: 'beten', bild: 'werk-beten', label: 'Beten', gewicht: 15, text: 'Sieben Gebetszeiten am Tag, auch nachts. Die Waage bewegt sich etwas.' },
+          { id: 'beichte', bild: 'werk-beichte', label: 'Beichte', gewicht: 18, text: 'Er beichtet stundenlang jede Kleinigkeit. Wieder ein Stück.' },
+          { id: 'wachen', bild: 'werk-wachen', label: 'Nachtwachen', gewicht: 10, text: 'Er wacht, bis ihm die Augen zufallen. Die Last bleibt schwerer.' }
         ],
         mehr: { label: 'Noch mehr davon', gewicht: 5, text: 'Noch mehr Fasten, noch mehr Beten. Die Waage rührt sich kaum noch.' },
         ende: 'Die Waage kippt nicht. So fühlt es sich für Bruder Martin an: Es reicht nie.',
@@ -90,44 +90,44 @@ export const puzzles = {
     id: 'standbild', station: 's3', titel: 'Standbild zum Lied', lernziel: [3],
     schritte: [
       { art: 'standbild', titel: 'Standbild zum Lied', genug: 3,
-        anweisung: 'Später, im Jahr 1523, schreibt Luther über diese Jahre ein Lied. Stelle zu drei Strophen ein Standbild: Wie steht Luther zu Gott?',
-        figuren: { luther: 'Luther', gott: 'Gott' },
+        anweisung: '1523 schreibt Luther über diese Jahre ein Lied. Stelle zu drei Strophen ein Standbild. Gott erscheint als Licht.',
+        figuren: { luther: 'Luther', gott: 'Gott (als Licht)' },
         regler: {
           abstand: { label: 'Abstand', werte: [{ id: 'nah', label: 'nah' }, { id: 'mittel', label: 'mittel' }, { id: 'weit', label: 'weit' }] },
-          blick: { label: 'Gott blickt', werte: [{ id: 'zu', label: 'zu Luther hin' }, { id: 'ab', label: 'von ihm weg' }] },
+          blick: { label: 'Das Licht scheint', werte: [{ id: 'zu', label: 'zu Luther hin' }, { id: 'ab', label: 'von ihm weg' }] },
           luther: { label: 'Luther', werte: [{ id: 'gebeugt', label: 'gebeugt' }, { id: 'kniend', label: 'kniend' }, { id: 'aufrecht', label: 'aufrecht' }] },
-          gott: { label: 'Gott', werte: [{ id: 'streng', label: 'mit erhobener Hand' }, { id: 'offen', label: 'mit offenen Armen' }] }
+          gott: { label: 'Das Licht ist', werte: [{ id: 'streng', label: 'schmal und fern' }, { id: 'offen', label: 'weit und warm' }] }
         },
         strophen: [
           { nr: 2, text: 'Ich war gefangen und verloren. Meine Schuld quälte mich Tag und Nacht. Ich fiel immer tiefer hinein.',
             passt: { abstand: ['weit'], blick: ['ab'], luther: ['gebeugt', 'kniend'], gott: ['streng'] },
             rueck: {
               abstand: { ja: 'Der große Abstand passt: Luther fühlt sich verloren.', nein: 'Abstand: „Verloren“ klingt nach großer Entfernung.' },
-              blick: { ja: 'Gott blickt weg. So erlebt es Luther in dieser Strophe.', nein: 'Blick: Spürt Luther hier, dass Gott ihn ansieht?' },
+              blick: { ja: 'Das Licht fällt nicht auf Luther. So erlebt er es in dieser Strophe.', nein: 'Licht: Spürt Luther hier, dass Gott ihn ansieht?' },
               luther: { ja: 'Luthers Haltung zeigt die Last der Schuld.', nein: 'Luther: Wer „immer tiefer fällt“, steht kaum aufrecht.' },
-              gott: { ja: 'Die erhobene Hand passt zum strengen Richter.', nein: 'Gott: Noch erlebt Luther ihn als Richter.' }
+              gott: { ja: 'Schmal und fern: So erlebt Luther den strengen Richter.', nein: 'Gott: Noch erlebt Luther ihn als fernen Richter.' }
             } },
           { nr: 3, text: 'Meine guten Werke halfen mir nicht. Die Angst trieb mich zur Verzweiflung. Mir blieb nur der Tod.',
             passt: { abstand: ['weit', 'mittel'], blick: ['ab'], luther: ['gebeugt', 'kniend'], gott: ['streng'] },
             rueck: {
               abstand: { ja: 'Der Abstand bleibt. Die Werke haben ihn nicht verkleinert.', nein: 'Abstand: Haben die guten Werke Luther näher zu Gott gebracht?' },
-              blick: { ja: 'Gott scheint weiter wegzusehen.', nein: 'Blick: In dieser Strophe ist noch keine Zuwendung zu spüren.' },
+              blick: { ja: 'Das Licht bleibt abgewandt.', nein: 'Licht: In dieser Strophe ist noch keine Zuwendung zu spüren.' },
               luther: { ja: 'So sieht Verzweiflung aus.', nein: 'Luther: Angst und Verzweiflung drücken ihn nieder.' },
-              gott: { ja: 'Gott bleibt für Luther der Strenge.', nein: 'Gott: Offene Arme sieht Luther hier noch nicht.' }
+              gott: { ja: 'Gott bleibt für Luther der Strenge.', nein: 'Gott: Wärme spürt Luther hier noch nicht.' }
             } },
           { nr: 4, text: 'Da hatte Gott Erbarmen mit mir. Er wandte mir sein Vaterherz zu. Er gab sein Bestes für mich.',
             passt: { abstand: ['nah', 'mittel'], blick: ['zu'], luther: ['kniend', 'aufrecht'], gott: ['offen'] },
             rueck: {
               abstand: { ja: 'Jetzt ist Nähe da. Gott kommt Luther entgegen.', nein: 'Abstand: „Er wandte sich mir zu“ klingt nach Nähe.' },
-              blick: { ja: 'Gott sieht Luther an. Das ist die Wende.', nein: 'Blick: Wohin schaut ein Vater, der Erbarmen hat?' },
+              blick: { ja: 'Das Licht fällt auf Luther. Das ist die Wende.', nein: 'Licht: Wohin wendet sich ein Vater, der Erbarmen hat?' },
               luther: { ja: 'Luther kann sich aufrichten.', nein: 'Luther: Die Last ist von ihm genommen.' },
-              gott: { ja: 'Offene Arme: wie der Vater im Gleichnis.', nein: 'Gott: Denk an den Vater, der dem Sohn entgegenläuft.' }
+              gott: { ja: 'Weit und warm: wie der Vater im Gleichnis.', nein: 'Gott: Denk an den Vater, der dem Sohn entgegenläuft.' }
             } }
         ],
         hilfen: [
           'Lies die Strophe genau. Welche Wörter sagen etwas über Nähe, Blick und Haltung?',
           'In Strophe 2 und 3 ist Gott fern und streng. In Strophe 4 wendet er sich Luther zu.',
-          'Strophe 2 und 3: weit, Gott blickt weg, Luther gebeugt, erhobene Hand. Strophe 4: nah, Gott blickt hin, Luther aufrecht, offene Arme.'
+          'Strophe 2 und 3: weit, Licht scheint weg, Luther gebeugt, Licht schmal und fern. Strophe 4: nah, Licht scheint zu Luther, Luther aufrecht, Licht weit und warm.'
         ] },
       { art: 'wahl', begruendung: true, frage: 'Welche Figur im Gleichnis vom verlorenen Sohn zeigt, wie Luther Gott jetzt sieht?',
         optionen: [
@@ -329,7 +329,7 @@ export const puzzles = {
         schlagzeilen: ['Mönch gegen Kaiser und Papst!', 'Vergebung ist kein Geschäft!', 'Die Bibel für alle, auf Deutsch!', 'Was Doktor Luther wirklich will'],
         eigene: 'Eigene Schlagzeile', namenHinweis: 'Schreibe keinen vollen Namen in die Schlagzeile.',
         kopf: 'Neue Zeitung aus Wittenberg', fuss: 'Gedruckt zu Wittenberg im Herbst 1522',
-        motive: [{ id: 'feder', label: 'Mönch mit Feder' }, { id: 'presse', label: 'Druckerpresse' }, { id: 'buch', label: 'Offene Bibel' }, { id: 'waage', label: 'Waage' }] }
+        motive: [{ id: 'feder', bild: 'motiv-1', label: 'Mönch mit Feder' }, { id: 'presse', bild: 'motiv-2', label: 'Druckerpresse' }, { id: 'buch', bild: 'motiv-3', label: 'Offene Bibel' }, { id: 'waage', bild: 'motiv-4', label: 'Waage' }] }
     ]
   }
 };

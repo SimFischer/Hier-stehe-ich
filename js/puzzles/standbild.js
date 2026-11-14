@@ -1,6 +1,6 @@
 // Digitales Standbild: Es gibt Rückmeldung in Worten, aber nicht nur eine einzige Lösung.
 import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
-import { standSvg } from '../engine/platzhalter.js';
+import { standbildHtml } from '../engine/bilder.js';
 
 export const rules = {
   startStellung: (s) => Object.fromEntries(Object.entries(s.regler).map(([k, r]) => [k, r.werte[Math.floor(r.werte.length / 2)].id])),
@@ -26,8 +26,8 @@ export function view(el, schritt, ctx, fertig) {
     const strophe = schritt.strophen[nr];
     const buehne = h('div', { class: `buehne abstand-${stellung.abstand}`, role: 'img',
       'aria-label': Object.entries(schritt.regler).map(([k, r]) => `${r.label}: ${r.werte.find((w) => w.id === stellung[k]).label}`).join(', ') },
-      h('div', { class: 'stand-figur luther', html: standSvg('luther', stellung.luther) }, h('span', {}, schritt.figuren.luther)),
-      h('div', { class: `stand-figur gott blick-${stellung.blick}`, html: standSvg('gott', stellung.gott) }, h('span', {}, schritt.figuren.gott)));
+      h('div', { class: 'stand-figur luther', html: standbildHtml('luther', stellung.luther) }, h('span', {}, schritt.figuren.luther)),
+      h('div', { class: `stand-figur gott blick-${stellung.blick}`, html: standbildHtml('gott', stellung.gott) }, h('span', {}, schritt.figuren.gott)));
     const regler = h('div', { class: 'regler' }, Object.entries(schritt.regler).map(([k, r]) =>
       h('fieldset', {}, h('legend', {}, r.label), r.werte.map((w) =>
         h('button', { type: 'button', class: `wahlknopf${stellung[k] === w.id ? ' gewaehlt' : ''}`, 'aria-pressed': String(stellung[k] === w.id),

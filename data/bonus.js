@@ -29,6 +29,7 @@ export const bonus = {
     kurz: 'Drucke in 45 Sekunden so viele Flugblätter wie möglich.',
     schritte: [
       { art: 'presse', titel: 'Die Druckerpresse', sekunden: 45,
+        bilder: ['bonus-presse-teile-1', 'bonus-presse-teile-2', 'bonus-presse-teile-3', 'bonus-presse-teile-4'],
         anweisung: 'Ein Flugblatt braucht vier Handgriffe, immer in derselben Reihenfolge. Wie viele Blätter schaffst du in 45 Sekunden?',
         handgriffe: [
           { id: 'farbe', label: 'Einfärben' }, { id: 'bogen', label: 'Bogen einlegen' },
@@ -89,11 +90,11 @@ export const bonus = {
           { id: 'z-ring', label: 'Das Glück bei Gott hat kein Ende und ist kostbar.' }
         ],
         items: [
-          { id: 'i-ring', text: 'Goldener Ring', ziel: 'z-ring' },
-          { id: 'i-kreuz', text: 'Schwarzes Kreuz', ziel: 'z-kreuz' },
-          { id: 'i-blau', text: 'Blaues Feld', ziel: 'z-blau' },
-          { id: 'i-herz', text: 'Rotes Herz', ziel: 'z-herz' },
-          { id: 'i-rose', text: 'Weiße Rose', ziel: 'z-rose' }
+          { id: 'i-ring', bild: 'rose-5', text: 'Goldener Ring', ziel: 'z-ring' },
+          { id: 'i-kreuz', bild: 'rose-1', text: 'Schwarzes Kreuz', ziel: 'z-kreuz' },
+          { id: 'i-blau', bild: 'rose-4', text: 'Blaues Feld', ziel: 'z-blau' },
+          { id: 'i-herz', bild: 'rose-2', text: 'Rotes Herz', ziel: 'z-herz' },
+          { id: 'i-rose', bild: 'rose-3', text: 'Weiße Rose', ziel: 'z-rose' }
         ],
         hilfen: [
           'Achte auf die Farben. Welche Farbe hat der Himmel? Was hat kein Ende?',
@@ -112,8 +113,8 @@ export const bonus = {
         anweisung: 'Durch die Reformation veränderte sich der Gottesdienst in den evangelischen Gemeinden. Was gehört wohin?',
         falsch: 'Das passt zur anderen Seite. Denk daran: Die Gemeinde soll verstehen und mitmachen.',
         ziele: [
-          { id: 'alt', label: 'Um 1500', unter: 'vor der Reformation' },
-          { id: 'neu', label: 'Evangelisch', unter: 'nach der Reformation' }
+          { id: 'alt', bild: 'bonus-gottesdienst-1500', label: 'Um 1500', unter: 'vor der Reformation' },
+          { id: 'neu', bild: 'bonus-gottesdienst-1522', label: 'Evangelisch', unter: 'nach der Reformation' }
         ],
         items: [
           { id: 'i-latein', text: 'Die Sprache ist Latein.', ziel: 'alt' },

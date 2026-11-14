@@ -2,7 +2,7 @@
 
 Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an sieben Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
 
-**Stand:** Phase 3 von 4. Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen und Vorlesen sind fertig, noch mit Platzhaltergrafik. Es fehlt die Abschlussprüfung (Phase 4).
+**Stand:** Phase 3 von 4, mit den fertigen Bildern. Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen und Vorlesen sind fertig. Es fehlt die Abschlussprüfung (Phase 4).
 
 ## Spielen
 
@@ -37,6 +37,7 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 | `js/engine/` | Spielstand, Fortsetzungscode, Szenen, Fenster, Rätselblatt, Platzhaltergrafik |
 | `js/puzzles/` | Ein Modul je Rätselart: oben die Regeln (ohne Bildschirm), unten die Anzeige |
 | `css/` | `tokens` (Farben, Größen), `layout`, `components`, `scenes`, `print` |
+| `assets/` | 117 Bilder, für das Spiel verkleinert (zusammen rund 29 MB); Register in `data/assets.js` |
 | `tests/` | Datenprüfung, Durchspieltest, Simulation der Spielsysteme, Fortsetzungscode |
 | `docs/` | Plan, Asset-Liste |
 
@@ -59,11 +60,13 @@ Im Browser geprüft wurden alle Stationen in 1024 × 768 sowie Stichproben in 11
 ## Offene Punkte
 
 - **Spielzeit:** Die Schätzung liegt bei 45 statt 40 Minuten. Ob gekürzt werden muss, zeigt erst eine Erprobung mit einer Klasse.
-- **Bilder:** Die fertigen Grafiken aus `docs/ASSET-PROMPTS.md` sind noch nicht eingebaut. Das Spiel zeichnet Platzhalter.
+- **Bilder:** Für den Kaplan in Jüterbog gibt es noch kein eigenes Bild; dort steht vorläufig der Mönch. Nicht verwendet werden bisher: Kaiser, Bote, Sprecher und Luther-Figuren außer Professor und Junker als Szenenfiguren, die Karte der Erinnerung, die Einzelteile der Waage, Kartenvorder- und -rückseite, Flugblatt- und Stadtzeichen, Münze, Geldweg Albrecht und Rom sowie Wald, Wagen und Reiter der Entführung.
 - **Druck, Teilen und Vorlesen** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser. Die Stimme hängt vom Gerät ab.
 - **Lehrkraftmodus:** Das Öffnen über Umschalt + Enter ist geprüft, das Halten des Titels am Touchscreen noch nicht.
 - **Fachprüfung** aller Texte gegen die Leitplanken des Konzepts folgt in Phase 4 (`docs/FACHPRUEFUNG.md`).
 
 ## Quellen und Rechte
+
+Die Illustrationen wurden mit einem Bildgenerator erstellt und für das Spiel verkleinert; die Originale in voller Größe liegen nicht im Repository. Die Karten beruhen auf Daten von © OpenStreetMap-Mitwirkenden (ODbL) und Natural Earth; Einzelheiten in `docs/ASSET-QUELLEN.md`.
 
 Konzept und fachliche Leitplanken: `KONZEPT.md`. Alle Spieltexte sind eigens geschrieben. Die Thesen und Liedstrophen sind eigene Übertragungen; die Bibel von 1483 (Koberger) und Luthers Fassung von 1546 sind gemeinfrei. Aus lizenziertem Unterrichtsmaterial wurde nichts übernommen.

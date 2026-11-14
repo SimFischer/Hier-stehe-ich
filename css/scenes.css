@@ -183,3 +183,73 @@ blockquote.luther { border-left-color: var(--gruen); background: var(--gruen-hel
 .nachdenken { display: grid; gap: var(--ab-2); }
 textarea { font: inherit; padding: var(--ab-2) var(--ab-3); border: var(--rand); border-radius: var(--rund); background: #fff; resize: none; width: 100%; }
 @media (orientation: portrait), (max-width: 760px) { .presse-knoepfe { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Echte Bilder ---------- */
+.figurbild { display: block; height: 100%; width: auto; }
+.hotspot .figur:has(.figurbild) { width: auto; aspect-ratio: auto; height: 46cqh; }
+.hotspot.mit-figur .schild, .hotspot.mit-objekt .schild { order: -1; }
+.hotspot .objekt img { display: block; width: calc(var(--breite) * 1cqw); height: auto; }
+.hotspot:not(.zu):hover .figurbild, .hotspot:not(.zu):hover .objekt img { filter: drop-shadow(0 0 6px #fff8); }
+.hotspot.zu .objekt img { filter: grayscale(0.4); }
+
+/* Zuordnen mit Bildern */
+.zu-bild img { display: block; width: 100%; height: auto; border-radius: 3px; }
+.teil.mit-bild { display: grid; grid-template-columns: 52px 1fr; align-items: center; gap: var(--ab-2); padding: var(--ab-1) var(--ab-2); }
+.zu-teile.bilder { gap: var(--ab-1); }
+.gelegt.mit-bild { display: grid; grid-template-columns: 44px 1fr; align-items: center; gap: var(--ab-2); }
+.gelegt.mit-bild::before { content: none; }
+.layout-bild .gelegt.mit-bild { grid-template-columns: 1fr; padding: 2px; }
+.layout-bild .gelegt.mit-bild .zu-bild img { max-height: 24cqh; width: auto; margin: 0 auto; }
+.layout-bild .gelegt.mit-bild > span:last-child { display: none; }
+.layout-bild .ziel.voll .ziel-kopf em { display: none; }
+.ziel > .zu-bild img { max-height: 120px; object-fit: cover; object-position: center 30%; }
+.blatt-koerper { container-type: size; }
+
+/* Waage */
+.icon { display: inline-block; vertical-align: middle; }
+.icon img { display: block; width: 34px; height: 34px; object-fit: contain; }
+.knopf .icon { margin-right: var(--ab-2); }
+.schale.links .icon img { width: 52px; height: 52px; margin: 0 auto; }
+
+/* Marktplatz */
+.markt-feld { background: linear-gradient(rgba(239, 227, 200, 0.5), rgba(239, 227, 200, 0.62)), var(--ort, none) center 70% / cover; }
+.markt-kasten { background: none; border: 0; width: auto; height: 22%; }
+.markt-kasten img { height: 100%; width: auto; display: block; }
+.markt-kasten span { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); white-space: nowrap; }
+.markt-figur .figur:has(.figurbild) { width: auto; height: clamp(74px, 15vh, 128px); }
+.markt-statist:has(.figurbild) { width: auto; aspect-ratio: auto; height: clamp(52px, 10vh, 84px); }
+
+/* Standbild */
+.buehne { background: linear-gradient(rgba(239, 227, 200, 0.35), rgba(239, 227, 200, 0.35)), var(--ort, none) center bottom / cover; }
+.stand-figur:has(.figurbild) { width: auto; height: 72%; grid-template-rows: 1fr auto; }
+.stand-figur .figurbild { min-height: 0; }
+.stand-figur.gott.blick-ab .figurbild { transform: scaleX(-1); opacity: 0.75; }
+.stand-figur.gott:has(.figurbild) { bottom: 16%; }
+
+/* Verhör und Übersetzung */
+.saal .kopf:has(.figurbild) { width: auto; height: clamp(70px, 13vh, 110px); }
+.saal .kopf .figurbild { width: auto; }
+.saal { background: linear-gradient(rgba(60, 40, 20, 0.35), rgba(60, 40, 20, 0.35)), var(--ort, none) center 60% / cover; gap: 2px; }
+.ratgeber-knopf .figur:has(.figurbild) { width: auto; height: 52px; }
+
+/* Flugschrift, Druckwelle, Bonus */
+.fb-bild img { width: 100%; height: auto; display: block; mix-blend-mode: multiply; }
+.reich { aspect-ratio: 4 / 3; min-height: 0; align-self: start; width: 100%; max-height: 100%; background-repeat: no-repeat; }
+.stadt.oben .name { order: -1; }
+.presse-bild { display: grid; place-items: center; }
+.presse-bild img { height: clamp(120px, 24vh, 220px); width: auto; }
+@media (orientation: portrait), (max-width: 760px) { .reich { min-height: 0; } .teil.mit-bild { grid-template-columns: 44px 1fr; } }
+
+/* Standbild mit echten Figuren: breite Bühne, beide Figuren gleich hoch */
+.buehne { aspect-ratio: 4 / 3; min-height: 0; align-self: start; width: 100%; }
+.stand-figur:has(.figurbild) { height: 74%; bottom: 4%; }
+.stand-figur.gott:has(.figurbild) { bottom: 10%; }
+.stand-figur.luther { left: 3%; } .stand-figur.gott { right: 3%; }
+.abstand-mittel .luther { left: 14%; } .abstand-mittel .gott { right: 14%; }
+.abstand-nah .luther { left: 24%; } .abstand-nah .gott { right: 24%; }
+.stand-figur.gott.blick-ab::after { content: none; }
+.markt-kasten { display: block; }
+.reich-rahmen { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
+@media (orientation: portrait), (max-width: 760px) { .reich-rahmen { grid-template-columns: minmax(0, 1fr); } }
+.saal .kopf.nickt .figurbild { filter: drop-shadow(0 0 5px #b8f5b0) drop-shadow(0 0 2px #fff); }
+.saal .kopf:not(.nickt) .figurbild { filter: saturate(0.55) brightness(0.9); }

@@ -1,8 +1,11 @@
 // Spielsystem „Die Druckwelle“ (Station 5). Regeln in js/puzzles/druckwelle.js.
 // gelehrte/volk sind Gewichte ohne Einheit, keine historischen Einwohnerzahlen.
-// x/y: Lage auf der Karte in Prozent. knoten: Handelsknoten, druckt nach und gibt die deutsche Fassung an alle Nachbarn weiter.
+// x/y: Lage in Prozent der ganzen Karte karte-reich (aus den Geodaten). Gezeigt wird der Ausschnitt unten. oben: Name über dem Punkt.
+// versatz: Der Punkt wird in der Anzeige etwas verschoben, damit eng benachbarte Städte antippbar bleiben.
+// knoten: Handelsknoten, druckt nach und gibt die deutsche Fassung an alle Nachbarn weiter.
 export const druckwelle = {
   runden: 6, boten: 3, start: 'wittenberg',
+  karte: { bild: 'karte-reich', ausschnitt: { x: 16, y: 34, b: 54 } },
   deutschJeRunde: [1, 1, 1, 1, 1, 1],
   // Nach so vielen Wochen hat in einer deutschen Stadt jeder davon gehört.
   volkStufen: 4,
@@ -17,16 +20,16 @@ export const druckwelle = {
     'Pro Woche ist nur ein deutsches Blatt fertig.'
   ],
   staedte: [
-    { id: 'wittenberg', name: 'Wittenberg', x: 72, y: 22, gelehrte: 2, volk: 2 },
-    { id: 'magdeburg', name: 'Magdeburg', x: 56, y: 14, gelehrte: 1, volk: 8 },
-    { id: 'leipzig', name: 'Leipzig', x: 68, y: 38, gelehrte: 2, volk: 7, knoten: true },
-    { id: 'erfurt', name: 'Erfurt', x: 50, y: 40, gelehrte: 2, volk: 8 },
-    { id: 'nuernberg', name: 'Nürnberg', x: 56, y: 62, gelehrte: 1, volk: 14, knoten: true },
-    { id: 'augsburg', name: 'Augsburg', x: 52, y: 82, gelehrte: 1, volk: 12 },
-    { id: 'frankfurt', name: 'Frankfurt', x: 30, y: 50, gelehrte: 1, volk: 8 },
-    { id: 'koeln', name: 'Köln', x: 14, y: 34, gelehrte: 2, volk: 14 },
-    { id: 'strassburg', name: 'Straßburg', x: 22, y: 72, gelehrte: 1, volk: 10 },
-    { id: 'basel', name: 'Basel', x: 26, y: 90, gelehrte: 2, volk: 6 }
+    { id: 'wittenberg', name: 'Wittenberg', x: 60.98, y: 44.63, oben: true, versatz: [5, -8], gelehrte: 2, volk: 2 },
+    { id: 'magdeburg', name: 'Magdeburg', x: 54.28, y: 42.33, oben: true, versatz: [-5, -5], gelehrte: 1, volk: 8 },
+    { id: 'leipzig', name: 'Leipzig', x: 59.19, y: 49.21, versatz: [3, 6], gelehrte: 2, volk: 7, knoten: true },
+    { id: 'erfurt', name: 'Erfurt', x: 50.19, y: 52.37, gelehrte: 2, volk: 8 },
+    { id: 'nuernberg', name: 'Nürnberg', x: 50.52, y: 65.64, gelehrte: 1, volk: 14, knoten: true },
+    { id: 'augsburg', name: 'Augsburg', x: 49.32, y: 75.08, gelehrte: 1, volk: 12 },
+    { id: 'frankfurt', name: 'Frankfurt', x: 34.51, y: 59.92, gelehrte: 1, volk: 8 },
+    { id: 'koeln', name: 'Köln', x: 23, y: 52.71, gelehrte: 2, volk: 14 },
+    { id: 'strassburg', name: 'Straßburg', x: 28.29, y: 73.2, gelehrte: 1, volk: 10 },
+    { id: 'basel', name: 'Basel', x: 27.2, y: 82.14, gelehrte: 2, volk: 6 }
   ],
   wege: [
     ['wittenberg', 'leipzig'], ['wittenberg', 'magdeburg'], ['leipzig', 'magdeburg'], ['leipzig', 'erfurt'],

@@ -7,6 +7,7 @@ import { kannSprechen, still } from './speech.js';
 import { bonus } from '../../data/bonus.js';
 import { kodiere, lies } from './code.js';
 import { zeigeSzene } from './szenen.js';
+import { bildHtml, bildUrl } from './bilder.js';
 import { game } from '../../data/game.js';
 import { scenes } from '../../data/scenes.js';
 import { cards } from '../../data/cards.js';
@@ -80,7 +81,7 @@ export function zeigeMenue() {
       if (!sicher) { sicher = true; zeichne(); return; }
       const neu = neuerStand(); neu.zuZweit = s.zuZweit; ersetze(neu); dlg.close(); zeigeStart();
     }, sicher ? 'warn' : 'still')),
-    h('p', { class: 'klein' }, t.datenschutz));
+    h('p', { class: 'klein' }, t.datenschutz), h('p', { class: 'klein' }, t.kartenQuelle));
   const dlg = fenster(game.titel, inhalt);
   zeichne();
 }
@@ -118,7 +119,7 @@ export function zeigeAbschluss(ids) {
   const ende = st.id === 'f';
   const dlg = fenster(ende ? t.endeTitel : st.platte ? fuelle(t.platteTitel, { n: platten(store.state).filter((p) => p.da).length, von: platten(store.state).length }) : st.name,
     h('div', { class: 'abschluss' },
-      st.platte ? h('div', { class: 'platte gross da', 'aria-hidden': 'true' }, st.platte) : null,
+      st.platte ? h('div', { class: 'platte-gross', html: bildHtml(st.bild) }, h('strong', {}, st.platte)) : null,
       h('p', {}, rich(st.abschluss)),
       neu.length ? h('div', {}, h('h3', {}, t.neueKarten), h('div', { class: 'hand' }, neu.map((k) => kartenChip(k)))) : null,
       ende ? h('p', {}, t.endeText) : null,
@@ -139,5 +140,7 @@ export function zeigeStart() {
       knopf(laeuft ? t.neuZuZweit : t.startZuZweit, () => { ersetze(neuerStand()); los(true); }, laeuft ? 'still' : 'gross')),
     h('details', {}, h('summary', {}, t.codeEingeben), codeEingabe(() => { el.hidden = true; zeigeSzene(game.start); melde(t.codeGeladen); })),
     h('p', { class: 'klein' }, t.datenschutz)));
+  const hinten = bildUrl(game.startBild);
+  if (hinten) el.style.setProperty('--hinter', `url("${hinten}")`);
   el.hidden = false;
 }

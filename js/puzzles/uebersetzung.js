@@ -1,6 +1,6 @@
 // Übersetzungswerkstatt: erst zuhören, dann die Fassung wählen, die jeder versteht.
 import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
-import { figurSvg } from '../engine/platzhalter.js';
+import { figurHtml } from '../engine/bilder.js';
 
 export const rules = {
   start: () => ({ vers: 0, gefragt: [], geloest: false, fehler: 0 }),
@@ -27,7 +27,7 @@ export function view(el, schritt, ctx, fertig) {
       h('blockquote', { class: 'alt' }, h('cite', {}, schritt.altLabel), v.alt),
       h('div', { class: 'ratgeber' }, schritt.ratgeber.map((id) => h('button', { type: 'button', class: `ratgeber-knopf${z.gefragt.includes(id) ? ' gefragt' : ''}${stimme === id ? ' gewaehlt' : ''}`,
         onclick: () => { z = rules.frage(z, schritt, id); stimme = id; rueck = ''; zeichne(); } },
-        h('span', { class: 'figur', html: figurSvg(ctx.figuren[id].farbe) }), h('span', {}, ctx.figuren[id].name)))),
+        h('span', { class: 'figur', html: figurHtml(ctx.figuren[id]) }), h('span', {}, ctx.figuren[id].name)))),
       h('p', { class: 'stimme', role: 'status' }, stimme ? h('span', {}, h('strong', {}, `${ctx.figuren[stimme].name}: `), v.stimmen[stimme]) : fuelle(t.ratFragen, { n: schritt.fragen })),
       h('div', { class: 'optionen' }, v.optionen.map((o, i) => h('button', { type: 'button', class: `option${z.geloest && o.richtig ? ' richtig' : ''}`, disabled: !darf || z.geloest,
         onclick: () => { const vor = z; z = rules.waehle(z, schritt, i); rueck = z.geloest ? '' : (z !== vor ? o.rueck : ''); zeichne(); } }, o.text))),

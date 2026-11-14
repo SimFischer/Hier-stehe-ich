@@ -1,5 +1,8 @@
 // Zuordnen: erst ein Teil antippen, dann das Ziel. Wird für Wandbild, Thesen, Strafen und die vier „allein“ benutzt.
 import { h, setzeInhalt, knopf, rich } from '../engine/ui.js';
+import { bildHtml } from '../engine/bilder.js';
+
+const mitBild = (x) => (x.bild ? h('span', { class: 'zu-bild', 'aria-hidden': 'true', html: bildHtml(x.bild) }) : null);
 
 /** Baut Teile und Ziele. Für die Thesen kommen sie aus den Karten. */
 export function aufbau(schritt, karten) {
@@ -33,10 +36,10 @@ export function view(el, schritt, ctx, fertig) {
 
   const zeichne = () => {
     const offen = a.items.filter((i) => !z.platz[i.id]);
-    const teile = h('div', { class: 'zu-teile', role: 'group', 'aria-label': t.zuTeile },
-      offen.map((i) => h('button', { type: 'button', class: `teil${wahl === i.id ? ' gewaehlt' : ''}`, 'aria-pressed': String(wahl === i.id),
-        onclick: () => { wahl = wahl === i.id ? null : i.id; hinweis = ''; zeichne(); } }, i.text)));
-    const ziele = h('div', { class: `zu-ziele layout-${schritt.layout}`, role: 'group', 'aria-label': t.zuZiele },
+    const teile = h('div', { class: `zu-teile${a.items.some((i) => i.bild) ? ' bilder' : ''}`, role: 'group', 'aria-label': t.zuTeile },
+      offen.map((i) => h('button', { type: 'button', class: `teil${wahl === i.id ? ' gewaehlt' : ''}${i.bild ? ' mit-bild' : ''}`, 'aria-pressed': String(wahl === i.id),
+        onclick: () => { wahl = wahl === i.id ? null : i.id; hinweis = ''; zeichne(); } }, mitBild(i), h('span', {}, i.text))));
+    const ziele = h('div', { class: `zu-ziele layout-${schritt.layout}${a.items.some((i) => i.bild) ? ' bilder' : ''}`, role: 'group', 'aria-label': t.zuZiele },
       a.ziele.map((zi) => {
         const drin = a.items.filter((i) => z.platz[i.id] === zi.id);
         const voll = schritt.einzeln && drin.length > 0;
@@ -48,8 +51,8 @@ export function view(el, schritt, ctx, fertig) {
             if (z.letzte.richtig) wahl = null;
             zeichne();
           } },
-          h('span', { class: 'ziel-kopf' }, h('strong', {}, zi.label), zi.unter ? h('em', {}, zi.unter) : null),
-          drin.map((i) => h('span', { class: 'gelegt' }, i.text)));
+          mitBild(zi), h('span', { class: 'ziel-kopf' }, h('strong', {}, zi.label), zi.unter ? h('em', {}, zi.unter) : null),
+          drin.map((i) => h('span', { class: `gelegt${i.bild ? ' mit-bild' : ''}` }, mitBild(i), h('span', {}, i.text))));
       }));
     const fuss = h('div', { class: 'reihe fuss' },
       h('p', { class: `rueck${hinweis ? ' offen' : ''}`, role: 'status' }, hinweis || (rules.fertig(z, a) ? t.zuFertig : wahl ? t.zuZielWaehlen : t.zuTeilWaehlen)),

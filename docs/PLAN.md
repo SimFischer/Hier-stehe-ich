@@ -321,3 +321,13 @@ Beim Bauen und Testen hat sich einiges anders ergeben als geplant.
 - **Vorlesen:** Sprachausgabe des Browsers, schaltbar in der Leiste und im Menü, dazu ein Knopf in jedem Rätsel.
 - **Nachdenken:** zwei Fragen mit Textfeldern. Die Antworten werden nicht gespeichert.
 - **Noch offen für Phase 4:** Bildschirmfotos aller Ansichten in vier Größen, Fachprüfung, Sprachprüfung, Erprobung am iPad.
+
+## 12. Einbau der Bilder
+
+- **Bildpaket:** 117 Bilder, für das Spiel verkleinert (Hintergründe 1600 × 1200 als JPG, Freisteller als PNG in halber Größe). Aus 133 MB wurden rund 29 MB. Geladen wird je Szene nur, was sie braucht.
+- **Register:** `data/assets.js` nennt jede Datei mit Maßen. `js/engine/bilder.js` liefert das Bild oder, wenn es fehlt, den Platzhalter. Ein Test prüft, dass jede Datei im Register steht und jeder Verweis in den Daten ein Bild findet.
+- **Szene:** Die Spielansicht zeigt jetzt immer das ganze 4:3-Bild. Bleibt seitlich Platz, liegt dort dasselbe Bild unscharf. Die Hotspots sind neu auf die Bilder gesetzt; Figuren stehen auf dem Boden, ihr Namensschild über dem Kopf.
+- **Gott als Licht:** Im Standbild erscheint Gott nach deiner Entscheidung als Licht. Die Regler heißen jetzt „Das Licht scheint“ und „Das Licht ist“ (schmal und fern / weit und warm), die Rückmeldungen sind angepasst.
+- **Druckwelle:** Die Karte ist ein Ausschnitt von `karte-reich`, die Städte liegen nach den Geodaten. Wittenberg, Magdeburg und Leipzig sind in der Anzeige leicht auseinandergerückt, damit man sie einzeln antippen kann.
+- **Weitere Bilder:** Wandbildteile und Wege als Bildkacheln, Werke der Waage als Zeichen, Reichsstände im Saal, Ratgeber auf der Wartburg, Druckmotive der Flugschrift, Druckplatten in der Leiste, Lutherrose, Gottesdienst und Druckerpresse in den Bonusspielen.
+- **Offen:** eigenes Bild für den Kaplan; einige Bilder des Pakets haben noch keinen Platz im Spiel (Liste im README).

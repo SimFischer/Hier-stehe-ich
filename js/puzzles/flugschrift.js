@@ -1,6 +1,6 @@
 // Die eigene Flugschrift: Schlagzeile, drei Kernaussagen, ein Bild. Drucken (PDF) oder als Bild teilen.
 import { h, setzeInhalt, knopf, rich, kartenChip, fuelle, melde } from '../engine/ui.js';
-import { motivSvg } from '../engine/platzhalter.js';
+import { motivHtml, motivUrl } from '../engine/bilder.js';
 
 export const rules = {
   start: (s) => ({ schlagzeile: s.schlagzeilen[0], eigene: false, karten: [], motiv: s.motive[0].id }),
@@ -34,7 +34,7 @@ export async function alsBild(f, schritt, ctx) {
   let y = 230;
   for (const z of umbruch(g, f.schlagzeile, 820)) { g.fillText(z, 500, y); y += 88; }
   const bild = new Image();
-  bild.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(motivSvg(f.motiv))}`;
+  bild.src = motivUrl(schritt.motive.find((m) => m.id === f.motiv));
   await bild.decode().catch(() => {});
   const groesse = 360; g.drawImage(bild, 500 - groesse / 2, y, groesse, groesse); y += groesse + 70;
   g.font = '40px Georgia, serif';
@@ -54,7 +54,7 @@ export function view(el, schritt, ctx, fertig) {
   const blatt = () => h('div', { class: 'flugblatt' },
     h('p', { class: 'fb-kopf' }, schritt.kopf),
     h('h3', {}, f.schlagzeile || '…'),
-    h('div', { class: 'fb-bild', html: motivSvg(f.motiv) }),
+    h('div', { class: 'fb-bild', html: motivHtml(schritt.motive.find((m) => m.id === f.motiv)) }),
     h('ul', {}, f.karten.map((id) => h('li', {}, ctx.karte(id).text))),
     h('p', { class: 'fb-fuss' }, schritt.fuss));
 

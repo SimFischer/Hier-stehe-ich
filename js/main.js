@@ -5,6 +5,7 @@ import { platten } from './engine/state.js';
 import { setzeStationHoerer, liesBand } from './engine/szenen.js';
 import { kannSprechen, still } from './engine/speech.js';
 import { zeigeKarte, zeigeBeutel, zeigeNotizbuch, zeigeMenue, zeigeAbschluss, zeigeStart, zeigeLehrkraft } from './engine/fenster.js';
+import { bildHtml, hatBild } from './engine/bilder.js';
 import { game } from '../data/game.js';
 import { t } from '../data/ui.js';
 
@@ -15,7 +16,7 @@ function zeichnePlatten() {
   const p = platten(store.state);
   const el = document.getElementById('platten');
   el.setAttribute('aria-label', `${t.platten}: ${p.filter((x) => x.da).length} / ${p.length}`);
-  setzeInhalt(el, ...p.map((x) => h('span', { class: `platte${x.da ? ' da' : ''}`, title: x.da ? x.platte : '' }, x.da ? String(x.nr) : '')));
+  setzeInhalt(el, ...p.map((x) => h('span', { class: `platte${x.da ? ' da' : ''}${hatBild(x.bild) ? ' mit-bild' : ''}`, title: x.da ? x.platte : '', html: bildHtml(x.da ? x.bild : 'platte-leer') }, x.da && !hatBild(x.bild) ? String(x.nr) : '')));
   const beutel = document.querySelector('#beutel .zahl');
   beutel.textContent = String(store.state.cards.length);
   document.getElementById('vorlesen')?.setAttribute('aria-pressed', String(store.state.vorlesen));

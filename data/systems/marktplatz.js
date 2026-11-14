@@ -1,7 +1,7 @@
 // Spielsystem „Der Marktplatz“ (Station 4). Alle Zahlen und Texte stehen hier, die Regeln in js/puzzles/marktplatz.js.
 // pos: 0 = weit weg vom Kasten, 3 = kauft. Nach Runde 1 und 2 rücken alle Unentschlossenen einen Schritt vor.
 export const marktplatz = {
-  runden: 3, gespraecheJeRunde: 2, kaufenAb: 3, statisten: 4,
+  runden: 3, gespraecheJeRunde: 2, kaufenAb: 3, statisten: 4, kastenBild: 'ablasskasten',
   stufen: [{ ab: 0, stufe: 1 }, { ab: 3, stufe: 2 }, { ab: 5, stufe: 3 }],
   einleitung: 'Sechs Menschen, jeder mit einem eigenen Grund. Du hast drei Runden mit je zwei Gesprächen. Hör zu und antworte mit einer Karte.',
   glocke: 'Die Glocke schlägt. Tetzel predigt weiter. Wer noch unentschlossen ist, rückt näher an den Kasten.',

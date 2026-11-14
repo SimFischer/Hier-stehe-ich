@@ -1,5 +1,6 @@
 // Spielsystem „Die Druckwelle“. Oben die Regeln (in Node testbar), unten die Anzeige.
 import { h, setzeInhalt, knopf, fuelle } from '../engine/ui.js';
+import { bildUrl } from '../engine/bilder.js';
 
 const nachbarn = (d, id) => d.wege.filter((w) => w.includes(id)).map((w) => (w[0] === id ? w[1] : w[0]));
 
@@ -61,18 +62,23 @@ export function view(el, schritt, ctx, fertig) {
   let z = rules.start(d);
   let wahl = null;
   let meldung = d.einleitung;
-  const ort = (id) => d.staedte.find((c) => c.id === id);
+  // Stadtlagen stehen in Prozent der ganzen Karte. Gezeigt wird ein Ausschnitt.
+  const aus = d.karte.ausschnitt;
+  const lage = (c) => ({ ...c, x: ((c.x - aus.x) / aus.b) * 100 + (c.versatz?.[0] || 0), y: ((c.y - aus.y) / aus.b) * 100 + (c.versatz?.[1] || 0) });
+  const orte = d.staedte.map(lage);
+  const ort = (id) => orte.find((c) => c.id === id);
+  const kartenStil = bildUrl(d.karte.bild) ? `background-image:url("${bildUrl(d.karte.bild)}");background-size:${10000 / aus.b}% auto;background-position:${(aus.x / (100 - aus.b)) * 100}% ${(aus.y / (100 - aus.b)) * 100}%` : '';
 
   const zeichne = () => {
     const linien = d.wege.map(([a, b]) => `<line x1="${ort(a).x}" y1="${ort(a).y}" x2="${ort(b).x}" y2="${ort(b).y}" class="${z.st[a].f === 'deutsch' && z.st[b].f === 'deutsch' ? 'linie aktiv' : 'linie'}"/>`).join('');
-    const karte = h('div', { class: 'reich' },
+    const karte = h('div', { class: 'reich', style: kartenStil },
       h('div', { class: 'reich-linien', 'aria-hidden': 'true', html: `<svg viewBox="0 0 100 100" preserveAspectRatio="none">${linien}</svg>` }),
-      ...d.staedte.map((c) => {
+      ...orte.map((c) => {
         const s = z.st[c.id];
         const zeichen = s.f === 'deutsch' ? t.druckKurzDeutsch : s.f === 'latein' ? t.druckKurzLatein : '';
         const zustand = s.f === 'deutsch' ? t.druckDeutsch : s.f === 'latein' ? t.druckLatein : t.druckKein;
         return h('button', { type: 'button', style: `left:${c.x}%;top:${c.y}%`, disabled: z.ende,
-          class: `stadt f-${s.f} v${s.volk}${c.knoten ? ' knoten' : ''}${wahl === c.id ? ' gewaehlt' : ''}${rules.erreichbar(z, d, c.id) ? ' erreichbar' : ''}`,
+          class: `stadt f-${s.f} v${s.volk}${c.knoten ? ' knoten' : ''}${c.oben ? ' oben' : ''}${wahl === c.id ? ' gewaehlt' : ''}${rules.erreichbar(z, d, c.id) ? ' erreichbar' : ''}`,
           'aria-label': `${c.name}, ${zustand}${c.knoten ? ', ' + t.druckKnoten : ''}`, onclick: () => { wahl = c.id; meldung = ''; zeichne(); } },
           h('span', { class: 'punkt' }, zeichen), h('span', { class: 'name' }, c.name));
       }));

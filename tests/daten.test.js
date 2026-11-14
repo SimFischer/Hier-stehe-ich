@@ -11,6 +11,9 @@ import { cards } from '../data/cards.js';
 import { glossary } from '../data/glossary.js';
 import { puzzles } from '../data/puzzles.js';
 import { t } from '../data/ui.js';
+import { assets } from '../data/assets.js';
+import { bonus } from '../data/bonus.js';
+import { existsSync } from 'node:fs';
 import { systeme, texte, woerter, zeitJeStation } from './inhalt.js';
 
 const wurzel = join(fileURLToPath(new URL('.', import.meta.url)), '..');
@@ -90,7 +93,8 @@ test('Szenen, Gespräche, Karten: alle Verweise existieren', () => {
     if (sz.film) { assert.ok(szene(sz.weiter), `${sz.id}: Folgeszene`); continue; }
     for (const hs of sz.hotspots) {
       const wo = `${sz.id}.${hs.id}`;
-      assert.ok(hs.x >= 5 && hs.x <= 95 && hs.y >= 20 && hs.y <= 66, `${wo}: Lage im sichtbaren Bereich`);
+      assert.ok(hs.x >= 5 && hs.x <= 95 && hs.y >= 20 && hs.y <= (hs.figur ? 95 : 82), `${wo}: Lage im sichtbaren Bereich`);
+      for (const b of [hs.zeigt, hs.objekt?.bild].filter(Boolean)) assert.ok(assets[b], `${wo}: Bild ${b}`);
       if (hs.figur) assert.ok(game.figuren[hs.figur], `${wo}: Figur`);
       if (hs.art === 'ansehen') assert.ok(hs.text, `${wo}: Text`);
       if (hs.art === 'gespraech') assert.ok(dialog(hs.ziel), `${wo}: Gespräch ${hs.ziel}`);
@@ -108,6 +112,29 @@ test('Szenen, Gespräche, Karten: alle Verweise existieren', () => {
   assert.equal(new Set(cards.map((k) => k.id)).size, cards.length, 'Karten-IDs sind eindeutig');
   for (const k of cards) assert.ok(k.art === 'these' || game.stationen.some((s) => (s.karten || []).includes(k.id)), `Karte ${k.id} ist erreichbar`);
   for (const k of cards.filter((c) => c.art === 'these')) assert.ok(k.alt && k.frage.optionen.filter((o) => o.richtig).length === 1, `${k.id}: alte Fassung und Erinnerungsfrage`);
+});
+
+test('Bilder: Register und Dateien stimmen, alle Verweise existieren', () => {
+  for (const [name, b] of Object.entries(assets)) {
+    assert.ok(existsSync(join(wurzel, 'assets', b.datei)), `Datei ${b.datei} liegt in assets/`);
+    assert.ok(b.w > 0 && b.h > 0, `${name}: Maße`);
+  }
+  const dateien = readdirSync(join(wurzel, 'assets'));
+  assert.equal(dateien.length, Object.keys(assets).length, 'keine Datei ohne Eintrag im Register');
+  // Jeder Verweis auf ein Bild in den Daten zeigt auf einen Eintrag im Register.
+  const verweise = [];
+  const suche = (wert, schluessel) => {
+    if (typeof wert === 'string') { if (['bild', 'datei', 'zeigt', 'lastBild', 'kastenBild', 'startBild'].includes(schluessel)) verweise.push(wert); }
+    else if (Array.isArray(wert)) wert.forEach((w) => suche(w, schluessel === 'bilder' ? 'bild' : schluessel));
+    else if (wert && typeof wert === 'object') for (const [k, v] of Object.entries(wert)) suche(v, k);
+  };
+  for (const quelle of [game, scenes, puzzles, bonus, systeme]) suche(quelle, '');
+  assert.ok(verweise.length > 60, `${verweise.length} Bildverweise gefunden`);
+  for (const v of verweise) assert.ok(assets[v], `Bild ${v} steht im Register`);
+  // Jede Szene, jede Figur und jede Druckplatte hat ein Bild.
+  for (const sz of scenes) assert.ok(assets[sz.bild?.datei], `Szene ${sz.id}: Hintergrund`);
+  for (const [id, f] of Object.entries(game.figuren)) if (f.farbe && id !== 'ich') assert.ok(assets[f.bild], `Figur ${id}: Bild`);
+  for (const st of game.stationen.filter((x) => x.platte)) assert.ok(assets[st.bild], `Platte ${st.id}`);
 });
 
 test('Glossar enthält die Pflichtbegriffe', () => {

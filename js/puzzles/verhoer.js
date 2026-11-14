@@ -1,6 +1,6 @@
 // Spielsystem „Das Verhör“. Oben die Regeln (in Node testbar), unten die Anzeige.
 import { h, setzeInhalt, knopf, rich, kartenChip, fuelle } from '../engine/ui.js';
-import { kopfSvg } from '../engine/platzhalter.js';
+import { standHtmlSaal } from '../engine/bilder.js';
 
 export const rules = {
   start: (d, hand) => ({ runde: 0, hand: [...hand], stimmung: 0, ende: false, letzte: null }),
@@ -30,7 +30,7 @@ export function view(el, schritt, ctx, fertig) {
   const zeichne = () => {
     const dafuer = Math.round((z.stimmung / rules.max(d)) * d.saalFiguren);
     const saal = h('div', { class: 'saal', role: 'img', 'aria-label': fuelle(t.verhoerSaal, { n: dafuer, von: d.saalFiguren }) },
-      Array.from({ length: d.saalFiguren }, (_, i) => h('span', { class: `kopf ${i < dafuer ? 'nickt' : ''}`, html: kopfSvg(i < dafuer) })));
+      Array.from({ length: d.saalFiguren }, (_, i) => h('span', { class: `kopf ${i < dafuer ? 'nickt' : ''}`, html: standHtmlSaal(i, i < dafuer) })));
     const kopf = h('div', { class: 'zaehler' },
       h('span', {}, fuelle(t.verhoerEinwand, { n: Math.min(z.runde + (z.letzte ? 0 : 1), d.einwaende.length), von: d.einwaende.length })),
       h('strong', {}, fuelle(t.verhoerSaal, { n: dafuer, von: d.saalFiguren })));

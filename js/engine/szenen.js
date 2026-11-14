@@ -2,7 +2,7 @@
 import { h, setzeInhalt, knopf, rich, melde, fuelle } from './ui.js';
 import { store, aendere } from './save.js';
 import { szene, erfuellt, hotspotSichtbar, hotspotAktiv, hotspotFlag, ansehen, gespraechEnde, setze, zielText } from './state.js';
-import { szeneSvg, figurSvg } from './platzhalter.js';
+import { szeneHtml, szeneUrl, figurHtml, bildHtml } from './bilder.js';
 import { oeffneRaetsel } from './raetsel.js';
 import { zeilenFuer } from '../puzzles/schritte.js';
 import { liesVor } from './speech.js';
@@ -21,19 +21,20 @@ const kartenMeldung = (ids) => ids.filter(Boolean).forEach((id) => melde(fuelle(
 function band(...kinder) { setzeInhalt(el('band'), ...kinder); if (store.state.vorlesen) liesVor(el('band')); }
 /** Liest den aktuellen Text im Band vor (für den Knopf in der Leiste). */
 export const liesBand = () => liesVor(el('band'));
-function zeigeText(text, wer) {
+function zeigeText(text, wer, bild) {
   bandInhalt = { art: 'text' };
-  band(wer ? h('strong', { class: 'sprecher' }, wer) : null, h('p', {}, rich(text)));
+  band(bild ? h('span', { class: 'band-bild', 'aria-hidden': 'true', html: bildHtml(bild) }) : null, wer ? h('strong', { class: 'sprecher' }, wer) : null, h('p', {}, rich(text)));
   zeichneHotspots();
 }
 
-function spieleZeilen(zeilen, beiEnde, { film = false } = {}) {
+function spieleZeilen(zeilen, beiEnde, { filmBild = null } = {}) {
   let i = 0;
   bandInhalt = { art: 'dialog' };
   const zeige = () => {
     const z = zeilen[i];
     const f = game.figuren[z.wer] || {};
     el('szene').classList.toggle('blitz', Boolean(z.blitz));
+    if (filmBild) el('bild').innerHTML = szeneHtml(z.bild ? { ...filmBild, datei: z.bild } : filmBild);
     band(f.name ? h('strong', { class: 'sprecher' }, f.name, f.echt ? h('em', {}, ` ${t.nacherzaehltKurz}`) : null) : null,
       h('p', {}, rich(z.text)),
       h('div', { class: 'reihe fuss' }, h('span', { class: 'klein' }, `${i + 1} / ${zeilen.length}`),
@@ -49,7 +50,7 @@ function benutze(sz, hs) {
   if (!hotspotAktiv(s, hs)) { zeigeText(hs.gesperrt || t.gesperrt); return; }
   if (hs.art === 'ansehen') {
     const r = aendere((st) => ansehen(st, sz.id, hs));
-    zeigeText(hs.text);
+    zeigeText(hs.text, null, hs.zeigt);
     kartenMeldung([r.karte]);
     if (r.stationen.length) beiStation(r.stationen);
   } else if (hs.art === 'gespraech') {
@@ -71,10 +72,12 @@ function zeichneHotspots() {
   const gesperrt = bandInhalt?.art === 'dialog';
   setzeInhalt(el('hotspots'), ...(sz.hotspots || []).filter((hs) => hotspotSichtbar(s, hs)).map((hs) => {
     const erledigt = hs.art === 'ansehen' && s.flags.includes(hotspotFlag(sz.id, hs.id));
-    return h('button', { type: 'button', class: `hotspot art-${hs.art}${hs.figur ? ' mit-figur' : ''}${erledigt ? ' erledigt' : ''}${hotspotAktiv(s, hs) ? '' : ' zu'}`,
+    return h('button', { type: 'button', class: `hotspot art-${hs.art}${hs.figur ? ' mit-figur' : hs.objekt ? ' mit-objekt' : ''}${erledigt ? ' erledigt' : ''}${hotspotAktiv(s, hs) ? '' : ' zu'}`,
       style: `left:${hs.x}%;top:${hs.y}%`, disabled: gesperrt, onclick: () => benutze(sz, hs) },
-      hs.figur ? h('span', { class: 'figur', html: figurSvg(game.figuren[hs.figur].farbe) }) : h('span', { class: 'marke', 'aria-hidden': 'true' }),
-      h('span', { class: 'schild' }, hs.label));
+      h('span', { class: 'schild' }, hs.label),
+      hs.figur ? h('span', { class: 'figur', html: figurHtml(game.figuren[hs.figur]) })
+        : hs.objekt ? h('span', { class: 'objekt', style: `--breite:${hs.objekt.breite}`, 'aria-hidden': 'true', html: bildHtml(hs.objekt.bild) })
+          : h('span', { class: 'marke', 'aria-hidden': 'true' }));
   }));
   el('ziel').textContent = zielText(s, sz);
 }
@@ -85,11 +88,12 @@ export function zeigeSzene(id, { ruhig = false } = {}) {
   const filmFlag = `film:${id}`;
   if (sz.film && store.state.flags.includes(filmFlag)) return zeigeSzene(sz.weiter);
   if (store.state.szene !== id) aendere((s) => { s.szene = id; });
-  el('bild').innerHTML = szeneSvg(sz.bild);
+  el('bild').innerHTML = szeneHtml(sz.bild);
+  document.getElementById('buehne').style.setProperty('--hinter', `url("${szeneUrl(sz.bild)}")`);
   setzeInhalt(el('ort'), h('strong', {}, sz.name), h('span', {}, sz.zeit));
   if (sz.film) {
     el('ziel').textContent = '';
-    spieleZeilen(sz.film, () => { aendere((s) => setze(s, filmFlag)); zeigeSzene(sz.weiter); });
+    spieleZeilen(sz.film, () => { aendere((s) => setze(s, filmFlag)); zeigeSzene(sz.weiter); }, { filmBild: sz.bild });
     return;
   }
   if (!ruhig || !bandInhalt) {

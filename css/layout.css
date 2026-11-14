@@ -85,3 +85,19 @@ button, input { font: inherit; color: inherit; }
   .platte { width: 20px; height: 26px; font-size: 0.875rem; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Echte Bilder: Die Szene zeigt immer das ganze 4:3-Bild. Daneben liegt dasselbe Bild unscharf. */
+#buehne::before { content: ""; position: absolute; inset: -20px; background: var(--hinter, none) center / cover; filter: blur(14px) brightness(0.45); }
+#szene { container-type: size; }
+.szenenbild { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (orientation: landscape) {
+  #szene { inset: 0; margin: 0 auto; height: 100%; width: auto; aspect-ratio: 4 / 3; max-width: 100%; }
+}
+#start { background: linear-gradient(rgba(42, 35, 29, 0.72), rgba(42, 35, 29, 0.86)), var(--hinter, none) center / cover, var(--nacht); }
+.band-bild { float: left; width: 84px; margin: 0 var(--ab-3) var(--ab-1) 0; }
+.band-bild img { width: 100%; height: auto; display: block; }
+.platte.mit-bild { border: 0; background: none; width: 34px; height: 34px; }
+.platte img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.platte:not(.da) img { opacity: 0.45; }
+.platte-gross { display: grid; justify-items: center; gap: var(--ab-1); margin-bottom: var(--ab-3); font-size: var(--text-gross); }
+.platte-gross img { width: 130px; height: 130px; }

@@ -12,6 +12,7 @@ export const t = {
   startKicker: 'Ein Lernspiel über Martin Luther, 1505–1522',
   startAllein: 'Allein spielen', startZuZweit: 'Zu zweit spielen', weiterspielen: 'Weiterspielen',
   neuAllein: 'Neu beginnen (allein)', neuZuZweit: 'Neu beginnen (zu zweit)',
+  kartenQuelle: 'Karte: © OpenStreetMap-Mitwirkende (ODbL) und Natural Earth.',
   datenschutz: 'Dein Spielstand bleibt auf diesem Gerät. Es werden keine Namen gebraucht und keine Daten gesendet.',
   codeTitel: 'Dein Fortsetzungscode', codeText: 'Schreib dir den Code auf. Damit spielst du später oder auf einem anderen Gerät weiter. Er merkt sich fertige Stationen.',
   codeKurz: 'Fortsetzungscode:', codeEingeben: 'Code eingeben', codeLaden: 'Laden', codeGeladen: 'Spielstand geladen.',

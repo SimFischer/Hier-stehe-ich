@@ -1,6 +1,7 @@
 // Schrittarten der Bonusspiele: Silbenrätsel, Druckerpresse, Weg durch den Wald, Nachdenken.
 // Wie überall: oben die Regeln (in Node testbar), unten die Anzeige.
 import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
+import { bildHtml } from '../engine/bilder.js';
 
 // ---------- Silbenrätsel ----------
 export const silbenRules = {
@@ -60,6 +61,7 @@ export function presse(el, schritt, ctx, fertig) {
     setzeInhalt(el,
       h('p', { class: 'anweisung' }, schritt.anweisung),
       h('div', { class: 'zaehler' }, h('span', {}, fuelle(schritt.zeit, { n: Math.max(0, rest) })), h('strong', {}, fuelle(schritt.zaehler, { n: z.blaetter }))),
+      schritt.bilder ? h('div', { class: 'presse-bild', 'aria-hidden': 'true', html: bildHtml(schritt.bilder[z.i]) }) : null,
       h('div', { class: 'presse-stapel', 'aria-hidden': 'true' }, Array.from({ length: Math.min(z.blaetter, 30) }, () => h('span', {}))),
       uhr === null ? h('div', { class: 'reihe mitte' }, knopf(schritt.start, starte, 'haupt gross')) : null,
       h('div', { class: 'presse-knoepfe' }, schritt.handgriffe.map((g, i) => h('button', { type: 'button', class: `knopf gross${laeuft && i === z.i ? ' dran' : ''}`,

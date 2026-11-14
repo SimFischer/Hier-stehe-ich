@@ -1,6 +1,6 @@
 // Spielsystem „Der Marktplatz“. Oben die Regeln (ohne Bildschirm, in Node testbar), unten die Anzeige.
 import { h, setzeInhalt, knopf, rich, kartenChip, fuelle } from '../engine/ui.js';
-import { figurSvg } from '../engine/platzhalter.js';
+import { figurHtml, statistHtml, bildHtml } from '../engine/bilder.js';
 
 export const rules = {
   start(d) {
@@ -46,8 +46,8 @@ export function view(el, schritt, ctx, fertig) {
     const nachd = rules.nachdenklich(z);
     const statWeg = Math.min(d.statisten, nachd);
     const feld = h('div', { class: 'markt-feld' },
-      h('div', { class: 'markt-kasten', 'aria-hidden': 'true' }, h('span', {}, t.marktKasten)),
-      ...Array.from({ length: d.statisten }, (_, i) => h('div', { class: `markt-statist ${i < statWeg ? 'weg' : ''}`, style: `--i:${i}`, 'aria-hidden': 'true', html: figurSvg('#8c8272') })),
+      h('div', { class: 'markt-kasten', 'aria-hidden': 'true', html: bildHtml(d.kastenBild) }, h('span', {}, t.marktKasten)),
+      ...Array.from({ length: d.statisten }, (_, i) => h('div', { class: `markt-statist ${i < statWeg ? 'weg' : ''}`, style: `--i:${i}`, 'aria-hidden': 'true', html: statistHtml(i) })),
       ...d.figuren.map((f, i) => {
         const st = z.fig[f.id];
         const name = ctx.figuren[f.id].name;
@@ -55,7 +55,7 @@ export function view(el, schritt, ctx, fertig) {
         return h('button', { type: 'button', class: `markt-figur st-${st.st}${wahl === f.id ? ' gewaehlt' : ''}`, style: `--i:${i};--pos:${st.pos}`,
           disabled: !rules.kann(z, f.id), 'aria-label': `${name}${zustand ? ', ' + zustand : ''}`,
           onclick: () => { wahl = f.id; z = { ...z, letzte: null }; zeichne(); } },
-          h('span', { class: 'figur', html: figurSvg(ctx.figuren[f.id].farbe) }), h('span', { class: 'schild' }, name), zustand ? h('span', { class: 'zustand' }, zustand) : null);
+          h('span', { class: 'figur', html: figurHtml(ctx.figuren[f.id]) }), h('span', { class: 'schild' }, name), zustand ? h('span', { class: 'zustand' }, zustand) : null);
       }));
 
     const kopf = h('div', { class: 'zaehler' },

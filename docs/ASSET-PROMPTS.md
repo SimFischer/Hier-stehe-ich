@@ -1,8 +1,12 @@
+# Verbindliche Anpassungen vom 13.11.2026
+
+Die aktuelle Nutzerentscheidung für schwebendes Licht ersetzt alle älteren Gottesgestalt-Vorgaben. Karten werden aus Geodaten gebaut; Rom zeigt keine spätere Kuppel. Gebäude bleiben freie Kulissen. Siehe ASSET-QUELLEN.md.
+
 # Asset-Liste und Bildbeschreibungen
 
 Stand: 13.11.2026 · gehört zu `docs/PLAN.md`
 
-Bis die Bilder fertig sind, zeichnet das Spiel einfache Platzhalter in den Farben des Stilrahmens (`js/engine/platzhalter.js`). Der Einbau der fertigen Bilder ist ein eigener kleiner Schritt, sobald sie unter den genannten Dateinamen in `assets/` liegen.
+Die Bilder liegen verkleinert in `assets/` und stehen im Register `data/assets.js`. Fehlt dort ein Eintrag, zeichnet das Spiel an der Stelle einen einfachen Platzhalter (`js/engine/platzhalter.js`). Die Maße unten sind die der Originale.
 
 ## Stilrahmen
 
@@ -48,7 +52,7 @@ Karikaturen.
 | Datei | Maße | Beschreibung |
 | --- | --- | --- |
 | `karte-erinnerung` | 2048 × 1536 | Landkarte Mitteldeutschlands im Holzschnittstil auf Pergament. Flüsse (Elbe, Saale, Main, Rhein), Wälder, Hügel. Kleine Stadtansichten an den Stellen von Erfurt, Wittenberg, Jüterbog, Worms und Eisenach. Keine Beschriftung. |
-| `karte-reich` | 2048 × 1536 | Schlichte Karte des Reichs um 1517 auf Pergament: nur Flüsse, Gebirge und Küstenlinie, sehr zurückhaltend koloriert, damit farbige Markierungen gut sichtbar sind. Keine Städte, keine Beschriftung. |
+| `karte-reich` | 2048 × 1536 | Georeferenzierte physische Übersicht Mitteleuropas als Hintergrund für die Reiseorte um 1517, ohne politische Grenzen: nur Flüsse, Gebirge und Küstenlinie, sehr zurückhaltend koloriert, damit farbige Markierungen gut sichtbar sind. Keine Städte, keine Beschriftung. |
 | `wandbild-1` bis `wandbild-6` | je 800 × 800 | Sechs Teile eines Kirchenwandbilds „Der Weg der Seele“: (1) Menschen am Sterbebett, (2) Christus als Richter auf dem Regenbogen, (3) Himmel als Stadt mit Tor und Engeln, (4) Fegefeuer: Menschen in Flammen, die nach oben blicken, ein Engel hebt eine Seele heraus, (5) Höllenrachen mit dunklen Gestalten, nicht blutig, (6) betende Angehörige vor einem Altar. Stil eines verblassten Wandgemäldes. |
 | `weg-wallfahrt`, `weg-reliquien`, `weg-heilige`, `weg-ablass` | je 600 × 600 | Vier Bildkarten: Pilger mit Stab und Muschel; ein verziertes Reliquienkästchen; eine Heiligenfigur mit Kerzen; ein Brief mit hängendem Siegel. |
 | `waage` | 1200 × 900 | Große Balkenwaage aus Messing mit zwei leeren Schalen, von vorn, Balken waagerecht. Einzelteile getrennt: `waage-staender`, `waage-balken`, `waage-schale`. |
@@ -86,7 +90,7 @@ Karikaturen.
 | Datei | Beschreibung |
 | --- | --- |
 | `stand-luther-gebeugt`, `-kniend`, `-aufrecht` | Luther als Mönch in drei Haltungen, Seitenansicht nach rechts. |
-| `stand-gott-streng`, `-offen` | Helle Gestalt ohne Gesichtszüge in einem weiten Gewand, von einem Lichtkranz umgeben: einmal mit erhobener Hand und abgewandtem Körper, einmal mit ausgebreiteten Armen. Seitenansicht nach links. (Siehe offene Frage 3 im Plan.) |
+| `stand-gott-streng`, `-offen` | Ausschließlich frei schwebendes Licht ohne Gesicht, Kopf, Körper, Hände, Gewand, Oval, Schatten oder Bodenfleck. Streng: schmal und gebündelt; offen: warm und nach links zu Luther aufgefächert. |
 
 ## Gegenstände und Zeichen (PNG, durchsichtig)
 
@@ -97,7 +101,7 @@ Karikaturen.
 | `ablassbrief` | 1200 × 900 | Gedruckter Brief mit freiem Namensfeld und hängendem Siegel. Schrift nur als unleserliche Zeilen. |
 | `ablasskasten` | 800 × 800 | Eisenbeschlagene Truhe mit drei Schlössern und Münzschlitz. |
 | `muenze` | 200 × 200 | Silbermünze. |
-| `geldweg-albrecht`, `-fugger`, `-rom` | je 600 × 600 | Drei Bildzeichen: Bischofsmütze mit Wappen; Kontorbuch mit Münzstapel; Kirchenkuppel im Bau mit Gerüst. |
+| `geldweg-albrecht`, `-fugger`, `-rom` | je 600 × 600 | Drei Bildzeichen: Bischofsmütze mit Wappen; Kontorbuch mit Münzstapel; frühe Petersbaustelle mit Pfeilern, Gerüsten und Hebezeug, ohne spätere Kuppel. |
 | `flugblatt-latein`, `flugblatt-deutsch` | je 300 × 400 | Zwei Flugblätter mit unleserlichen Zeilen: eines eng gesetzt, eines mit großem Holzschnitt und breiten Zeilen. |
 | `stadt-klein`, `stadt-knoten` | 200 × 200 | Zwei Stadtzeichen für die Reichskarte: ein Turm; drei Türme mit Mauer. |
 | `rose-1` bis `rose-5` | je 600 × 600 | Fünf Teile der Lutherrose: schwarzes Kreuz, rotes Herz, weiße Rose, blaues Feld, goldener Ring. |
