@@ -25,6 +25,14 @@ export const t = {
   endeTitel: 'Geschafft!', endeText: 'Du hast Luthers Weg von 1505 bis 1522 nachgezeichnet. Zeigt euch eure Flugschriften und vergleicht: Welche Gründe habt ihr gewählt?',
   beutelLeer: 'Dein Beutel ist noch leer. Karten bekommst du an den Stationen.',
   notizen: 'Was du gesehen hast', notizenLeer: 'Noch keine Einträge.', glossar: 'Wörter, die man kennen sollte',
+  // Vorlesen, Bonus, Lehrkraftmodus
+  vorlesen: 'Vorlesen', vorlesenAuto: 'Texte automatisch vorlesen',
+  bonusTitel: 'Bonusspiele', bonusText: 'Freiwillig und kurz. Für alle, die schon fertig sind oder mehr wissen wollen.',
+  bonusOffen: 'offen, etwa {n} Minuten', bonusZu: 'öffnet sich nach „{ort}“', bonusFertig: 'Bonusspiel geschafft: {titel}',
+  lkTitel: 'Lehrkraftmodus', lkText: 'Dieser Bereich ist für Lehrkräfte. Er ist nicht geschützt: Wer ihn kennt, kann ihn öffnen.',
+  lkKompendium: 'Lehrkräftekompendium öffnen ↗', lkStand: 'Stationen: {n} von {von} · Hilfen: {hilfen} · Bonusspiele: {bonus}',
+  lkStufe: 'erledigt, Stufe {n} von 3', lkSpringen: 'Hinspringen', lkLoesen: 'Als gelöst markieren',
+  lkHinweis: '„Hinspringen“ markiert alle Stationen davor als gelöst. Karten und Druckplatten werden dabei vergeben.',
   // Rätselblatt
   schritt: 'Schritt {n} von {von}', hilfe: 'Hilfe', hilfeStufe: 'Hilfe {n} von {von}:', raetselVerlassen: 'Rätsel verlassen',
   zuTeile: 'Teile', zuZiele: 'Plätze', zuTeilWaehlen: 'Tippe ein Teil an.', zuZielWaehlen: 'Tippe jetzt den passenden Platz an.', zuFertig: 'Alles liegt richtig.',

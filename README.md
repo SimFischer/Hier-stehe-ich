@@ -2,7 +2,7 @@
 
 Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an sieben Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
 
-**Stand:** Phase 2 von 4. Der Kernpfad ist vollständig spielbar, mit Platzhaltergrafik. Lehrkraftmodus, Kompendium, Bonusspiele und Vorlesen folgen in Phase 3.
+**Stand:** Phase 3 von 4. Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen und Vorlesen sind fertig, noch mit Platzhaltergrafik. Es fehlt die Abschlussprüfung (Phase 4).
 
 ## Spielen
 
@@ -23,6 +23,9 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 - **Gerät:** iPad im Quer- oder Hochformat, allein oder zu zweit.
 - **Speichern:** Der Stand bleibt auf dem Gerät. Über den Titel oben öffnet sich das Menü mit dem Fortsetzungscode (acht Zeichen). Er merkt sich fertige Stationen und funktioniert auf jedem Gerät.
 - **Hilfen:** Jedes Rätsel hat drei gestufte Hilfen. Das Menü zeigt, wie viele genutzt wurden.
+- **Lehrkraftmodus:** Titel fünf Sekunden halten oder Umschalt + Enter. Dort lassen sich Stationen anspringen oder als gelöst markieren, und von dort geht es zum Kompendium (`lehrkraefte.html`) mit Schnellstart, Leitfaden, Lösungen, Fragen und Fachhinweisen.
+- **Bonusspiele:** Silbenrätsel, Druckerpresse, Entführung, Lutherrose, Gottesdienst und zwei Fragen zum Nachdenken. Sie stehen unten auf der Karte und öffnen sich nach der passenden Station.
+- **Vorlesen:** Der Lautsprecher in der Leiste liest alle Texte mit der Sprachausgabe des Geräts vor. Kopfhörer sind sinnvoll.
 - **Datenschutz:** keine Namen, keine Konten, kein Server, keine externen Abrufe.
 - **Flugschrift:** „Drucken / PDF“ öffnet den Druckdialog, „Als Bild teilen“ das Teilen-Menü des iPads.
 
@@ -49,6 +52,7 @@ npm test
 - **Durchspiel:** Der Kernpfad wird zweimal vollständig gespielt, sorgfältig und schwach (falsche Karten in Worms, nur Latein in der Druckwelle), und nach jedem Fortsetzungscode fortgesetzt.
 - **Spielsysteme:** Marktplatz, Druckwelle und Verhör je 500-mal für drei Spielertypen mit festem Startwert.
 - **Zeit:** Schätzung je Station aus Textmenge und Bedienschritten.
+- **Phase 3:** Regeln der Bonusspiele, Lehrkraftmodus (Hinspringen, Lösen) und die aus den Daten erzeugten Lösungen des Kompendiums.
 
 Im Browser geprüft wurden alle Stationen in 1024 × 768 sowie Stichproben in 1180 × 820, 1366 × 1024 und 820 × 1180.
 
@@ -56,7 +60,8 @@ Im Browser geprüft wurden alle Stationen in 1024 × 768 sowie Stichproben in 11
 
 - **Spielzeit:** Die Schätzung liegt bei 45 statt 40 Minuten. Ob gekürzt werden muss, zeigt erst eine Erprobung mit einer Klasse.
 - **Bilder:** Die fertigen Grafiken aus `docs/ASSET-PROMPTS.md` sind noch nicht eingebaut. Das Spiel zeichnet Platzhalter.
-- **Druck und Teilen** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser.
+- **Druck, Teilen und Vorlesen** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser. Die Stimme hängt vom Gerät ab.
+- **Lehrkraftmodus:** Das Öffnen über Umschalt + Enter ist geprüft, das Halten des Titels am Touchscreen noch nicht.
 - **Fachprüfung** aller Texte gegen die Leitplanken des Konzepts folgt in Phase 4 (`docs/FACHPRUEFUNG.md`).
 
 ## Quellen und Rechte

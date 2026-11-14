@@ -96,3 +96,12 @@ dialog.fenster header h2 { margin: 0; }
 #meldung { position: fixed; left: 50%; top: var(--ab-2); z-index: 40; transform: translate(-50%, -150%); max-width: min(92vw, 36em); padding: var(--ab-3) var(--ab-4); background: var(--nacht); color: var(--pergament); border: 2px solid var(--ocker); border-radius: var(--rund); transition: transform 0.25s; cursor: pointer; }
 #meldung.an { transform: translate(-50%, 0); }
 #druck { display: none; }
+
+/* Bonus, Lehrkraftmodus, Vorlesen */
+.zwischen { margin-top: var(--ab-5); }
+.ort.bonus .nr { border-radius: var(--rund); }
+.leisten-knopf[aria-pressed="true"] { background: var(--ocker); color: var(--tinte); border-color: var(--pergament); }
+.lehrkraft table { width: 100%; border-collapse: collapse; margin-bottom: var(--ab-3); }
+.lehrkraft th, .lehrkraft td { padding: var(--ab-1) var(--ab-2); border-bottom: 1px solid var(--pergament-dunkel); text-align: left; font-size: var(--text-klein); }
+a.knopf { display: inline-flex; align-items: center; text-decoration: none; color: var(--tinte); }
+#vorlesen span:nth-child(2) { display: none; }

@@ -12,7 +12,7 @@ export function h(tag, attrs = {}, ...kinder) {
     else if (k === 'class') el.className = v;
     else el.setAttribute(k, v === true ? '' : v);
   }
-  for (const kind of kinder.flat()) if (kind != null && kind !== false) el.append(kind);
+  for (const kind of kinder.flat(Infinity)) if (kind != null && kind !== false) el.append(kind);
   return el;
 }
 
@@ -68,4 +68,4 @@ export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = fa
 }
 
 /** Ersetzt den Inhalt eines Elements. Leere Einträge (null, false) werden übersprungen. */
-export function setzeInhalt(el, ...kinder) { el.replaceChildren(...kinder.flat().filter((k) => k != null && k !== false)); }
+export function setzeInhalt(el, ...kinder) { el.replaceChildren(...kinder.flat(Infinity).filter((k) => k != null && k !== false)); }

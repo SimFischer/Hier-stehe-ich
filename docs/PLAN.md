@@ -312,3 +312,12 @@ Beim Bauen und Testen hat sich einiges anders ergeben als geplant.
 - **Zeit:** Die Texte waren mit rund 3500 gelesenen Wörtern länger als das Budget von 2400. Nach Kürzungen und mit 130 statt 110 Wörtern pro Minute liegt die Schätzung bei 45 Minuten. Hotspots, die man für den Kernpfad nicht braucht, sind als `optional` markiert und zählen halb. Verlässlich wird die Zahl erst nach einer Erprobung.
 - **Noch nicht in Phase 2:** Töne (Frage 16), der Einbau fertiger Bilder und die Prüfung von Druck und Teilen am iPad.
 - **Offene Fragen:** Alle 16 Fragen aus Abschnitt 9 sind nach den dortigen Vorschlägen umgesetzt.
+
+## 11. Phase 3
+
+- **Lehrkraftmodus:** Fenster mit Stand je Station, Stufe der drei Spielsysteme, genutzten Hilfen und Bonusspielen. Stationen lassen sich anspringen oder als gelöst markieren; alles davor gilt dann als gelöst.
+- **Kompendium:** `lehrkraefte.html` liest Stationen, Zeiten, Karten und Lösungen aus `data/`. Nur Schnellstart, Leitfaden-Hinweise, Fragen und Fachhinweise stehen als eigener Text in `data/teacher.js`. Die Lösungen sind eingeklappt und werden nur mitgedruckt, wenn sie geöffnet sind.
+- **Bonusspiele:** Daten in `data/bonus.js`, neue Schrittarten in `js/puzzles/bonus.js`. Das Silbenrätsel hat eigene Fragen, nicht die vom Arbeitsblatt. Das Gottesdienst-Spiel vergleicht mit der Zeit nach der Reformation allgemein, nicht mit dem Jahr 1522, weil Luthers deutsche Gottesdienstordnung erst 1526 erschien.
+- **Vorlesen:** Sprachausgabe des Browsers, schaltbar in der Leiste und im Menü, dazu ein Knopf in jedem Rätsel.
+- **Nachdenken:** zwei Fragen mit Textfeldern. Die Antworten werden nicht gespeichert.
+- **Noch offen für Phase 4:** Bildschirmfotos aller Ansichten in vier Größen, Fachprüfung, Sprachprüfung, Erprobung am iPad.

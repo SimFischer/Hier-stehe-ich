@@ -1,7 +1,10 @@
 // Fenster über dem Spiel: Karte, Argumentebeutel, Notizbuch, Menü, Stationsabschluss, Startseite.
 import { h, setzeInhalt, knopf, rich, fenster, kartenChip, fuelle, melde } from './ui.js';
 import { store, aendere, ersetze } from './save.js';
-import { neuerStand, station, stationOffen, hotspotFlag, platten } from './state.js';
+import { neuerStand, station, szene, stationOffen, hotspotFlag, platten, loeseStation, springeZu } from './state.js';
+import { oeffneRaetsel } from './raetsel.js';
+import { kannSprechen, still } from './speech.js';
+import { bonus } from '../../data/bonus.js';
 import { kodiere, lies } from './code.js';
 import { zeigeSzene } from './szenen.js';
 import { game } from '../../data/game.js';
@@ -13,7 +16,15 @@ import { t } from '../../data/ui.js';
 export function zeigeKarte() {
   const s = store.state;
   if (!s.done.includes('p')) { melde(t.karteNochNicht); return; }
-  const dlg = fenster(t.karte, h('div', { class: 'weg' }, game.stationen.map((st) => {
+  const bonusListe = Object.values(bonus).map((b) => {
+    const offen = s.done.includes(b.nach);
+    const fertig = s.bonus.includes(b.id);
+    return h('button', { type: 'button', class: `ort bonus${fertig ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen,
+      onclick: () => { dlg.close(); oeffneRaetsel(b.id, { bild: szene(s.szene), beiEnde: () => melde(fuelle(t.bonusFertig, { titel: b.titel })) }); } },
+      h('span', { class: 'nr' }, fertig ? '✓' : '+'), h('strong', {}, b.titel), h('span', {}, b.kurz),
+      h('em', {}, fertig ? t.ortFertig : offen ? fuelle(t.bonusOffen, { n: b.minuten }) : fuelle(t.bonusZu, { ort: station(b.nach).name })));
+  });
+  const dlg = fenster(t.karte, h('div', {}, h('div', { class: 'weg' }, game.stationen.map((st) => {
     const fertig = s.done.includes(st.id);
     const offen = stationOffen(s, st);
     return h('button', { type: 'button', class: `ort${fertig ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen,
@@ -21,7 +32,7 @@ export function zeigeKarte() {
       h('span', { class: 'nr' }, st.nr === 0 ? '★' : st.id === 'f' ? '✎' : String(st.nr)),
       h('strong', {}, st.name), h('span', {}, `${st.ort}, ${st.zeit}`),
       h('em', {}, fertig ? t.ortFertig : offen ? t.ortOffen : t.ortZu));
-  })), { breit: true });
+  })), h('h3', { class: 'zwischen' }, t.bonusTitel), h('p', { class: 'klein' }, t.bonusText), h('div', { class: 'weg' }, bonusListe)), { breit: true });
 }
 
 export function zeigeBeutel() {
@@ -63,6 +74,7 @@ export function zeigeMenue() {
     h('h3', {}, t.codeEingeben), codeEingabe(() => { dlg.close(); zeigeSzene(game.start); melde(t.codeGeladen); }),
     h('h3', {}, t.einstellungen),
     h('label', { class: 'schalter' }, h('input', { type: 'checkbox', checked: s.zuZweit, onchange: (e) => aendere((st) => { st.zuZweit = e.target.checked; }) }), t.zuZweit),
+    kannSprechen() ? h('label', { class: 'schalter' }, h('input', { type: 'checkbox', checked: s.vorlesen, onchange: (e) => { aendere((st) => { st.vorlesen = e.target.checked; }); if (!e.target.checked) still(); } }), t.vorlesenAuto) : null,
     h('p', { class: 'klein' }, fuelle(t.hilfenGezaehlt, { n: s.hilfen })),
     h('div', { class: 'reihe' }, knopf(sicher ? t.neuSicher : t.neu, () => {
       if (!sicher) { sicher = true; zeichne(); return; }
@@ -70,6 +82,33 @@ export function zeigeMenue() {
     }, sicher ? 'warn' : 'still')),
     h('p', { class: 'klein' }, t.datenschutz));
   const dlg = fenster(game.titel, inhalt);
+  zeichne();
+}
+
+/** Lehrkraftmodus: Übersicht auf dem Gerät, Stationen anspringen oder als gelöst markieren. */
+export function zeigeLehrkraft() {
+  const inhalt = h('div', { class: 'lehrkraft' });
+  const stufenName = { s4: 'markt', s5: 'druck', s6: 'verhoer' };
+  const zeichne = () => {
+    const s = store.state;
+    setzeInhalt(inhalt,
+      h('p', {}, t.lkText),
+      h('p', {}, h('a', { href: 'lehrkraefte.html', target: '_blank', rel: 'noopener', class: 'knopf' }, t.lkKompendium)),
+      h('p', { class: 'klein' }, fuelle(t.lkStand, { n: s.done.length, von: game.stationen.length, hilfen: s.hilfen, bonus: s.bonus.length })),
+      h('table', {}, h('tbody', {}, game.stationen.map((st) => {
+        const fertig = s.done.includes(st.id);
+        const stufe = stufenName[st.id] ? s.stufen[stufenName[st.id]] : 0;
+        return h('tr', {},
+          h('th', { scope: 'row' }, st.nr === 0 ? st.name : `${st.nr}. ${st.name}`),
+          h('td', {}, fertig ? (stufe ? fuelle(t.lkStufe, { n: stufe }) : t.ortFertig) : stationOffen(s, st) ? t.ortOffen : t.ortZu),
+          h('td', {}, knopf(t.lkSpringen, () => { aendere((x) => springeZu(x, st.id)); dlg.close(); zeigeSzene(st.szene); }, 'still klein')),
+          h('td', {}, knopf(t.lkLoesen, () => { aendere((x) => loeseStation(x, st.id)); zeichne(); }, 'still klein', { disabled: fertig })));
+      }))),
+      h('p', { class: 'klein' }, t.lkHinweis));
+  };
+  const dlg = fenster(t.lkTitel, inhalt, { breit: true });
+  // Nach dem Schließen zeigt die Szene den neuen Stand.
+  dlg.addEventListener('close', () => { if (store.state.szene && document.getElementById('blatt').hidden) zeigeSzene(store.state.szene); });
   zeichne();
 }
 

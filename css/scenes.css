@@ -158,3 +158,28 @@ blockquote.luther { border-left-color: var(--gruen); background: var(--gruen-hel
   .flugblatt { height: 340px; }
   .hotspot .figur { width: clamp(48px, 9vw, 80px); }
 }
+
+/* Bonusspiele */
+.silben-liste { margin: 0; padding-left: 1.4em; display: grid; gap: var(--ab-1); }
+.silben-liste li { color: var(--tinte-weich); }
+.silben-liste li.aktiv { color: var(--tinte); font-weight: bold; }
+.silben-liste li.fertig strong { color: var(--gruen); }
+.silben-liste li.fertig strong::before { content: "✓ "; }
+.silben-vorrat { display: flex; flex-wrap: wrap; gap: var(--ab-2); justify-content: center; padding: var(--ab-3); background: var(--pergament-dunkel); border: 3px double var(--tinte); }
+.silbe { min-width: 64px; font-size: var(--text); font-weight: bold; }
+.presse-knoepfe { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ab-3); }
+.presse-knoepfe .knopf { min-height: 96px; padding: var(--ab-2); }
+.presse-knoepfe .knopf.dran { background: var(--ocker-hell); box-shadow: inset 0 0 0 3px var(--tinte), var(--schatten); }
+.presse-stapel { display: flex; flex-wrap: wrap; gap: 4px; min-height: 44px; align-content: start; }
+.presse-stapel span { width: 26px; height: 36px; background: var(--pergament-hell); border: 2px solid var(--tinte); }
+.wald { display: grid; grid-template-columns: repeat(var(--spalten), minmax(0, 1fr)); gap: 3px; padding: var(--ab-2); background: var(--gruen); border: 3px double var(--tinte); flex: 1; min-height: 260px; max-height: 420px; }
+.zelle { display: grid; place-items: center; padding: 0; border: 2px solid transparent; border-radius: var(--rund); background: #c9bd94; font-size: 0.875rem; font-weight: bold; cursor: pointer; min-height: var(--tipp); }
+.zelle:disabled { opacity: 1; cursor: default; }
+.zelle:not(:disabled) { border-color: var(--tinte); background: var(--ocker-hell); }
+.zelle.f-W { background: #2f4636; color: #cfe0d0; }
+.zelle.f-D { background: var(--rot); color: #fff; }
+.zelle.f-Z { background: var(--blau); color: #fff; }
+.zelle.hier { background: var(--tinte); color: var(--pergament); border-color: var(--pergament); }
+.nachdenken { display: grid; gap: var(--ab-2); }
+textarea { font: inherit; padding: var(--ab-2) var(--ab-3); border: var(--rand); border-radius: var(--rund); background: #fff; resize: none; width: 100%; }
+@media (orientation: portrait), (max-width: 760px) { .presse-knoepfe { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

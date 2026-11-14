@@ -5,7 +5,7 @@ import { puzzles } from '../../data/puzzles.js';
 
 export const neuerStand = () => ({
   v: 1, szene: null, done: [], flags: [], cards: [], thesen: [], rat: '',
-  stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, flug: null
+  stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, vorlesen: false, flug: null
 });
 
 const liste = (x) => (Array.isArray(x) ? x : [x]);
@@ -77,6 +77,24 @@ export function raetselEnde(s, id, ergebnis = {}) {
   const neu = st && schliesseStation(s, st.id) ? [st.id] : [];
   return { stationen: neu };
 }
+
+/** Lehrkraftmodus: markiert eine Station samt ihren Voraussetzungen als gelöst. */
+export function loeseStation(s, id) {
+  const st = station(id);
+  for (const d of st.offen) loeseStation(s, d);
+  if (s.done.includes(id)) return;
+  if (st.raetsel) setze(s, `r:${st.raetsel}`);
+  if (id === 's5' && s.thesen.length !== 2) { s.thesen = ['t36', 't43']; s.thesen.forEach((k) => gibKarte(s, k)); }
+  schliesseStation(s, id);
+}
+
+/** Lehrkraftmodus: springt zu einer Station. Alles davor gilt als gelöst. */
+export function springeZu(s, id) {
+  for (const d of station(id).offen) loeseStation(s, d);
+  s.szene = station(id).szene;
+}
+
+export function bonusEnde(s, id) { if (!s.bonus.includes(id)) s.bonus.push(id); }
 
 /** Karten, die sich allein aus erledigten Stationen ergeben (für den Fortsetzungscode). */
 export function kartenAusStand(s) {

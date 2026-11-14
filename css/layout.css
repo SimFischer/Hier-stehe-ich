@@ -16,7 +16,7 @@ button, input { font: inherit; color: inherit; }
 #app { height: 100vh; height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 
 /* Leiste */
-.leiste { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr); align-items: center; gap: var(--ab-3); padding: var(--ab-2) var(--ab-3); background: var(--nacht); color: var(--pergament); }
+.leiste { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--ab-3); padding: var(--ab-2) var(--ab-3); background: var(--nacht); color: var(--pergament); }
 .leiste nav { display: flex; gap: var(--ab-2); }
 .leisten-knopf { display: inline-flex; align-items: center; gap: var(--ab-2); min-height: var(--tipp); padding: 0 var(--ab-3); background: transparent; color: var(--pergament); border: 2px solid rgba(239, 227, 200, 0.45); border-radius: var(--rund); cursor: pointer; font-size: var(--text-klein); }
 .leisten-knopf svg { width: 24px; height: 24px; display: block; }

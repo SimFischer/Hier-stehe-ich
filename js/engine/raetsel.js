@@ -1,10 +1,12 @@
 // Rätselblatt: führt die Schritte eines Rätsels nacheinander aus und zeigt die gestuften Hilfen.
 import { h, setzeInhalt, knopf, fuelle } from './ui.js';
 import { store, aendere } from './save.js';
-import { raetselEnde, gespraechEnde, gibKarte, szene } from './state.js';
+import { raetselEnde, bonusEnde, gespraechEnde, gibKarte, szene } from './state.js';
+import { kannSprechen, liesVor, still } from './speech.js';
 import { szeneSvg } from './platzhalter.js';
 import { game } from '../../data/game.js';
 import { puzzles } from '../../data/puzzles.js';
+import { bonus } from '../../data/bonus.js';
 import { cards } from '../../data/cards.js';
 import { dialogs } from '../../data/dialogs.js';
 import { t } from '../../data/ui.js';
@@ -21,15 +23,16 @@ import { view as auswahl } from '../puzzles/auswahl.js';
 import { view as uebersetzung } from '../puzzles/uebersetzung.js';
 import { view as flugschrift } from '../puzzles/flugschrift.js';
 import { wahl, text, gespraech } from '../puzzles/schritte.js';
+import { silben, presse, weg, reflexion } from '../puzzles/bonus.js';
 
-const module = { zuordnen, waage, standbild, markt, druck, verhoer: verhoerView, auswahl, uebersetzung, flugschrift, wahl, text, gespraech };
+const module = { zuordnen, waage, standbild, markt, druck, verhoer: verhoerView, auswahl, uebersetzung, flugschrift, wahl, text, gespraech, silben, presse, weg, reflexion };
 export const systeme = { marktplatz, druckwelle, verhoer };
 
 // Fortschritt innerhalb eines Rätsels: bleibt, solange die Seite offen ist.
 const fortschritt = {};
 
 export function oeffneRaetsel(id, { beiEnde, bild }) {
-  const r = puzzles[id];
+  const r = puzzles[id] || bonus[id];
   const blatt = document.getElementById('blatt');
   const f = (fortschritt[id] ||= { i: 0, sammel: {}, hilfe: {} });
 
@@ -44,7 +47,7 @@ export function oeffneRaetsel(id, { beiEnde, bild }) {
   };
 
   const hinten = (aus) => { for (const id of ['szene', 'band']) document.getElementById(id).inert = aus; };
-  const schliessen = () => { blatt.hidden = true; setzeInhalt(blatt); hinten(false); };
+  const schliessen = () => { still(); blatt.hidden = true; setzeInhalt(blatt); hinten(false); };
 
   const zeige = () => {
     const schritt = r.schritte[f.i];
@@ -62,7 +65,7 @@ export function oeffneRaetsel(id, { beiEnde, bild }) {
     setzeInhalt(blatt, 
       h('header', { class: 'blatt-kopf' },
         h('div', {}, h('span', { class: 'kicker' }, `${r.titel} · ${fuelle(t.schritt, { n: f.i + 1, von: r.schritte.length })}`), h('h2', { tabindex: '-1' }, schritt.titel || r.titel)),
-        h('div', { class: 'reihe' }, hilfeKnopf, h('button', { type: 'button', class: 'schliess', 'aria-label': t.raetselVerlassen, onclick: schliessen }, '✕'))),
+        h('div', { class: 'reihe' }, kannSprechen() ? knopf(t.vorlesen, () => liesVor(koerper), 'still klein') : null, hilfeKnopf, h('button', { type: 'button', class: 'schliess', 'aria-label': t.raetselVerlassen, onclick: schliessen }, '✕'))),
       koerper, hilfeBox);
     if (stufe) zeigeHilfe(stufe);
     module[schritt.art](koerper, schritt, ctx, (ergebnis = {}) => {
@@ -72,11 +75,12 @@ export function oeffneRaetsel(id, { beiEnde, bild }) {
       if (f.i < r.schritte.length - 1) { f.i += 1; zeige(); return; }
       const sammel = f.sammel;
       delete fortschritt[id];
-      const { stationen } = aendere((s) => raetselEnde(s, id, sammel));
+      const { stationen } = aendere((s) => (bonus[id] ? (bonus[id].ohneMerker || bonusEnde(s, id), { stationen: [] }) : raetselEnde(s, id, sammel)));
       schliessen();
       beiEnde(stationen);
     });
     blatt.querySelector('h2').focus();
+    if (store.state.vorlesen) liesVor(koerper);
   };
 
   blatt.hidden = false;

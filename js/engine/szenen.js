@@ -5,6 +5,7 @@ import { szene, erfuellt, hotspotSichtbar, hotspotAktiv, hotspotFlag, ansehen, g
 import { szeneSvg, figurSvg } from './platzhalter.js';
 import { oeffneRaetsel } from './raetsel.js';
 import { zeilenFuer } from '../puzzles/schritte.js';
+import { liesVor } from './speech.js';
 import { game } from '../../data/game.js';
 import { dialogs } from '../../data/dialogs.js';
 import { cards } from '../../data/cards.js';
@@ -17,7 +18,9 @@ let bandInhalt = null; // { art: 'text' | 'dialog' | 'film', ... }
 const el = (id) => document.getElementById(id);
 const kartenMeldung = (ids) => ids.filter(Boolean).forEach((id) => melde(fuelle(t.neueKarte, { titel: cards.find((k) => k.id === id).titel })));
 
-function band(...kinder) { setzeInhalt(el('band'), ...kinder); }
+function band(...kinder) { setzeInhalt(el('band'), ...kinder); if (store.state.vorlesen) liesVor(el('band')); }
+/** Liest den aktuellen Text im Band vor (für den Knopf in der Leiste). */
+export const liesBand = () => liesVor(el('band'));
 function zeigeText(text, wer) {
   bandInhalt = { art: 'text' };
   band(wer ? h('strong', { class: 'sprecher' }, wer) : null, h('p', {}, rich(text)));

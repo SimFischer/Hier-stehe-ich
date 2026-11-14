@@ -1,0 +1,44 @@
+/* Lehrkräftekompendium: eine ruhige Leseseite, die sich gut drucken lässt. */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: var(--schrift); font-size: var(--text); line-height: 1.55; color: var(--tinte); background: var(--pergament-hell); }
+#kompendium { max-width: 54rem; margin: 0 auto; padding: var(--ab-5) var(--ab-4) 4rem; }
+h1 { font-size: 2.2rem; margin: 0 0 var(--ab-3); line-height: 1.15; }
+h2 { font-size: 1.6rem; margin: var(--ab-6) 0 var(--ab-3); padding-top: var(--ab-3); border-top: 3px double var(--tinte); }
+h3 { font-size: 1.2rem; margin: 0 0 var(--ab-1); }
+h4 { font-size: 1rem; margin: var(--ab-3) 0 var(--ab-1); }
+p { margin: 0 0 var(--ab-3); }
+ul, ol { margin: 0 0 var(--ab-3); padding-left: 1.3em; }
+li { margin-bottom: var(--ab-1); }
+.kicker { margin: 0; font-size: var(--text-klein); letter-spacing: 0.06em; text-transform: uppercase; color: var(--rot-dunkel); }
+.klein { font-size: var(--text-klein); color: var(--tinte-weich); }
+.ort { color: var(--tinte-weich); font-size: var(--text-klein); }
+.reihe { display: flex; flex-wrap: wrap; gap: var(--ab-3); }
+nav { display: flex; flex-wrap: wrap; gap: var(--ab-2) var(--ab-4); padding: var(--ab-2) 0; }
+nav a { color: var(--rot-dunkel); min-height: var(--tipp); display: inline-flex; align-items: center; }
+.knopf { display: inline-flex; align-items: center; min-height: var(--tipp); padding: var(--ab-2) var(--ab-4); font: inherit; font-weight: bold; color: var(--tinte); text-decoration: none; background: var(--pergament); border: var(--rand); border-radius: var(--rund); box-shadow: var(--schatten); cursor: pointer; }
+.knopf.haupt { background: var(--rot); color: #fff; }
+:focus-visible { outline: var(--fokus); outline-offset: 2px; }
+.station { padding: var(--ab-3) var(--ab-4); margin-bottom: var(--ab-3); background: #fff; border: var(--rand); border-radius: var(--rund); break-inside: avoid; }
+dl { margin: 0; }
+dt { font-weight: bold; margin-top: var(--ab-2); }
+dd { margin: 0; }
+dd ul { margin: 0; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: var(--ab-2); border-bottom: 1px solid var(--pergament-dunkel); text-align: left; vertical-align: top; }
+details { margin-bottom: var(--ab-2); padding: var(--ab-2) var(--ab-4); background: #fff; border: var(--rand); border-radius: var(--rund); }
+summary { min-height: var(--tipp); display: flex; align-items: center; font-weight: bold; cursor: pointer; }
+summary::before { content: "▸ "; white-space: pre; }
+details[open] > summary::before { content: "▾ "; }
+#loesungen-inhalt { background: var(--ocker-hell); }
+input[type="search"] { width: 100%; min-height: var(--tipp); padding: 0 var(--ab-3); font: inherit; border: var(--rand); border-radius: var(--rund); background: #fff; }
+[hidden] { display: none !important; }
+
+@media print {
+  @page { margin: 18mm; }
+  body { background: #fff; font-size: 11pt; }
+  #kompendium { max-width: none; padding: 0; }
+  .nicht-drucken { display: none !important; }
+  .station, details { border-width: 1px; box-shadow: none; }
+  h2 { break-after: avoid; }
+  #loesungen-inhalt:not([open]) { display: none; }
+}
