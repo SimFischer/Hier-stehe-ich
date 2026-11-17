@@ -1,7 +1,6 @@
 // Gemeinsame Helfer für die Tests: fester Zufall und drei Spielertypen für die Spielsysteme.
 import { rules as markt } from '../js/puzzles/marktplatz.js';
 import { rules as druck } from '../js/puzzles/druckwelle.js';
-import { rules as verhoer } from '../js/puzzles/verhoer.js';
 
 /** Zufall mit Startwert: Jeder Testlauf ist gleich. */
 export function zufall(seed) {
@@ -13,15 +12,15 @@ const aus = (rnd, liste) => liste[Math.floor(rnd() * liste.length)];
 // typ: 'sorgfaeltig' | 'zufall' | 'schwach' (liest ungenau: trifft nur manchmal die passende Wahl)
 const kenntEs = (typ, rnd) => typ === 'sorgfaeltig' || (typ === 'schwach' && rnd() < 0.5);
 
-export function spieleMarkt(d, beutel, typ, rnd) {
+export function spieleMarkt(d, typ, rnd) {
   let z = markt.start(d); let zuege = 0;
   while (!z.ende) {
     const offen = d.figuren.filter((f) => markt.kann(z, f.id));
     const klug = kenntEs(typ, rnd);
     const f = klug ? [...offen].sort((a, b) => z.fig[b.id].pos - z.fig[a.id].pos)[0] : aus(rnd, offen);
-    const passend = beutel.filter((k) => k in f.ja);
-    const karte = klug && passend.length ? passend[0] : aus(rnd, beutel);
-    z = markt.zug(z, d, { figur: f.id, karte });
+    const richtig = f.antworten.findIndex((a) => a.passt);
+    const antwort = klug ? richtig : Math.floor(rnd() * f.antworten.length);
+    z = markt.zug(z, d, { figur: f.id, antwort });
     if (++zuege > 50) throw new Error('Marktplatz endet nicht');
   }
   return { z, zuege, stufe: markt.stufe(z, d) };
@@ -46,20 +45,6 @@ export function spieleDruck(d, typ, rnd) {
   return { z, anteil: druck.anteil(z, d), stufe: druck.stufe(z, d) };
 }
 
-export function spieleVerhoer(d, beutel, typ, rnd) {
-  const gute = d.einwaende.map((e) => verhoer.passend(e)[0]);
-  const klugDeck = kenntEs(typ, rnd);
-  let hand = klugDeck ? gute.filter((k) => beutel.includes(k)) : [];
-  const rest = beutel.filter((k) => !hand.includes(k)).sort(() => rnd() - 0.5);
-  hand = [...hand, ...rest].slice(0, d.handGroesse);
-  let z = verhoer.start(d, hand);
-  while (!z.ende) {
-    const e = d.einwaende[z.runde];
-    const beste = z.hand.find((k) => verhoer.bewerte(e, k) === 'gut') || z.hand.find((k) => verhoer.bewerte(e, k) === 'halb');
-    z = verhoer.zug(z, d, { karte: kenntEs(typ, rnd) && beste ? beste : aus(rnd, z.hand) });
-  }
-  return { z, stufe: verhoer.stufe(z, d) };
-}
 
 export const verteilung = (laeufe) => laeufe.reduce((v, l) => { v[l.stufe] = (v[l.stufe] || 0) + 1; return v; }, {});
 export const mittel = (laeufe, f) => laeufe.reduce((s, l) => s + f(l), 0) / laeufe.length;

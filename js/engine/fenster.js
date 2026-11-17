@@ -4,6 +4,8 @@ import { store, aendere, ersetze } from './save.js';
 import { neuerStand, station, szene, stationOffen, hotspotFlag, platten, loeseStation, springeZu } from './state.js';
 import { oeffneRaetsel } from './raetsel.js';
 import { bonus } from '../../data/bonus.js';
+import { disputation } from '../../data/disputation.js';
+import { kirchenGesehen } from '../puzzles/duell-regeln.js';
 import { kodiere, lies } from './code.js';
 import { zeigeSzene } from './szenen.js';
 import { bildHtml, bildUrl } from './bilder.js';
@@ -24,6 +26,15 @@ export function zeigeKarte() {
       h('span', { class: 'nr' }, fertig ? '✓' : '+'), h('strong', {}, b.titel), h('span', {}, b.kurz),
       h('em', {}, fertig ? t.ortFertig : offen ? fuelle(t.bonusOffen, { n: b.minuten }) : fuelle(t.bonusZu, { ort: station(b.nach).name })));
   });
+  const duellListe = disputation.liste.map((id) => disputation.raetsel[id]).map((d) => {
+    const offen = s.done.includes(d.nach);
+    const gegner = d.schritte.find((x) => x.art === 'duell').gegner;
+    const gewonnen = s.siege.includes(gegner) || (gegner === 'worms' && s.stufen.verhoer === 3);
+    return h('button', { type: 'button', class: `ort bonus disputation${gewonnen ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen,
+      onclick: () => { dlg.close(); if (d.szene) zeigeSzene(d.szene); else oeffneRaetsel(d.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); } },
+      h('span', { class: 'nr' }, gewonnen ? '★' : '⚔'), h('strong', {}, d.titel), h('span', {}, d.kurz),
+      h('em', {}, gewonnen ? t.duellSiegKurz : offen ? fuelle(t.bonusOffen, { n: d.minuten }) : fuelle(t.bonusZu, { ort: station(d.nach).name })));
+  });
   const dlg = fenster(t.karte, h('div', {}, h('div', { class: 'weg' }, game.stationen.map((st) => {
     const fertig = s.done.includes(st.id);
     const offen = stationOffen(s, st);
@@ -32,19 +43,26 @@ export function zeigeKarte() {
       h('span', { class: 'nr' }, st.nr === 0 ? '★' : st.id === 'f' ? '✎' : String(st.nr)),
       h('strong', {}, st.name), h('span', {}, `${st.ort}, ${st.zeit}`),
       h('em', {}, fertig ? t.ortFertig : offen ? t.ortOffen : t.ortZu));
-  })), h('h3', { class: 'zwischen' }, t.bonusTitel), h('p', { class: 'klein' }, t.bonusText), h('div', { class: 'weg' }, bonusListe)), { breit: true });
+  })), h('h3', { class: 'zwischen' }, t.duellTitel), h('p', { class: 'klein' }, t.duellListeText), h('div', { class: 'weg' }, duellListe),
+    h('h3', { class: 'zwischen' }, t.bonusTitel), h('p', { class: 'klein' }, t.bonusText), h('div', { class: 'weg' }, bonusListe)), { breit: true });
 }
 
 export function zeigeBeutel() {
-  const hat = (k) => store.state.cards.includes(k.id);
+  const s = store.state;
+  const hat = (k) => s.cards.includes(k.id);
   const n = cards.filter(hat).length;
-  const leer = (k) => h('div', { class: 'karte sammel leer', 'aria-label': t.albumFehlt },
+  const leer = (k, kirche = false) => h('div', { class: `karte sammel leer${kirche ? ' kirche' : ''}`, 'aria-label': kirche ? t.albumKircheFehlt : t.albumFehlt },
     h('span', { class: 'k-frage', 'aria-hidden': 'true' }, '?'),
-    h('span', { class: 'k-typ' }, fuelle(t.albumWo, { nr: station(k.station).nr })));
+    h('span', { class: 'k-typ' }, kirche ? t.albumKircheFehlt : k.duell ? fuelle(t.albumDuell, { name: disputation.gegner[k.duell].name }) : fuelle(t.albumWo, { nr: station(k.station).nr })));
+  const gesehen = kirchenGesehen(s.flags);
   fenster(t.beutel, h('div', { class: 'album' },
+    h('h3', {}, t.albumLuther),
     h('p', { class: 'kicker' }, fuelle(t.albumStand, { n, von: cards.length })),
     n ? null : h('p', {}, t.beutelLeer),
-    h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k) : leer(k))))), { breit: true });
+    h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k) : leer(k)))),
+    h('h3', { class: 'zwischen' }, t.albumKirche),
+    h('p', { class: 'kicker' }, fuelle(t.albumKircheText, { n: gesehen.size, von: disputation.kirche.length })),
+    h('div', { class: 'hand album-karten' }, disputation.kirche.map((k) => (gesehen.has(k.id) ? kartenChip(k) : leer(k, true))))), { breit: true });
 }
 
 export function zeigeNotizbuch() {

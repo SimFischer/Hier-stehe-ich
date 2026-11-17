@@ -2,7 +2,7 @@
 export const teacher = {
   titel: 'Lehrkräftekompendium', untertitel: 'Hier stehe ich · Luther-Lernspiel für Klasse 7',
   zurueck: 'Zum Spiel', drucken: 'Anleitung drucken / Als PDF speichern',
-  nav: { schnellstart: 'Schnellstart', ablauf: 'Ablauf', leitfaden: 'Leitfaden', bonus: 'Bonusspiele', loesungen: 'Lösungen', faq: 'Fragen', fach: 'Fachhinweise' },
+  nav: { schnellstart: 'Schnellstart', ablauf: 'Ablauf', leitfaden: 'Leitfaden', bonus: 'Bonusspiele', disputation: 'Kartenspiel', loesungen: 'Lösungen', faq: 'Fragen', fach: 'Fachhinweise' },
   spalten: { station: 'Station', zeit: 'Zeit', minuten: '{n} min', ziel: 'Lernziele', raetsel: 'Rätsel', karten: 'Karten', material: 'Bezug zur Einheit', hinweis: 'Achte auf', nach: 'offen nach' },
   summe: 'Kernpfad zusammen: rund {n} Minuten (Planwerte). Die Schätzung aus Textmenge und Bedienschritten steht im README.',
   schnellstart: {
@@ -39,11 +39,22 @@ export const teacher = {
     s1: { material: 'Stunde 7: Jenseitsvorstellung im Mittelalter (Bildbeschreibung)', hinweis: 'Station 1 und 2 sind beide von Anfang an offen. So stauen sich die Gruppen nicht.' },
     s2: { material: 'Stunde 1/2: Text „Ein Leben im Aufbruch“, Steckbrief, Gegenüberstellung der Lehren (gute Werke)', hinweis: 'Die Waage kann nicht kippen: Immer wenn sie fast ausgeglichen ist, fällt eine neue Sünde hinein. Genau das ist die Erkenntnis. Manche suchen lange nach einer Lösung: Dann hilft die Hilfe 3.' },
     s3: { material: 'Stunde 2/3: Lied „Nun freut euch“, Gleichnis vom verlorenen Sohn, Standbilder', hinweis: 'Das Standbild hat mehrere richtige Lösungen. Die Rückmeldung erklärt, sie bewertet nicht streng. Das Lied ist von 1523 und wird im Spiel als späterer Rückblick benannt.' },
-    s4: { material: 'Stunde 3: Ablasstext, Tetzel-Spruch', hinweis: 'Es geht nicht darum, Tetzel zu besiegen. Wer zuerst mit den Menschen nah am Kasten spricht, erreicht mehr. Der Rat an die Bäuerin hat keine falsche Antwort und kehrt im Finale wieder.' },
+    s4: { material: 'Stunde 3: Ablasstext, Tetzel-Spruch', hinweis: 'Am Markt wählt man für jede Person eine von drei Antworten. Wer zuerst mit den Menschen nah am Kasten spricht, erreicht mehr. Danach folgt die erste Disputation gegen Tetzel. Sie ist erfunden, die Argumente nicht. Wer verliert, spielt trotzdem weiter und kann später eine Revanche spielen. Der Rat an die Bäuerin hat keine falsche Antwort und kehrt im Finale wieder.' },
     s5: { material: 'Stunde 3–6: AB 95 Thesen, Material 1–3; Aufgabe „Wer fertig ist“', hinweis: 'Die Druckwelle zeigt den Unterschied zwischen Latein und Deutsch. Frag danach: Was hat mehr gebracht, ein lateinisches oder ein deutsches Blatt?' },
-    s6: { material: 'M 6/M 7 Reichstag zu Worms; Silbenrätsel (Kirchenbann, Reichsacht)', hinweis: 'Das Verhör ist ein Kartenduell: Jeder Einwand hat Stärke 4, nur die passende Karte (Stärke plus Bonus „Stark gegen“) schlägt ihn. Gut für das Gespräch danach: Warum reicht ein starkes, aber unpassendes Argument nicht? Wer „Widerrufen“ wählt, sieht, was dann gefehlt hätte, und wählt neu. Das Urteil des Kaisers bleibt in jedem Fall gleich. M 7 legt Luther „hier stehe ich“ in den Mund; das Finale löst die Legende auf.' },
+    s6: { material: 'M 6/M 7 Reichstag zu Worms; Silbenrätsel (Kirchenbann, Reichsacht)', hinweis: 'Das Verhör ist eine Disputation gegen den Sprecher des Kaisers. Vorher baut man ein Deck aus höchstens zwölf Karten und sieht die Karten des Gegners. Ein Sieg ergibt Stufe 3, eine gewonnene Runde Stufe 2. Wer „Widerrufen“ wählt, sieht, was dann gefehlt hätte, und wählt neu. Das Urteil des Kaisers bleibt in jedem Fall gleich. M 7 legt Luther „hier stehe ich“ in den Mund; das Finale löst die Legende auf.' },
     s7: { material: 'M 8 „Luther übersetzt die Bibel“ (Psalm 23)', hinweis: 'Auf der Wartburg entstand das Neue Testament, nicht Psalm 23. Das Spiel sagt das offen und nutzt den Psalm als Übung, weil die Klasse ihn aus M 8 kennt.' },
     f: { material: 'AB „Gegenüberstellung der Lehren“, AB 11 „Forderungen der Reformation“', hinweis: 'Gnade und Glaube liegen für Klasse 7 nah beieinander. Die Rückmeldung im Spiel erklärt den Unterschied. Für die Flugschrift gilt: keine vollen Namen in die Schlagzeile.' }
+  },
+  disputation: {
+    titel: 'Das Kartenspiel „Disputation“',
+    absaetze: [
+      'Die Karten der Kirche sind stark (bis 10), Luthers Karten schwach (1 bis 6). So wird erfahrbar: Die Kirche hatte die Argumenthoheit. Bei Gleichstand gewinnt sie.',
+      'Luther gewinnt nur mit den passenden Erkenntnissen. Eine Karte wie „Wie der Vater“ entkräftet „Gott, der strenge Richter“: Solange sie liegt, zählt die Kirchenkarte nur 1.',
+      'Gespielt wird wie bei bekannten Sammelkartenspielen: abwechselnd legen, passen, zwei Runden gewinnen. Vor Worms baut man ein Deck aus höchstens zwölf Karten und sieht dabei die Karten des Gegners.',
+      'Nach einer Niederlage zeigt das Spiel, welche Karte geholfen hätte und wo es sie gibt. Leipzig ist bewusst früh offen: Ohne „Konzilien irren“ aus Worms ist Eck kaum zu schlagen.',
+      'Tetzel und Worms gehören zum Kernpfad. Auch nach einer Niederlage geht es weiter. In Worms bestimmt das Ergebnis nur die Auswertung, nicht das Urteil. Revanche, Leipzig und die große Disputation sind freiwillig.',
+      'Gesprächsimpuls danach: Warum reicht ein starkes, aber unpassendes Argument nicht? Welche Karte war für dich die wichtigste und warum?'
+    ]
   },
   bonusTitel: 'Bonusspiele',
   bonusText: 'Alle Bonusspiele sind freiwillig. Sie stehen unten auf der Karte und öffnen sich nach der genannten Station.',
@@ -55,9 +66,10 @@ export const teacher = {
     { f: 'Eine Gruppe wird nicht fertig. Was nun?', a: 'Im Menü (Tipp auf den Titel) steht der Fortsetzungscode. Die Gruppe schreibt ihn auf und gibt ihn in der nächsten Stunde auf der Startseite ein. Er merkt sich fertige Stationen, nicht den Zwischenstand in einem Rätsel.' },
     { f: 'Ein Code wird nicht angenommen.', a: 'Der Code hat acht Zeichen. Die Buchstaben O und I und die Ziffern 0 und 1 kommen nicht vor. Bei einem Tippfehler meldet das Spiel, dass der Code nicht stimmt.' },
     { f: 'Eine Gruppe hängt in einem Rätsel fest.', a: 'Oben rechts im Rätsel gibt es drei Hilfen: erst eine Richtung, dann eine Teillösung, dann die Lösung mit Erklärung. Du kannst die Station auch im Lehrkraftmodus als gelöst markieren.' },
-    { f: 'Kann man etwas falsch machen und verlieren?', a: 'Nein. In den drei Spielsystemen gibt es drei Ergebnisstufen und immer eine Auswertung. Man kann jedes System noch einmal spielen.' },
+    { f: 'Kann man etwas falsch machen und hängen bleiben?', a: 'Nein. Markt und Druckwelle haben drei Ergebnisstufen und immer eine Auswertung. Eine verlorene Disputation hält niemanden auf. Man kann alles noch einmal spielen.' },
     { f: 'Wie öffne ich den Lehrkraftmodus?', a: 'Halte den Titel „Hier stehe ich“ fünf Sekunden gedrückt oder drücke Umschalt + Enter. Der Modus ist nicht durch ein Passwort geschützt.' },
-    { f: 'Was sind die Karten?', a: 'Jede Erkenntnis aus einer Station wird eine Sammelkarte mit Bild, Stärke und „Stark gegen“. Der Beutel zeigt das Album mit allen Plätzen. Am Markt und im Duell in Worms spielt man die Karten aus.' },
+    { f: 'Was sind die Karten?', a: 'Jede Erkenntnis aus einer Station wird eine Sammelkarte mit Bild, Stärke, Seltenheit und Fähigkeit. Der Beutel zeigt das Album: Luthers Karten und die Karten der Kirche, die man schon gesehen hat. Ausgespielt werden sie in den Disputationen gegen Tetzel, Eck und in Worms.' },
+    { f: 'Kann man eine Disputation verlieren?', a: 'Ja, und das ist gewollt. Danach zeigt das Spiel, welche Karte geholfen hätte und an welcher Station es sie gibt. Im Kernpfad geht es nach einer Niederlage trotzdem weiter.' },
     { f: 'Was zeigt der Lehrkraftmodus?', a: 'Fertige Stationen, die erreichte Stufe in den drei Spielsystemen, genutzte Hilfen und erledigte Bonusspiele. Alles bezieht sich nur auf dieses eine Gerät.' },
     { f: 'Gibt es eine Übersicht über die ganze Klasse?', a: 'Nein, mit Absicht. Das Spiel hat keinen Server. Es werden keine Daten gesendet oder gesammelt.' },
     { f: 'Wie kommt die Flugschrift auf die Pinnwand?', a: '„Als Bild teilen“ öffnet das Teilen-Menü des iPads. Von dort lässt sich das Bild speichern oder hochladen. „Drucken / PDF“ öffnet den Druckdialog.' },

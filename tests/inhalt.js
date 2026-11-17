@@ -8,12 +8,13 @@ import { puzzles } from '../data/puzzles.js';
 import { marktplatz } from '../data/systems/marktplatz.js';
 import { druckwelle } from '../data/systems/druckwelle.js';
 import { verhoer } from '../data/systems/verhoer.js';
+import { disputation } from '../data/disputation.js';
 
 export const systeme = { marktplatz, druckwelle, verhoer };
 export const woerter = (text) => text.split(/\s+/).filter((w) => /[A-Za-zÄÖÜäöüß0-9]/.test(w)).length;
 
 // Schlüssel, die keinen Lesetext enthalten.
-const KEIN_TEXT = new Set(['id', 'art', 'ziel', 'wer', 'figur', 'szene', 'dialog', 'system', 'station', 'layout', 'quelle', 'ergebnis', 'speichert', 'wert', 'gibt', 'raetsel', 'bild', 'farbe', 'platte', 'start', 'weiter']);
+const KEIN_TEXT = new Set(['id', 'art', 'ziel', 'wer', 'figur', 'szene', 'dialog', 'system', 'station', 'layout', 'quelle', 'ergebnis', 'speichert', 'wert', 'gibt', 'raetsel', 'bild', 'farbe', 'platte', 'start', 'weiter', 'gegner', 'deck', 'entkraeftet', 'gruppe', 'typ', 'seltenheit', 'duell', 'belohnung', 'liste']);
 // Historische Originaltexte werden nicht an der Satzlänge gemessen.
 const ORIGINAL = new Set(['alt', 'luther']);
 
@@ -26,17 +27,17 @@ function sammle(wert, aus, schluessel = '') {
 /** Alle Texte, die Schülerinnen und Schüler lesen. */
 export function texte() {
   const aus = [];
-  for (const quelle of [game.stationen, scenes, dialogs, cards.map(({ alt, ...rest }) => rest), glossary.map((g) => g.text), puzzles, marktplatz, druckwelle, verhoer]) sammle(quelle, aus);
+  for (const quelle of [game.stationen, scenes, dialogs, cards.map(({ alt, ...rest }) => rest), glossary.map((g) => g.text), puzzles, marktplatz, druckwelle, verhoer, disputation]) sammle(quelle, aus);
   return aus;
 }
 
 // Sekunden je Rätselschritt: Bedienzeit zusätzlich zum Lesen.
 const BEDIENZEIT = {
   zuordnen: (s) => 7 * (s.items?.length || 5), waage: () => 50, standbild: (s) => 40 * s.strophen.length, markt: () => 90, druck: () => 150,
-  auswahl: (s) => 12 * s.anzahl, verhoer: () => 60, wahl: () => 15, text: () => 0, gespraech: () => 0, uebersetzung: (s) => 35 * s.verse.length, flugschrift: () => 100
+  auswahl: (s) => 12 * s.anzahl, duell: () => 300, wahl: () => 15, text: () => 0, gespraech: () => 0, uebersetzung: (s) => 35 * s.verse.length, flugschrift: () => 100
 };
 // Welcher Teil eines Spielsystems in einem Durchgang gelesen wird.
-const SYSTEMANTEIL = { marktplatz: 0.75, druckwelle: 0.8, verhoer: 0.6 };
+const SYSTEMANTEIL = { marktplatz: 0.75, druckwelle: 0.8, verhoer: 1 };
 
 /** Geschätzte Spielzeit in Minuten je Station: Lesetext plus Bedienzeit. */
 /** Wörter und Bedienzeit je Station, gefüllt von zeitJeStation(). */

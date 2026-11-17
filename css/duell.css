@@ -1,0 +1,176 @@
+/* Kartenspiel „Disputation“: Seltenheit, Fähigkeiten, Spieltisch, Animationen. */
+
+/* ---------- Sammelkarten: Seltenheit und Fähigkeiten ---------- */
+.typ-menschen { --kf: #6b5a2e; }
+.typ-rom { --kf: #6e1f14; }
+.karte.sammel.typ-rom { background: linear-gradient(#fbeee6, #ead0c2); }
+.k-typ { display: inline-flex; align-items: center; gap: 6px; }
+.k-rar { font-style: normal; font-weight: normal; opacity: 0.9; }
+.k-rar::before { content: "◆ "; }
+.rar-selten .k-rar::before { color: #a8c8e8; }
+.rar-episch .k-rar::before { color: #d6a8f0; }
+.rar-legendaer .k-rar::before { color: #ffd86b; }
+.k-faehig { display: grid; gap: 2px; padding: 3px 5px; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(31, 26, 23, 0.25); border-radius: 5px; font-size: 0.875rem; line-height: 1.25; }
+.k-faehig span::before { content: "✦ "; color: var(--kf); }
+
+.karte.sammel.rar-selten { border-color: #5d7f9e; }
+.karte.sammel.rar-episch { border-color: #6b3f8a; box-shadow: 0 0 0 2px rgba(107, 63, 138, 0.35), 3px 3px 0 rgba(31, 26, 23, 0.8); }
+.karte.sammel.rar-legendaer { border-color: #b8860b; box-shadow: 0 0 0 2px #f3d27a, 0 0 14px rgba(230, 180, 60, 0.55), 3px 3px 0 rgba(31, 26, 23, 0.8); overflow: hidden; }
+.karte.sammel.rar-legendaer::after, .bk.rar-legendaer::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 240, 190, 0.55) 45%, transparent 60%) no-repeat; background-size: 250% 100%;
+  animation: glanz 4.5s ease-in-out infinite;
+}
+@keyframes glanz { 0%, 55% { background-position: 130% 0; } 100% { background-position: -60% 0; } }
+
+/* ---------- Vorbereitung ---------- */
+.d-vor, .d-ende { display: flex; flex-direction: column; gap: var(--ab-3); }
+.d-gegner-kopf { display: flex; gap: var(--ab-4); align-items: center; padding: var(--ab-3); background: linear-gradient(90deg, #3a2a20, #5a3d2b); color: var(--pergament); border: 3px double var(--ocker); border-radius: 10px; }
+.d-gegner-kopf h3 { font-size: var(--text-gross); color: #fff; }
+.d-gegner-kopf .kicker { color: var(--ocker-hell); }
+.d-gegner-kopf p { margin: 0; }
+.d-portrait { flex: none; display: grid; place-items: end center; width: 92px; height: 92px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 35%, #f3e6c8, #c7ab7b); border: 3px solid var(--ocker); }
+.d-portrait img, .d-portrait svg { width: 100%; height: auto; transform: translateY(14%) scale(1.5); transform-origin: top center; }
+.d-portrait.klein { width: 52px; height: 52px; border-width: 2px; }
+.d-regeln { background: var(--pergament); border: var(--rand); border-radius: var(--rund); padding: var(--ab-2) var(--ab-3); }
+.d-regeln summary { min-height: var(--tipp); display: flex; align-items: center; cursor: pointer; font-weight: bold; }
+.d-regeln ol { margin: 0; padding-left: 1.4em; }
+.d-regeln li { margin-bottom: var(--ab-1); }
+.d-kirchendeck, .d-sammlung { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--ab-2); }
+.d-kirchendeck .karte.sammel .k-bild, .d-sammlung .karte.sammel .k-bild { aspect-ratio: auto; height: 70px; }
+
+/* ---------- Spieltisch ---------- */
+.blatt-koerper.art-duell:has(.d-tisch) { padding: var(--ab-2); overflow: hidden; }
+.d-tisch {
+  position: relative; flex: 1; min-height: 0; display: grid; gap: 6px; padding: 8px;
+  grid-template-rows: auto 100px auto 100px auto minmax(0, 1fr);
+  background: radial-gradient(ellipse at 50% 50%, #6b4a30 0%, #4a3122 60%, #33221a 100%); border: 4px solid #2a1c14; border-radius: 14px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.55); color: var(--pergament);
+}
+.d-kopf { display: flex; align-items: center; gap: var(--ab-3); min-height: 52px; padding: 2px 6px; border-radius: 10px; transition: background 0.3s; }
+.d-kopf.dran { background: rgba(240, 217, 166, 0.14); box-shadow: inset 0 0 0 2px rgba(240, 217, 166, 0.45); }
+.d-name { display: grid; gap: 2px; }
+.d-name strong { font-size: var(--text-klein); color: #fff; }
+.d-siege { display: flex; gap: 6px; }
+.stein { width: 16px; height: 16px; transform: rotate(45deg); background: #2a1c14; border: 2px solid #8a6a4a; }
+.stein.an { background: radial-gradient(circle at 35% 35%, #ffe7a3, #d4a020); border-color: #fff3c4; box-shadow: 0 0 10px #f3c84a; animation: aufleuchten 0.6s ease-out; }
+@keyframes aufleuchten { from { transform: rotate(45deg) scale(1.9); } to { transform: rotate(45deg) scale(1); } }
+.d-handzahl { display: flex; align-items: center; margin-left: auto; }
+.d-handzahl .ruecken { width: 16px; height: 24px; margin-left: -8px; border-radius: 3px; border: 1px solid #f0d9a6; background: repeating-linear-gradient(45deg, #7f2f1f 0 4px, #a6432e 4px 8px); }
+.d-handzahl em { font-style: normal; margin-left: 6px; font-weight: bold; }
+.d-runde { margin-left: auto; font-size: var(--text-klein); color: var(--ocker-hell); }
+.d-pass { padding: 2px 10px; border-radius: 12px; background: #2a1c14; border: 1px solid var(--ocker); font-size: var(--text-klein); font-style: italic; }
+.d-summe { display: grid; place-items: center; flex: none; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; font-weight: bold; color: var(--tinte);
+  background: radial-gradient(circle at 35% 35%, #fff8e6, #cbb48a); border: 3px solid #2a1c14; transition: transform 0.25s; }
+.d-summe.vorne { background: radial-gradient(circle at 35% 35%, #fff3c4, #e0a92a); box-shadow: 0 0 14px rgba(243, 200, 74, 0.8); }
+.d-kopf .knopf { min-width: 7.5rem; }
+.d-kopf.luther .d-summe { margin-left: 0; }
+
+.d-reihe { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 0; padding: 12px 12px 6px; overflow-x: auto; overflow-y: hidden;
+  background: rgba(0, 0, 0, 0.18); border: 2px dashed rgba(240, 217, 166, 0.3); border-radius: 10px; }
+.d-reihe.kirche { background: rgba(110, 31, 20, 0.25); }
+.d-reihe.luther { background: rgba(62, 91, 69, 0.28); }
+.d-status { margin: 0; min-height: 2.4em; line-height: 1.2; display: grid; place-items: center; padding: 2px 10px; text-align: center; font-size: var(--text-klein); color: var(--pergament-hell); }
+.d-status.treffer { color: #c9f0c4; text-shadow: 0 0 8px rgba(120, 220, 120, 0.7); font-weight: bold; }
+.d-status.bann { color: #ffc2b5; font-weight: bold; }
+
+/* Karten auf dem Tisch */
+.bk { --kf: var(--tinte-weich); position: relative; flex: none; display: grid; grid-template-rows: minmax(0, 1fr) auto; width: 96px; height: 100%; max-height: 132px; min-height: 92px;
+  padding: 4px; border: 3px solid var(--kf); border-radius: 9px; background: linear-gradient(#fffaf0, #eedfbd); color: var(--tinte); cursor: pointer; font: inherit; text-align: center; }
+.bk.kirche { background: linear-gradient(#fbeee6, #e3c2b2); }
+.bk.rar-episch { box-shadow: 0 0 8px rgba(180, 120, 230, 0.7); }
+.bk.rar-legendaer { box-shadow: 0 0 10px rgba(243, 200, 74, 0.9); border-color: #b8860b; overflow: hidden; }
+.bk-bild { display: grid; place-items: center; min-height: 0; overflow: hidden; border-radius: 5px; background: radial-gradient(circle, #fff8e6, #e8d6ae); }
+.bk-bild img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.bk-name { font-size: 0.875rem; line-height: 1.1; font-weight: bold; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bk-wert { position: absolute; top: -10px; right: -10px; z-index: 2; display: flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; padding: 0 4px; border-radius: 17px;
+  font-size: 1.15rem; font-weight: bold; color: #fff; background: var(--kf); border: 2px solid #fff3c4; }
+.bk-wert s { font-size: 0.8rem; font-weight: normal; margin-right: 3px; opacity: 0.8; }
+.bk.plus .bk-wert { background: #2f7a3e; }
+.bk.minus .bk-wert { background: #a03a2a; }
+.bk.entkraeftet { filter: grayscale(0.85) brightness(0.88); }
+.bk.entkraeftet .bk-wert { background: #5b5550; }
+.bk-riss { position: absolute; inset: 0; pointer-events: none; border-radius: 6px;
+  background: linear-gradient(62deg, transparent 47%, rgba(31, 26, 23, 0.85) 48%, rgba(31, 26, 23, 0.85) 50%, transparent 51%),
+    linear-gradient(118deg, transparent 58%, rgba(31, 26, 23, 0.7) 59%, rgba(31, 26, 23, 0.7) 60.5%, transparent 61.5%); }
+.bk.neu.kirche { animation: vonOben 0.55s cubic-bezier(0.2, 0.8, 0.3, 1.2); }
+.bk.neu.luther { animation: vonUnten 0.55s cubic-bezier(0.2, 0.8, 0.3, 1.2); }
+.bk.pop .bk-wert { animation: pop 0.6s ease-out; }
+.bk.bricht { animation: bricht 0.6s ease-in-out; }
+@keyframes vonOben { from { transform: translateY(-120px) scale(0.6) rotate(-8deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes vonUnten { from { transform: translateY(160px) scale(0.6) rotate(8deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.7); } 100% { transform: scale(1); } }
+@keyframes bricht { 0%, 100% { transform: none; } 20% { transform: translateX(-6px) rotate(-3deg); } 40% { transform: translateX(6px) rotate(3deg); } 60% { transform: translateX(-4px) rotate(-2deg); } 80% { transform: translateX(3px); } }
+
+/* Hand */
+.d-hand { display: flex; gap: 8px; padding: 6px 4px 4px; overflow-x: auto; overflow-y: hidden; min-height: 0; }
+/* In der Hand zählt, was die Karte kann: Name, Stärke, Fähigkeit. Bild und Art zeigt die Großansicht. */
+.d-hand .karte.sammel.klein { flex: none; width: 150px; max-height: 100%; overflow: hidden; grid-template-rows: auto minmax(0, 46px) minmax(0, 1fr); align-content: start; background: linear-gradient(#fffaf0, #f3e6c8); }
+.d-hand .karte.sammel .k-bild { aspect-ratio: auto; height: 100%; min-height: 0; }
+.d-hand .karte.sammel .k-bild img { height: 100%; }
+.d-hand .karte.sammel .k-typ { display: none; }
+.d-hand .k-faehig { -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.d-hand .karte.sammel:disabled { opacity: 0.75; cursor: default; }
+.d-hand .karte.sammel.neu { animation: vonUnten 0.45s ease-out; }
+
+/* Rundenbanner und Großansicht */
+.d-banner, .d-gross { position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: var(--ab-2); padding: var(--ab-4); text-align: center; background: rgba(20, 14, 10, 0.72); border-radius: 12px; }
+.d-banner { animation: einblenden 0.35s ease-out; }
+.d-banner strong { font-size: clamp(1.6rem, 4vw, 2.4rem); color: #fff3c4; text-shadow: 0 2px 0 #000; animation: zoom 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.d-banner.kirche strong { color: #ffc2b5; }
+.d-banner .kicker { color: var(--ocker-hell); }
+.d-banner-zahl { font-size: 2rem; font-weight: bold; color: #fff; }
+@keyframes einblenden { from { opacity: 0; } }
+@keyframes zoom { from { transform: scale(0.3); opacity: 0; } }
+.art-duell { position: relative; }
+.d-gross { position: absolute; z-index: 6; }
+.d-gross-karte { display: grid; gap: var(--ab-2); justify-items: center; width: min(360px, 92vw); color: var(--pergament-hell); }
+.d-gross-karte .karte.sammel { width: 100%; font-size: 1rem; color: var(--tinte); animation: zoom 0.25s ease-out; }
+.d-gross-karte > p { font-weight: bold; text-shadow: 0 1px 0 #000; }
+.d-gross-karte .karte.sammel .k-kopf strong { font-size: 1.15rem; }
+.d-gross-karte .karte.sammel .k-bild { aspect-ratio: auto; height: clamp(80px, 18vh, 140px); }
+.d-gross-karte .k-staerke { width: 40px; height: 40px; font-size: 1.3rem; }
+.d-gross-karte p { margin: 0; }
+
+/* ---------- Ergebnis ---------- */
+.d-ende-titel { font-size: clamp(1.8rem, 4vw, 2.6rem) !important; }
+.d-ende.sieg .d-ende-titel { color: #ffe08a !important; animation: zoom 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.d-runden { display: flex; flex-wrap: wrap; gap: var(--ab-2); list-style: none; margin: 0; padding: 0; }
+.d-runden li { padding: var(--ab-1) var(--ab-3); border: var(--rand); border-radius: 20px; background: var(--pergament); }
+.d-runden li.luther { background: var(--gruen-hell); }
+.d-belohnung { display: grid; justify-items: start; gap: var(--ab-2); }
+.d-belohnung .karte.sammel { width: min(260px, 100%); animation: zoom 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.d-tipps { padding: var(--ab-3); background: var(--ocker-hell); border: var(--rand); border-radius: var(--rund); }
+.d-tipps ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--ab-3); }
+.d-tipps li p { margin: var(--ab-1) 0 0; }
+.mini-paar { display: flex; align-items: center; gap: var(--ab-2); flex-wrap: wrap; font-size: 1.4rem; }
+.mini-paar .karte.sammel.mini { display: inline-grid; min-height: 40px; }
+
+/* Album: Karten der Kirche */
+.album h3.zwischen { margin-top: var(--ab-4); }
+.karte.sammel.leer.kirche { background: repeating-linear-gradient(45deg, #ead6cc 0 8px, #f3e3da 8px 16px); }
+
+@media (max-height: 700px) {
+  .d-hand .karte.sammel .k-bild { display: none; }
+  .d-tisch { grid-template-rows: auto minmax(84px, 104px) auto minmax(84px, 104px) auto minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  .d-hand .karte.sammel.klein { width: 124px; }
+  .bk { width: 84px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bk.neu, .bk.pop .bk-wert, .bk.bricht, .d-banner, .d-banner strong, .karte.sammel.rar-legendaer::after, .bk.rar-legendaer::after, .stein.an { animation: none !important; }
+}
+.d-gross-karte .karte.sammel { display: flex; flex-direction: column; height: auto; }
+.d-gross-karte > p { padding: 2px 10px; border-radius: 12px; background: rgba(0, 0, 0, 0.45); }
+
+/* Vorbereitung: Kirchendeck als Schilder */
+.d-kirchendeck { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.d-kirchendeck .karte.sammel.mini { min-height: 48px; background: linear-gradient(#fbeee6, #ead0c2); }
+.d-kirchendeck .karte.sammel.mini .k-staerke { width: 30px; height: 30px; font-size: 1rem; }
+.d-sammlung { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.d-sammlung .karte.sammel .k-bild { height: 44px; }
+.d-sammlung .karte.sammel .k-typ { display: none; }
+/* Lange Kartenart und Seltenheit dürfen umbrechen, die Karte bleibt so breit wie ihre Spalte. */
+.karte.sammel { grid-template-columns: minmax(0, 1fr); }
+.k-typ { flex-wrap: wrap; max-width: 100%; row-gap: 0; }

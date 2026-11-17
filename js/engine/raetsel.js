@@ -1,11 +1,12 @@
 // Rätselblatt: führt die Schritte eines Rätsels nacheinander aus und zeigt die gestuften Hilfen.
 import { h, setzeInhalt, knopf, fuelle } from './ui.js';
 import { store, aendere } from './save.js';
-import { raetselEnde, bonusEnde, gespraechEnde, gibKarte, szene } from './state.js';
+import { raetselEnde, bonusEnde, gespraechEnde, gibKarte, szene, station, duellEnde } from './state.js';
 import { szeneUrl } from './bilder.js';
 import { game } from '../../data/game.js';
 import { puzzles } from '../../data/puzzles.js';
 import { bonus } from '../../data/bonus.js';
+import { disputation } from '../../data/disputation.js';
 import { cards } from '../../data/cards.js';
 import { dialogs } from '../../data/dialogs.js';
 import { t } from '../../data/ui.js';
@@ -17,14 +18,14 @@ import { view as waage } from '../puzzles/waage.js';
 import { view as standbild } from '../puzzles/standbild.js';
 import { view as markt } from '../puzzles/marktplatz.js';
 import { view as druck } from '../puzzles/druckwelle.js';
-import { view as verhoerView } from '../puzzles/verhoer.js';
+import { view as duell } from '../puzzles/duell.js';
 import { view as auswahl } from '../puzzles/auswahl.js';
 import { view as uebersetzung } from '../puzzles/uebersetzung.js';
 import { view as flugschrift } from '../puzzles/flugschrift.js';
 import { wahl, text, gespraech } from '../puzzles/schritte.js';
 import { silben, presse, fahrt, rose, reflexion } from '../puzzles/bonus.js';
 
-const module = { zuordnen, waage, standbild, markt, druck, verhoer: verhoerView, auswahl, uebersetzung, flugschrift, wahl, text, gespraech, silben, presse, fahrt, rose, reflexion };
+const module = { zuordnen, waage, standbild, markt, druck, duell, auswahl, uebersetzung, flugschrift, wahl, text, gespraech, silben, presse, fahrt, rose, reflexion };
 export const systeme = { marktplatz, druckwelle, verhoer };
 
 // Fortschritt innerhalb eines Rätsels: bleibt, solange die Seite offen ist.
@@ -32,7 +33,9 @@ const fortschritt = {};
 
 /** Öffnet ein Rätsel. schritt und sammel sind nur für die Layoutprüfung: Sie springen direkt zu einem Schritt. */
 export function oeffneRaetsel(id, { beiEnde, bild, schritt = null, sammel = null }) {
-  const r = puzzles[id] || bonus[id];
+  const r = puzzles[id] || bonus[id] || disputation.raetsel[id];
+  // Bonusspiele werden gemerkt (außer ohneMerker), Disputationen nur mit „merker“.
+  const merken = bonus[id] ? !r.ohneMerker : Boolean(r.merker);
   const blatt = document.getElementById('blatt');
   const f = (fortschritt[id] ||= { i: 0, sammel: {}, hilfe: {} });
   if (schritt != null) { f.i = schritt; if (sammel) f.sammel = sammel; }
@@ -41,6 +44,9 @@ export function oeffneRaetsel(id, { beiEnde, bild, schritt = null, sammel = null
     t, systeme, figuren: game.figuren, alleKarten: cards, sammel: f.sammel,
     get state() { return store.state; },
     karte: (kid) => cards.find((k) => k.id === kid),
+    station,
+    merkeDeck: (deck) => aendere((s) => { s.deck = [...deck]; }),
+    duellEnde: (gegner, sieg) => aendere((s) => duellEnde(s, gegner, sieg)),
     karten: () => cards.filter((k) => store.state.cards.includes(k.id) || (f.sammel.thesen || []).includes(k.id)),
     gibKarte: (kid) => aendere((s) => gibKarte(s, kid)),
     dialog: (did) => dialogs.find((d) => d.id === did),
@@ -76,7 +82,7 @@ export function oeffneRaetsel(id, { beiEnde, bild, schritt = null, sammel = null
       if (f.i < r.schritte.length - 1) { f.i += 1; zeige(); return; }
       const sammel = f.sammel;
       delete fortschritt[id];
-      const { stationen } = aendere((s) => (bonus[id] ? (bonus[id].ohneMerker || bonusEnde(s, id), { stationen: [] }) : raetselEnde(s, id, sammel)));
+      const { stationen } = aendere((s) => (puzzles[id] ? raetselEnde(s, id, sammel) : (merken && bonusEnde(s, id), { stationen: [] })));
       schliessen();
       beiEnde(stationen);
     });

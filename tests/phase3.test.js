@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import * as S from '../js/engine/state.js';
 import { kodiere, lies } from '../js/engine/code.js';
 import { loesung, loesungen } from '../js/engine/loesungen.js';
+import { disputation } from '../data/disputation.js';
 import { silbenRules, presseRules, fahrtRules, roseRules } from '../js/puzzles/bonus.js';
 import { rules as zuordnen, aufbau } from '../js/puzzles/zuordnen.js';
 import { wahlRules } from '../js/puzzles/schritte.js';
@@ -14,7 +15,7 @@ import { bonus } from '../data/bonus.js';
 import { cards } from '../data/cards.js';
 import { teacher } from '../data/teacher.js';
 
-const daten = { cards, systeme, figuren: game.figuren };
+const daten = { cards, systeme, figuren: game.figuren, disputation };
 const BONUS_ARTEN = ['silben', 'presse', 'fahrt', 'rose', 'reflexion', 'zuordnen', 'wahl', 'text'];
 
 test('Bonusspiele: Aufbau, Hilfen, Freischaltung', () => {
@@ -142,6 +143,6 @@ test('Kompendium: Lösungen entstehen aus den Daten, Leitfaden ist vollständig'
   // Stichprobe: Die Lösung nennt wirklich die richtige Antwort aus den Daten.
   const wahl = puzzles.waage.schritte.find((s) => s.art === 'wahl');
   assert.deepEqual(loesung(wahl, daten), [wahl.optionen.find((o) => o.richtig).text]);
-  assert.ok(loesung(puzzles.marktplatz.schritte[0], daten).some((z) => z.includes('Weg des Geldes')));
+  assert.ok(loesung(puzzles.marktplatz.schritte[0], daten).some((z) => z.includes('wohin dein Geld geht')));
   assert.ok(teacher.faq.length >= 10 && teacher.fach.length >= 8);
 });

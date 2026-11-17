@@ -8,7 +8,9 @@ import { rules as waage } from '../js/puzzles/waage.js';
 import { rules as standbild } from '../js/puzzles/standbild.js';
 import { rules as markt } from '../js/puzzles/marktplatz.js';
 import { rules as druck } from '../js/puzzles/druckwelle.js';
-import { rules as verhoer } from '../js/puzzles/verhoer.js';
+import { rules as duell } from '../js/puzzles/duell-regeln.js';
+import { spieleDuell, deckFuer } from './duell-bot.js';
+import { disputation } from '../data/disputation.js';
 import { rules as auswahl } from '../js/puzzles/auswahl.js';
 import { rules as ueb } from '../js/puzzles/uebersetzung.js';
 import { rules as flug } from '../js/puzzles/flugschrift.js';
@@ -59,7 +61,7 @@ function loeseSchritt(s, schritt, sammel, gut) {
       return {};
     }
     case 'markt': {
-      const r = spieleMarkt(systeme.marktplatz, beutel().map((k) => k.id), gut ? 'sorgfaeltig' : 'zufall', zufall(4));
+      const r = spieleMarkt(systeme.marktplatz, gut ? 'sorgfaeltig' : 'zufall', zufall(4));
       assert.ok(r.z.ende);
       return { stufe: { markt: r.stufe } };
     }
@@ -76,22 +78,26 @@ function loeseSchritt(s, schritt, sammel, gut) {
         assert.ok(auswahl.erinnert(fehlt, wahlRules.loesung(fehlt.frage)));
         S.gibKarte(s, fehlt.id);
       }
-      const wunsch = gut ? systeme.verhoer.einwaende.map((e) => verhoer.passend(e)[0]) : ['k1', 'k2', 'w1', 'w2', 'k6'];
+      const wunsch = ['k1', 'k2', 'w1', 'w2', 'k6'];
       let wahl = [];
       for (const k of [...wunsch.filter((x) => vorrat.includes(x)), ...vorrat]) wahl = wahl.includes(k) ? wahl : auswahl.umschalten(wahl, k, schritt.anzahl);
       assert.ok(auswahl.fertig(wahl, schritt.anzahl));
       return { [schritt.ergebnis]: wahl };
     }
-    case 'verhoer': {
-      const d = systeme.verhoer;
-      let z = verhoer.start(d, sammel.hand);
-      while (!z.ende) {
-        const e = d.einwaende[z.runde];
-        z = verhoer.zug(z, d, { karte: (gut && z.hand.find((k) => verhoer.bewerte(e, k) === 'gut')) || z.hand[0] });
-        assert.ok(z.letzte.text, 'Jede Karte bekommt eine Erklärung');
+    case 'duell': {
+      // Gut: Deck passend zum Gegner, klug gespielt, bei Niederlage noch einmal (wie ein Kind, das es erneut versucht).
+      const g = disputation.gegner[schritt.gegner];
+      const besitz = beutel().map((k) => k.id);
+      const rnd = zufall(9);
+      let z;
+      for (let versuch = 0; versuch < 12; versuch++) {
+        z = spieleDuell(g, gut ? deckFuer(besitz, g) : besitz.slice(0, 12), gut ? 'klug' : 'zufall', rnd);
+        assert.equal(z.phase, 'ende');
+        S.duellEnde(s, g.id, z.sieger === 'luther');
+        if (!gut || z.sieger === 'luther') break;
       }
-      assert.equal(z.runde, d.einwaende.length);
-      return { stufe: { verhoer: verhoer.stufe(z, d) } };
+      if (gut) assert.equal(z.sieger, 'luther', `${g.id}: klug gespielt gewinnbar`);
+      return g.id === 'worms' ? { stufe: { verhoer: duell.stufe(z) } } : {};
     }
     case 'wahl': {
       const i = wahlRules.loesung(schritt);
@@ -211,5 +217,6 @@ test('Jede Szene ist von einer Station aus erreichbar', () => {
   const erreichbar = new Set(game.stationen.map((st) => st.szene));
   for (const sz of scenes) if (sz.weiter && erreichbar.has(sz.id)) erreichbar.add(sz.weiter);
   for (const r of Object.values(puzzles)) for (const schritt of r.schritte) if (schritt.szene) erreichbar.add(schritt.szene);
+  for (const r of Object.values(disputation.raetsel)) if (r.szene) erreichbar.add(r.szene);
   for (const sz of scenes) assert.ok(erreichbar.has(sz.id), `Szene ${sz.id}`);
 });

@@ -18,8 +18,9 @@ export function bildHtml(name, klasse = '') {
   return `<img src="${ORDNER}${b.datei}" width="${b.w}" height="${b.h}" alt="" class="${klasse}" decoding="async" draggable="false">`;
 }
 
-export const szeneHtml = (bild = {}) => bildHtml(bild.datei, 'szenenbild') || szeneSvg(bild);
-export const szeneUrl = (bild = {}) => bildUrl(bild.datei) || svgUrl(szeneSvg(bild));
+// ersatz: Bild, das gilt, bis die eigentliche Datei im Register steht (zum Beispiel Leipzig).
+export const szeneHtml = (bild = {}) => bildHtml(bild.datei, 'szenenbild') || bildHtml(bild.ersatz, 'szenenbild') || szeneSvg(bild);
+export const szeneUrl = (bild = {}) => bildUrl(bild.datei) || bildUrl(bild.ersatz) || svgUrl(szeneSvg(bild));
 export const figurHtml = (figur = {}) => bildHtml(figur.bild, 'figurbild') || figurSvg(figur.farbe);
 export const statistHtml = (nr) => bildHtml(`fig-statist-${(nr % 4) + 1}`, 'figurbild') || figurSvg();
 /** Reichsstand im Saal: sechs Typen, die sich auf den Plätzen wiederholen. */

@@ -17,7 +17,9 @@ function staende() {
     if (s.done.includes('s4')) { s.rat = ['behalten', 'armen', 'kaufen'][n % 3]; s.stufen.markt = 1 + (n % 3); }
     if (s.done.includes('s5')) { s.thesen = [...paare[n % paare.length]]; s.stufen.druck = 1 + ((n + 1) % 3); }
     if (s.done.includes('s6')) s.stufen.verhoer = 1 + ((n + 2) % 3);
-    s.hilfen = n % 20;
+    s.hilfen = n % 40;
+    if (s.done.includes('s4') && n % 2) s.siege = ['tetzel'];
+    if (s.done.includes('s6') && n % 3 === 0) s.siege = [...s.siege, 'eck'];
     s.cards = kartenAusStand(s);
     liste.push(s); n += 1;
   }
@@ -34,7 +36,8 @@ test('Code: Hin- und Rückweg für jeden Zwischenstand', () => {
     assert.deepEqual(r.stand.thesen, [...s.thesen].sort());
     assert.equal(r.stand.rat, s.rat);
     assert.deepEqual(r.stand.stufen, s.stufen);
-    assert.equal(r.stand.hilfen, Math.min(15, s.hilfen));
+    assert.equal(r.stand.hilfen, Math.min(31, s.hilfen));
+    assert.deepEqual(r.stand.siege, s.siege);
     assert.deepEqual([...r.stand.cards].sort(), [...s.cards].sort());
     assert.equal(r.stand.szene, game.start);
   }

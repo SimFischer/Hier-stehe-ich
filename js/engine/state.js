@@ -2,10 +2,11 @@
 import { game } from '../../data/game.js';
 import { scenes } from '../../data/scenes.js';
 import { puzzles } from '../../data/puzzles.js';
+import { disputation } from '../../data/disputation.js';
 
 export const neuerStand = () => ({
   v: 1, szene: null, done: [], flags: [], cards: [], thesen: [], rat: '',
-  stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, flug: null
+  stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, flug: null, siege: [], deck: null
 });
 
 const liste = (x) => (Array.isArray(x) ? x : [x]);
@@ -96,10 +97,20 @@ export function springeZu(s, id) {
 
 export function bonusEnde(s, id) { if (!s.bonus.includes(id)) s.bonus.push(id); }
 
+/** Ende einer Disputation. Der erste Sieg bringt die Belohnungskarte. */
+export function duellEnde(s, gegner, sieg) {
+  setze(s, `duell:${gegner}`);
+  if (!sieg) return { neu: null };
+  if (!s.siege.includes(gegner)) s.siege.push(gegner);
+  const b = disputation.gegner[gegner].belohnung;
+  return { neu: b && gibKarte(s, b) ? b : null };
+}
+
 /** Karten, die sich allein aus erledigten Stationen ergeben (für den Fortsetzungscode). */
 export function kartenAusStand(s) {
   const karten = [];
   for (const st of game.stationen) if (s.done.includes(st.id)) karten.push(...(st.karten || []));
+  for (const g of s.siege || []) if (disputation.gegner[g]?.belohnung) karten.push(disputation.gegner[g].belohnung);
   return [...karten, ...s.thesen];
 }
 

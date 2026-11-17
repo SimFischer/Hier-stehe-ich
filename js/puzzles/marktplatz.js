@@ -1,5 +1,5 @@
 // Spielsystem „Der Marktplatz“. Oben die Regeln (ohne Bildschirm, in Node testbar), unten die Anzeige.
-import { h, setzeInhalt, knopf, rich, kartenChip, fuelle } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
 import { figurHtml, statistHtml, bildHtml } from '../engine/bilder.js';
 
 export const rules = {
@@ -8,14 +8,16 @@ export const rules = {
       fig: Object.fromEntries(d.figuren.map((f) => [f.id, { pos: f.start, st: 'offen' }])) };
   },
   kann: (z, figur) => !z.ende && z.fig[figur]?.st === 'offen',
-  /** Ein Gespräch: Karte passt → nachdenklich. Nach dem letzten Gespräch der Runde schlägt die Glocke. */
-  zug(z, d, { figur, karte }) {
+  /** Ein Gespräch: Die gewählte Antwort passt → nachdenklich. Nach dem letzten Gespräch der Runde schlägt die Glocke. */
+  zug(z, d, { figur, antwort }) {
     if (!rules.kann(z, figur)) return z;
     const n = structuredClone(z);
     const f = d.figuren.find((x) => x.id === figur);
-    const passt = karte in f.ja;
+    const a = f.antworten[antwort];
+    if (!a) return z;
+    const passt = Boolean(a.passt);
     if (passt) n.fig[figur].st = 'nachdenklich';
-    n.letzte = { figur, karte, passt, text: passt ? f.ja[karte] : (d.sonderNein[karte] || f.nein), glocke: false };
+    n.letzte = { figur, antwort, passt, text: a.rueck, glocke: false };
     n.rest -= 1;
     if (n.rest === 0 || !Object.values(n.fig).some((x) => x.st === 'offen')) { rules.glocke(n, d); n.letzte.glocke = true; }
     return n;
@@ -49,7 +51,6 @@ export function view(el, schritt, ctx, fertig) {
   const t = ctx.t;
   let z = rules.start(d);
   let wahl = null;
-  const beutel = ctx.karten().filter((k) => k.art !== 'these');
 
   const zeichne = () => {
     const nachd = rules.nachdenklich(z);
@@ -91,7 +92,7 @@ export function view(el, schritt, ctx, fertig) {
       seite = h('div', { class: 'markt-seite' },
         h('div', { class: 'sprechblase' }, h('strong', { class: 'sprecher' }, ctx.figuren[wahl].name), h('p', {}, '„', rich(f.anliegen), '“')),
         h('p', { class: 'kicker' }, t.marktKarteWaehlen),
-        h('div', { class: 'hand karten-hand' }, beutel.map((k) => kartenChip(k, { klein: true, onclick: () => { z = rules.zug(z, d, { figur: wahl, karte: k.id }); zeichne(); } }))));
+        h('div', { class: 'optionen' }, f.antworten.map((a, i) => h('button', { type: 'button', class: 'option', onclick: () => { z = rules.zug(z, d, { figur: wahl, antwort: i }); zeichne(); } }, a.text))));
     } else {
       seite = h('div', { class: 'markt-seite' }, h('p', {}, z.runde === 1 && z.rest === d.gespraecheJeRunde ? d.einleitung : t.marktWaehle));
     }

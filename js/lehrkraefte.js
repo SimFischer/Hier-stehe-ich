@@ -9,8 +9,9 @@ import { teacher as tk } from '../data/teacher.js';
 import { marktplatz } from '../data/systems/marktplatz.js';
 import { druckwelle } from '../data/systems/druckwelle.js';
 import { verhoer } from '../data/systems/verhoer.js';
+import { disputation } from '../data/disputation.js';
 
-const daten = { cards, systeme: { marktplatz, druckwelle, verhoer }, figuren: game.figuren };
+const daten = { cards, systeme: { marktplatz, druckwelle, verhoer }, figuren: game.figuren, disputation };
 const abschnitt = (id, titel, ...inhalt) => h('section', { id }, h('h2', {}, titel), inhalt);
 const liste = (punkte, art = 'ul') => h(art, {}, punkte.map((p) => h('li', {}, p)));
 const zeile = (name, wert) => (wert ? [h('dt', {}, name), h('dd', {}, wert)] : []);
@@ -56,7 +57,8 @@ function aufbau() {
   const loesungsTeil = h('details', { id: 'loesungen-inhalt' }, h('summary', {}, tk.loesungenOeffnen),
     h('p', { class: 'klein' }, tk.loesungenDruck),
     game.stationen.filter((st) => st.raetsel).map((st) => loesungsBlock(puzzles[st.raetsel], `${st.nr}. ${st.name}`)),
-    Object.values(bonus).map((b) => loesungsBlock(b, b.titel)));
+    Object.values(bonus).map((b) => loesungsBlock(b, b.titel)),
+    ['leipzig', 'frei'].map((id) => loesungsBlock(disputation.raetsel[id], disputation.raetsel[id].titel)));
 
   setzeInhalt(document.getElementById('kompendium'),
     h('header', {},
@@ -71,6 +73,10 @@ function aufbau() {
       h('table', {}, h('tbody', {}, Object.values(bonus).map((b) => h('tr', {},
         h('th', { scope: 'row' }, b.titel), h('td', {}, b.kurz), h('td', {}, fuelle(tk.spalten.minuten, { n: b.minuten })),
         h('td', {}, `${tk.spalten.nach} ${game.stationen.find((st) => st.id === b.nach).name}`)))))),
+    abschnitt('disputation', tk.disputation.titel, tk.disputation.absaetze.map((a) => h('p', {}, a)),
+      h('table', {}, h('tbody', {}, disputation.liste.map((id) => disputation.raetsel[id]).map((d) => h('tr', {},
+        h('th', { scope: 'row' }, d.titel), h('td', {}, d.kurz), h('td', {}, fuelle(tk.spalten.minuten, { n: d.minuten })),
+        h('td', {}, `${tk.spalten.nach} ${game.stationen.find((st) => st.id === d.nach).name}`)))))),
     abschnitt('loesungen', tk.loesungenTitel, h('p', {}, tk.loesungenText), loesungsTeil),
     abschnitt('faq', tk.faqTitel, faq()),
     abschnitt('fach', tk.fachTitel, h('dl', {}, tk.fach.flatMap((e) => [h('dt', {}, e.t), h('dd', {}, e.a)]))));

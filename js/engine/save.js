@@ -7,7 +7,7 @@ const hoerer = new Set();
 function laden() {
   try {
     const roh = JSON.parse(localStorage.getItem(SCHLUESSEL));
-    return roh && roh.v === 1 ? { ...neuerStand(), ...roh } : null;
+    return roh && roh.v === 1 ? { ...neuerStand(), ...roh, stufen: { ...neuerStand().stufen, ...roh.stufen } } : null;
   } catch { return null; }
 }
 

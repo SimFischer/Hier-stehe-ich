@@ -40,7 +40,8 @@ export const dialogs = [
     { wer: 'tetzel', text: 'Ich habe den Ablass nicht erfunden. Papst und Erzbischof haben mich beauftragt.' },
     { wer: 'tetzel', text: 'Die Menschen haben Angst um ihre Toten. Ich gebe ihnen etwas in die Hand.' },
     { wer: 'tetzel', text: 'Und das Geld baut die Kirche des heiligen Petrus. Ist das etwa schlecht?' },
-    { wer: 'erz', text: 'Tetzel glaubt, was er sagt. Luther sieht es anders: Der Brief wiegt die Menschen in falscher Sicherheit.' }
+    { wer: 'erz', text: 'Tetzel glaubt, was er sagt. Luther sieht es anders: Der Brief wiegt die Menschen in falscher Sicherheit.' },
+    { wer: 'erz', text: 'Tetzel mustert dich. Vor allen Leuten will er zeigen, wer die besseren Argumente hat.' }
   ] },
   { id: 'baeuerin-finale', zeilen: [
     { wer: 'erz', text: 'Die Tür geht auf. Eine Bäuerin tritt ein. Du kennst sie vom Markt in Jüterbog.' },

@@ -133,7 +133,7 @@ export const scenes = [
     einstieg: [{ text: 'Worms, April 1521. Vor Kaiser und Reich soll Luther seine Bücher widerrufen, also zurücknehmen. Er hat einen Tag Bedenkzeit bekommen. Du sitzt in seiner Herberge.' }],
     ziel: [
       { wenn: { done: 's6' }, text: 'Hier ist alles erledigt. Öffne die Karte.' },
-      { wenn: { flag: ['h:herberge.buecher', 'h:herberge.bann'] }, text: 'Setz dich an den Tisch und wähle die Argumente für morgen.' },
+      { wenn: { flag: ['h:herberge.buecher', 'h:herberge.bann'] }, text: 'Setz dich an den Tisch und stell dein Deck für morgen zusammen.' },
       { text: 'Sieh dir die Bücher und das Schreiben aus Rom an.' }
     ],
     hotspots: [
@@ -148,6 +148,24 @@ export const scenes = [
     ]
   },
   { id: 'saal', name: 'Der Saal im Bischofshof', zeit: 'Worms, 18. April 1521', bild: { typ: 'saal', datei: 'bg-saal' }, hotspots: [] },
+  {
+    // Nebenort. Eigenes Bild folgt (bg-leipzig). Bis dahin zeigt die Szene den Saal.
+    id: 'leipzig', name: 'Die Pleißenburg in Leipzig', zeit: 'Sommer 1519', nebenort: true, bild: { typ: 'saal', datei: 'bg-leipzig', ersatz: 'bg-saal' },
+    einstieg: [{ text: 'Leipzig, Sommer 1519. In der Pleißenburg streiten Gelehrte vor vielen Zuhörern über den Glauben. So ein Streitgespräch heißt Disputation.' }],
+    ziel: [
+      { wenn: { flag: 'duell:eck' }, text: 'Fordere Eck erneut heraus, wann immer du willst. Oder öffne die Karte.' },
+      { wenn: { flag: 'h:leipzig.eck' }, text: 'Tritt ans Rednerpult und fordere Eck heraus.' },
+      { text: 'Sieh dir deinen Gegner an.' }
+    ],
+    hotspots: [
+      { id: 'eck', label: 'Johann Eck', figur: 'eck', x: 24, y: 92, art: 'ansehen', merken: true,
+        text: 'Johann Eck ist Professor in Ingolstadt und ein gefürchteter Redner. Er kennt die Beschlüsse der Konzilien genau. Für ihn ist klar: Wer dem Papst widerspricht, redet wie der Ketzer Jan Hus.' },
+      { id: 'studenten', label: 'Studenten', figur: 'student', x: 80, y: 92, art: 'ansehen', merken: true, optional: true,
+        text: 'Etwa 200 Studenten sind mit Luther aus Wittenberg gekommen. Die Stimmung in der Stadt ist aufgeheizt.' },
+      { id: 'pult', label: 'Rednerpult', x: 52, y: 62, art: 'raetsel', ziel: 'leipzig', wenn: { flag: 'h:leipzig.eck' },
+        gesperrt: 'Sieh dir erst deinen Gegner an.' }
+    ]
+  },
   {
     id: 'wartburg', name: 'Auf der Wartburg', zeit: 'Winter 1521/22', bild: { typ: 'stube', winter: true, datei: 'bg-wartburg' },
     einstieg: [{ text: 'Die Wartburg bei Eisenach, Winter 1521/22. Hier versteckt sich Luther. Er nennt sich Junker Jörg. In nur elf Wochen übersetzt er das Neue Testament.' }],

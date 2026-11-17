@@ -1,18 +1,35 @@
 // Fortsetzungscode: 32 Bit Spielstand + 8 Bit Prüfsumme = 8 Zeichen. Kein Server nötig.
+// Fassung 2: Die erledigten Stationen werden als Nummer eines erreichbaren Stands gespeichert (4 statt 9 Bit).
+// Dadurch ist Platz für die Siege in den Disputationen und zwei weitere Bonusspiele.
 import { game } from '../../data/game.js';
-import { neuerStand, kartenAusStand, station } from './state.js';
+import { neuerStand, kartenAusStand, station, stationOffen } from './state.js';
 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const VERSION = 1;
+const VERSION = 2;
 const THESEN = ['t27', 't32', 't36', 't43', 't86'];
 const PAARE = [];
 for (let a = 0; a < THESEN.length; a++) for (let b = a + 1; b < THESEN.length; b++) PAARE.push([THESEN[a], THESEN[b]]);
 const RAT = ['', 'behalten', 'armen', 'kaufen'];
-const BONUS = ['entfuehrung', 'presse', 'lutherrose', 'gottesdienst', 'silben'];
-const ids = game.stationen.map((st) => st.id);
+const BONUS = ['entfuehrung', 'presse', 'lutherrose', 'gottesdienst', 'silben', 'leipzig', 'frei'];
+const SIEGE = ['tetzel', 'eck'];
+
+// Alle Mengen erledigter Stationen, die man im Spiel erreichen kann, in fester Reihenfolge.
+const schluessel = (done) => [...done].sort().join(',');
+const STAENDE = (() => {
+  const liste = [[]]; const gesehen = new Set(['']);
+  for (let i = 0; i < liste.length; i++) {
+    for (const st of game.stationen) {
+      if (liste[i].includes(st.id) || !stationOffen({ done: liste[i] }, st)) continue;
+      const neu = [...liste[i], st.id];
+      if (!gesehen.has(schluessel(neu))) { gesehen.add(schluessel(neu)); liste.push(neu); }
+    }
+  }
+  return liste;
+})();
 
 // Felder in fester Reihenfolge: [Name, Bitbreite]
-const FELDER = [['version', 2], ['done', 9], ['thesen', 4], ['rat', 2], ['markt', 2], ['druck', 2], ['verhoer', 2], ['bonus', 5], ['hilfen', 4]];
+const FELDER = [['version', 2], ['done', 4], ['thesen', 4], ['rat', 2], ['markt', 2], ['druck', 2], ['verhoer', 2], ['bonus', 7], ['siege', 2], ['hilfen', 5]];
+if (FELDER.reduce((n, [, b]) => n + b, 0) !== 32 || STAENDE.length > 16) throw new Error('FELDER');
 
 function crc8(bits) {
   let crc = 0x5a;
@@ -28,10 +45,11 @@ const ausMaske = (m, alle) => alle.filter((_, i) => m & (1 << i));
 
 export function kodiere(s) {
   const paar = PAARE.findIndex((p) => p.every((t) => s.thesen.includes(t)));
+  const stand = STAENDE.findIndex((d) => schluessel(d) === schluessel(s.done));
   const werte = {
-    version: VERSION, done: maske(s.done, ids), thesen: s.thesen.length === 2 ? paar + 1 : 0,
+    version: VERSION, done: Math.max(0, stand), thesen: s.thesen.length === 2 ? paar + 1 : 0,
     rat: Math.max(0, RAT.indexOf(s.rat)), markt: s.stufen.markt, druck: s.stufen.druck, verhoer: s.stufen.verhoer,
-    bonus: maske(s.bonus, BONUS), hilfen: Math.min(15, s.hilfen)
+    bonus: maske(s.bonus, BONUS), siege: maske(s.siege || [], SIEGE), hilfen: Math.min(31, s.hilfen)
   };
   let bits = FELDER.map(([name, breite]) => werte[name].toString(2).padStart(breite, '0')).join('');
   bits += crc8(bits).toString(2).padStart(8, '0');
@@ -48,19 +66,21 @@ export function lies(eingabe) {
   if (crc8(bits.slice(0, 32)) !== parseInt(bits.slice(32), 2)) return { fehler: 'pruefsumme' };
   const w = {}; let pos = 0;
   for (const [name, breite] of FELDER) { w[name] = parseInt(bits.slice(pos, pos + breite), 2); pos += breite; }
-  if (w.version !== VERSION || w.thesen > PAARE.length) return { fehler: 'inhalt' };
+  if (w.version !== VERSION || w.thesen > PAARE.length || w.done >= STAENDE.length) return { fehler: 'inhalt' };
   const s = neuerStand();
-  s.done = ausMaske(w.done, ids);
-  // Ein Stand ist nur gültig, wenn die Voraussetzungen jeder Station erfüllt sind.
-  if (!s.done.every((id) => station(id).offen.every((d) => s.done.includes(d)))) return { fehler: 'inhalt' };
+  s.done = [...STAENDE[w.done]];
   if ((w.thesen > 0) !== s.done.includes('s5')) return { fehler: 'inhalt' };
   s.thesen = w.thesen ? [...PAARE[w.thesen - 1]] : [];
   s.rat = RAT[w.rat];
   s.stufen = { markt: w.markt, druck: w.druck, verhoer: w.verhoer };
   s.bonus = ausMaske(w.bonus, BONUS);
+  s.siege = ausMaske(w.siege, SIEGE);
   s.hilfen = w.hilfen;
   s.cards = kartenAusStand(s);
   s.flags = s.done.map((id) => station(id).raetsel).filter(Boolean).map((r) => `r:${r}`);
+  // Gespielte Disputationen: Daraus ergibt sich, welche Kirchenkarten man schon kennt.
+  const gespielt = { tetzel: s.done.includes('s4'), worms: s.done.includes('s6'), eck: s.bonus.includes('leipzig') || s.siege.includes('eck'), frei: s.bonus.includes('frei') };
+  for (const [g, ja] of Object.entries(gespielt)) if (ja) s.flags.push(`duell:${g}`);
   s.szene = game.start;
   return { stand: s };
 }

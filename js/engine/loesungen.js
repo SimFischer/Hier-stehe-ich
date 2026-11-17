@@ -5,7 +5,7 @@ import { aufbau } from '../puzzles/zuordnen.js';
 const PFEIL = ' → ';
 
 /** Lösung eines Schritts als Liste kurzer Zeilen. Leere Liste: Der Schritt hat keine Lösung (Text, Gespräch, freie Wahl). */
-export function loesung(schritt, { cards, systeme, figuren }) {
+export function loesung(schritt, { cards, systeme, figuren, disputation }) {
   const karte = (id) => cards.find((k) => k.id === id)?.titel || id;
   const system = schritt.system ? systeme[schritt.system] : null;
   switch (schritt.art) {
@@ -17,8 +17,12 @@ export function loesung(schritt, { cards, systeme, figuren }) {
     case 'waage': return [schritt.ende];
     case 'standbild': return schritt.strophen.map((st) => `${st.nr}: ${Object.entries(schritt.regler)
       .map(([k, r]) => `${r.label} ${st.passt[k].map((w) => r.werte.find((x) => x.id === w).label).join(' / ')}`).join('; ')}`);
-    case 'markt': return system.figuren.map((f) => `${figuren[f.id].name}${PFEIL}${Object.keys(f.ja).map(karte).join(' / ')}`);
-    case 'verhoer': return system.einwaende.map((e) => `${e.titel} (Stärke ${e.staerke})${PFEIL}${cards.filter((k) => (k.staerke || 0) + (k.gegen?.[e.art] || 0) > e.staerke).map((k) => k.titel).join(' / ')}`);
+    case 'markt': return system.figuren.map((f) => `${figuren[f.id].name}${PFEIL}${f.antworten.filter((a) => a.passt).map((a) => a.text).join(' / ')}`);
+    case 'duell': {
+      const kirche = (id) => disputation.kirche.find((k) => k.id === id);
+      return [...new Set(disputation.gegner[schritt.gegner].deck)].map(kirche).sort((a, b) => b.staerke - a.staerke)
+        .map((k) => `${k.titel} (${k.staerke})${PFEIL}${cards.filter((c) => (c.entkraeftet || []).includes(k.id)).map((c) => c.titel).join(' / ') || '–'}`);
+    }
     case 'uebersetzung': return schritt.verse.map((v) => v.optionen.find((o) => o.richtig).text);
     case 'silben': return schritt.fragen.map((f) => `${f.frage}${PFEIL}${f.silben.join('')}`);
     case 'presse': return [schritt.schritte.join(PFEIL)];

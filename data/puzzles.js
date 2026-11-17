@@ -157,9 +157,15 @@ export const puzzles = {
         hilfen: [
           'Hör genau hin: Was treibt die Person an? Angst, Rechnen, Trauer, ein Plan?',
           'Wer rechnet, will wissen, wohin das Geld geht. Wer Angst hat, braucht ein anderes Bild von Gott. Sprich zuerst mit denen, die nah am Kasten stehen.',
-          'Bäuerin: „Gott entscheidet“. Kaufmann: „Weg des Geldes“. Pilger: „Gnade ist ein Geschenk“. Junge: „Ohne Reue kein Erlass“. Geselle: „Werke reichen nicht“. Witwe: „Weg des Geldes“.'
+          'Bäuerin: Gott entscheidet. Kaufmann: Weg des Geldes. Pilger: Gnade ist ein Geschenk. Junge: Ohne Reue kein Erlass. Geselle: Werke reichen nicht. Witwe: Gott braucht dein Geld nicht.'
         ] },
       { art: 'gespraech', dialog: 'tetzel-auswertung' },
+      { art: 'duell', gegner: 'tetzel', titel: 'Disputation mit Tetzel', szene: 'jueterbog',
+        hilfen: [
+          'Tippe die Karten von Tetzel an und lies, wie stark sie sind. Dann such in deiner Hand eine Karte, die sie entkräftet.',
+          'Warte mit deiner Konterkarte, bis die starke Karte liegt. Dann fällt sie auf 1, und du ziehst eine Karte nach.',
+          'Ablasshandel: „Gnade ist ein Geschenk“. Strenger Richter: „Wie der Vater“. Fegefeuer: „Gott entscheidet“. Gute Werke: „Werke reichen nicht“. Predigt und Brief: „Ohne Reue kein Erlass“. Petersdom: „Weg des Geldes“.'
+        ] },
       { art: 'wahl', frei: true, speichert: 'rat', wer: 'baeuerin', frage: 'Du hast mit so vielen geredet. Was soll ich nun tun mit meinen drei Groschen?',
         optionen: [
           { wert: 'behalten', text: 'Behalte sie. Bete für deine Mutter und vertraue auf Gott.', rueck: 'Vertrauen. Das ist schwerer als bezahlen. Aber ich will es versuchen.' },
@@ -206,17 +212,11 @@ export const puzzles = {
   verhoer: {
     id: 'verhoer', station: 's6', titel: 'Das Verhör', lernziel: [5],
     schritte: [
-      { art: 'auswahl', titel: 'Die Nacht der Bedenkzeit', quelle: 'beutel', anzahl: 5, ergebnis: 'hand', erinnerung: true, system: 'verhoer',
+      { art: 'duell', gegner: 'worms', titel: 'Vor Kaiser und Reich', szene: 'saal',
         hilfen: [
-          'Überlege, was man Luther vorwerfen wird: Es geht um Papst, Konzilien, Ordnung und darum, dass er allein steht.',
-          'Karten über Angst und Geld helfen im Saal wenig. Nimm Karten über Bibel, Konzilien und Luthers Absicht.',
-          'Stark sind: „Maßstab Bibel“, „Konzilien irren“, „Erneuern, nicht spalten“ und „Viele haben es gelesen“. Die fünfte Karte wählst du frei.'
-        ] },
-      { art: 'verhoer', titel: 'Vor Kaiser und Reich', system: 'verhoer', szene: 'saal',
-        hilfen: [
-          'Lies den Einwand genau: Worum geht es? Wer entscheidet, wer irrt, wer spaltet, wer steht allein?',
-          'Jede Karte kannst du nur einmal spielen. Spare „Maßstab Bibel“ für den Einwand, zu dem sie am besten passt.',
-          'Papst: „Maßstab Bibel“. Konzilien: „Konzilien irren“. Ordnung: „Erneuern, nicht spalten“. Allein: „Viele haben es gelesen“.'
+          'Sieh dir die Karten des Sprechers an, bevor du dein Deck baust. Nimm für jede starke Karte eine passende Antwort mit.',
+          'Ein Deck mit zwölf Karten hält länger durch als ein kleines. Karten ohne passende Antwort kannst du zu Beginn tauschen.',
+          'Papst und Tradition: „Maßstab Bibel“. Konzilien und Hus: „Konzilien irren“. Ordnung: „Erneuern, nicht spalten“. Alle gegen einen: „Viele haben es gelesen“. Bann: „Gewissen“. Strenger Richter: „Wie der Vater“.'
         ] },
       { art: 'wahl', wer: 'sprecher', frage: 'Zum letzten Mal, Martin Luther: Widerrufst du deine Bücher?',
         optionen: [

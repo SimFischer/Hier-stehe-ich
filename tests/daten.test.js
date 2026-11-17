@@ -13,12 +13,13 @@ import { puzzles } from '../data/puzzles.js';
 import { t } from '../data/ui.js';
 import { assets } from '../data/assets.js';
 import { bonus } from '../data/bonus.js';
+import { disputation } from '../data/disputation.js';
 import { existsSync } from 'node:fs';
 import { systeme, texte, woerter, zeitJeStation } from './inhalt.js';
 
 const wurzel = join(fileURLToPath(new URL('.', import.meta.url)), '..');
-const ARTEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'auswahl', 'verhoer', 'wahl', 'text', 'gespraech', 'uebersetzung', 'flugschrift'];
-const MIT_HILFEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'verhoer', 'uebersetzung'];
+const ARTEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'auswahl', 'duell', 'wahl', 'text', 'gespraech', 'uebersetzung', 'flugschrift'];
+const MIT_HILFEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'duell', 'uebersetzung'];
 const karte = (id) => cards.find((k) => k.id === id);
 const szene = (id) => scenes.find((s) => s.id === id);
 const dialog = (id) => dialogs.find((d) => d.id === id);
@@ -27,6 +28,7 @@ function flagGibtEs(flag) {
   const [art, rest] = [flag.slice(0, flag.indexOf(':')), flag.slice(flag.indexOf(':') + 1)];
   if (art === 'g') return Boolean(dialog(rest));
   if (art === 'r') return Boolean(puzzles[rest]);
+  if (art === 'duell') return Boolean(disputation.gegner[rest]);
   if (art === 'h') { const [sz, hs] = rest.split('.'); return Boolean(szene(sz)?.hotspots.some((h) => h.id === hs)); }
   return false;
 }
@@ -98,7 +100,7 @@ test('Szenen, Gespräche, Karten: alle Verweise existieren', () => {
       if (hs.figur) assert.ok(game.figuren[hs.figur], `${wo}: Figur`);
       if (hs.art === 'ansehen') assert.ok(hs.text, `${wo}: Text`);
       if (hs.art === 'gespraech') assert.ok(dialog(hs.ziel), `${wo}: Gespräch ${hs.ziel}`);
-      if (hs.art === 'raetsel') { assert.ok(puzzles[hs.ziel], `${wo}: Rätsel ${hs.ziel}`); assert.ok(!hs.wenn || hs.gesperrt, `${wo}: Text für „noch gesperrt“`); }
+      if (hs.art === 'raetsel') { assert.ok(puzzles[hs.ziel] || disputation.raetsel[hs.ziel], `${wo}: Rätsel ${hs.ziel}`); assert.ok(!hs.wenn || hs.gesperrt, `${wo}: Text für „noch gesperrt“`); }
       if (hs.gibt) assert.ok(karte(hs.gibt), `${wo}: Karte ${hs.gibt}`);
       pruefeBedingung(hs.wenn, wo); pruefeBedingung(hs.zeigtWenn, wo);
     }
@@ -110,7 +112,7 @@ test('Szenen, Gespräche, Karten: alle Verweise existieren', () => {
     pruefeBedingung(z.wenn, d.id);
   }
   assert.equal(new Set(cards.map((k) => k.id)).size, cards.length, 'Karten-IDs sind eindeutig');
-  for (const k of cards) assert.ok(k.art === 'these' || game.stationen.some((s) => (s.karten || []).includes(k.id)), `Karte ${k.id} ist erreichbar`);
+  for (const k of cards) assert.ok(k.art === 'these' || game.stationen.some((s) => (s.karten || []).includes(k.id)) || disputation.gegner[k.duell]?.belohnung === k.id, `Karte ${k.id} ist erreichbar`);
   for (const k of cards.filter((c) => c.art === 'these')) assert.ok(k.alt && k.frage.optionen.filter((o) => o.richtig).length === 1, `${k.id}: alte Fassung und Erinnerungsfrage`);
 });
 
@@ -124,15 +126,17 @@ test('Bilder: Register und Dateien stimmen, alle Verweise existieren', () => {
   // Jeder Verweis auf ein Bild in den Daten zeigt auf einen Eintrag im Register.
   const verweise = [];
   const suche = (wert, schluessel) => {
-    if (typeof wert === 'string') { if (['bild', 'datei', 'zeigt', 'lastBild', 'kastenBild', 'startBild'].includes(schluessel)) verweise.push(wert); }
+    if (typeof wert === 'string') { if (['bild', 'datei', 'zeigt', 'lastBild', 'kastenBild', 'startBild', 'ersatz'].includes(schluessel)) verweise.push(wert); }
     else if (Array.isArray(wert)) wert.forEach((w) => suche(w, schluessel === 'bilder' ? 'bild' : schluessel));
     else if (wert && typeof wert === 'object') for (const [k, v] of Object.entries(wert)) suche(v, k);
   };
-  for (const quelle of [game, scenes, puzzles, bonus, systeme]) suche(quelle, '');
+  for (const quelle of [game, scenes, puzzles, bonus, systeme, cards, disputation]) suche(quelle, '');
   assert.ok(verweise.length > 60, `${verweise.length} Bildverweise gefunden`);
-  for (const v of verweise) assert.ok(assets[v], `Bild ${v} steht im Register`);
+  const wartet = scenes.filter((sz) => sz.bild?.ersatz && !assets[sz.bild.datei]).map((sz) => sz.bild.datei);
+  for (const v of verweise) assert.ok(assets[v] || wartet.includes(v), `Bild ${v} steht im Register`);
   // Jede Szene, jede Figur und jede Druckplatte hat ein Bild.
-  for (const sz of scenes) assert.ok(assets[sz.bild?.datei], `Szene ${sz.id}: Hintergrund`);
+  // Eine Szene darf auf ihr eigenes Bild warten, wenn ein Ersatzbild eingetragen ist (Leipzig).
+  for (const sz of scenes) assert.ok(assets[sz.bild?.datei] || assets[sz.bild?.ersatz], `Szene ${sz.id}: Hintergrund`);
   for (const [id, f] of Object.entries(game.figuren)) if (f.farbe && id !== 'ich') assert.ok(assets[f.bild], `Figur ${id}: Bild`);
   for (const st of game.stationen.filter((x) => x.platte)) assert.ok(assets[st.bild], `Platte ${st.id}`);
 });
@@ -170,7 +174,8 @@ test('Zeit: Kernpfad liegt bei rund 40 Minuten', () => {
   const zeiten = zeitJeStation();
   const summe = Object.values(zeiten).reduce((a, b) => a + b, 0);
   console.log('Geschätzte Minuten je Station:', Object.entries(zeiten).map(([k, v]) => `${k} ${v.toFixed(1)}`).join(' · '), `· Summe ${summe.toFixed(1)}`);
-  // Ziel laut Konzept: rund 40 Minuten. Seit Überarbeitung 1 (mehr Spiel an Waage und Gleichnis) bewusst bis 48 erlaubt, siehe docs/UEBERARBEITUNG-1.md.
-  assert.ok(summe >= 34 && summe <= 48, `Kernpfad ${summe.toFixed(1)} Minuten`);
+  // Ziel laut Konzept: rund 40 Minuten. Überarbeitung 1 und 2 (Kartenspiel Disputation) machen das Spiel bewusst länger,
+  // siehe docs/UEBERARBEITUNG-2.md. Erlaubt sind jetzt bis 58 Minuten.
+  assert.ok(summe >= 34 && summe <= 58, `Kernpfad ${summe.toFixed(1)} Minuten`);
   for (const st of game.stationen) assert.ok(Math.abs(zeiten[st.id] - st.minuten) <= 2.5, `${st.id}: geplant ${st.minuten}, geschätzt ${zeiten[st.id].toFixed(1)} Minuten`);
 });

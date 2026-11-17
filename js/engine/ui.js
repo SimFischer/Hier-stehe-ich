@@ -2,6 +2,8 @@
 import { glossary } from '../../data/glossary.js';
 import { t } from '../../data/ui.js';
 import { bildHtml } from './bilder.js';
+import { cards } from '../../data/cards.js';
+import { disputation } from '../../data/disputation.js';
 
 /** Baut ein Element: h('button', { class: 'x', onclick: fn }, 'Text', kind) */
 export function h(tag, attrs = {}, ...kinder) {
@@ -72,21 +74,39 @@ export function fenster(titel, inhalt, { breit = false } = {}) {
   return dlg;
 }
 
-/** Kleine Karte aus dem Argumentebeutel. */
-/** Sammelkarte: Bild, Name, Stärke, Kartenart, Text und „Stark gegen“. klein: ohne Text, für die Hand. */
+const KARTEN = new Map([...cards, ...disputation.kirche].map((k) => [k.id, k]));
+const gruppen = (liste) => liste.map((g) => t.gruppen[g] || g).join(t.und);
+
+/** Fähigkeiten einer Karte als kurze Sätze, aus den Daten erzeugt. */
+export function faehigkeiten(k) {
+  const aus = [];
+  if (k.entkraeftet?.length) aus.push(fuelle(t.f_entkraeftet, { namen: k.entkraeftet.map((id) => `„${KARTEN.get(id)?.titel || id}“`).join(t.und) }));
+  if (k.staerkt) aus.push(k.staerkt.gruppe.includes('alle') ? fuelle(t.f_alle, { n: k.staerkt.plus }) : fuelle(t.f_staerkt, { gruppen: gruppen(k.staerkt.gruppe), n: k.staerkt.plus }));
+  if (k.schwaecht) aus.push(fuelle(t.f_schwaecht, { gruppen: gruppen(k.schwaecht.gruppe), n: k.schwaecht.minus }));
+  if (k.bund) aus.push(fuelle(t.f_bund, { typ: t.gruppen[k.typ] || k.typ }));
+  if (k.zieht) aus.push(fuelle(t.f_zieht, { n: k.zieht }));
+  if (k.standhaft) aus.push(t.f_standhaft);
+  if (k.bann) aus.push(t.f_bann);
+  return aus;
+}
+
+/** Sammelkarte: Bild, Name, Stärke, Kartenart, Seltenheit, Fähigkeiten und Text.
+ *  klein: ohne Text, für Hand und Auswahl. mini: nur Name und Stärke, für lange Listen. */
 export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = false, mini = false, aus = false, extra = '' } = {}) {
-  const gegen = Object.entries(karte.gegen || {});
   const typ = karte.typ || karte.art;
-  // mini: nur Name und Stärke, für Listen mit vielen Karten (Flugschrift)
-  if (mini) return h('button', { type: 'button', class: `karte sammel mini typ-${typ}${gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': String(gewaehlt), onclick },
-    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null));
-  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte sammel typ-${typ}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''} ${extra}`.trim(),
-    'aria-pressed': onclick ? String(gewaehlt) : null, 'aria-label': `${karte.titel}. ${karte.text}${karte.staerke ? '. ' + fuelle(t.kartenStaerke, { n: karte.staerke }) : ''}`, disabled: aus, onclick },
-    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null),
+  const rar = karte.seltenheit ? ` rar-${karte.seltenheit}` : '';
+  const staerke = karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null;
+  if (mini) return h(onclick ? 'button' : 'span', { type: onclick ? 'button' : null, class: `karte sammel mini typ-${typ}${rar}${gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': onclick ? String(gewaehlt) : null, onclick },
+    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke));
+  const faehig = faehigkeiten(karte);
+  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte sammel typ-${typ}${rar}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''} ${extra}`.trim(),
+    'aria-pressed': onclick ? String(gewaehlt) : null, disabled: aus, onclick,
+    'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', ...faehig, klein ? '' : karte.text].filter(Boolean).join('. ') },
+    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke),
     h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(karte.bild) }, karte.nr ? h('span', { class: 'k-nr' }, String(karte.nr)) : null),
-    h('span', { class: 'k-typ' }, t.typen[typ] || typ),
-    klein ? null : h('span', { class: 'k-text' }, karte.text),
-    gegen.length ? h('span', { class: 'k-gegen' }, klein ? null : `${t.kartenGegen} `, gegen.map(([art, plus]) => h('em', {}, `${t.einwandArten[art]} +${plus}`))) : null);
+    h('span', { class: 'k-typ' }, t.typen[typ] || typ, karte.seltenheit ? h('em', { class: 'k-rar', title: t.seltenheit[karte.seltenheit] }, klein ? null : t.seltenheit[karte.seltenheit]) : null),
+    faehig.length ? h('span', { class: 'k-faehig' }, faehig.map((f) => h('span', {}, f))) : null,
+    klein ? null : h('span', { class: 'k-text' }, karte.text));
 }
 
 /** Ersetzt den Inhalt eines Elements. Leere Einträge (null, false) werden übersprungen. */
