@@ -35,6 +35,15 @@ export const rules = {
   stufe(z, d) { const n = rules.nachdenklich(z); return [...d.stufen].reverse().find((s) => n >= s.ab).stufe; }
 };
 
+// Bühne: Lage der Figuren in Prozent des Feldes. Grundlinie unten, je näher am Kasten, desto weiter hinten und kleiner.
+const BASIS = [9, 25, 41, 59, 75, 91];
+const KASTEN = { x: 50, unten: 36 };
+function lage(i, pos, max) {
+  const t = pos / max;
+  const zielX = KASTEN.x + (i - 2.5) * 6;
+  return { x: BASIS[i] + (zielX - BASIS[i]) * t, unten: 2 + (KASTEN.unten - 6) * t, mass: 1 - 0.3 * t };
+}
+
 export function view(el, schritt, ctx, fertig) {
   const d = ctx.systeme[schritt.system];
   const t = ctx.t;
@@ -46,29 +55,32 @@ export function view(el, schritt, ctx, fertig) {
     const nachd = rules.nachdenklich(z);
     const statWeg = Math.min(d.statisten, nachd);
     const feld = h('div', { class: 'markt-feld' },
-      h('div', { class: 'markt-kasten', 'aria-hidden': 'true', html: bildHtml(d.kastenBild) }, h('span', {}, t.marktKasten)),
-      ...Array.from({ length: d.statisten }, (_, i) => h('div', { class: `markt-statist ${i < statWeg ? 'weg' : ''}`, style: `--i:${i}`, 'aria-hidden': 'true', html: statistHtml(i) })),
+      h('div', { class: 'markt-kasten', style: `left:${KASTEN.x}%;bottom:${KASTEN.unten}%`, 'aria-hidden': 'true', html: bildHtml(d.kastenBild) }, h('span', {}, t.marktKasten)),
+      ...Array.from({ length: d.statisten }, (_, i) => h('div', { class: `markt-statist${i < statWeg ? ' weg' : ''}`,
+        style: `left:${[30, 35, 66, 71][i]}%;bottom:${KASTEN.unten + 2}%`, 'aria-hidden': 'true', html: statistHtml(i) })),
       ...d.figuren.map((f, i) => {
         const st = z.fig[f.id];
         const name = ctx.figuren[f.id].name;
+        const l = st.st === 'nachdenklich' ? { x: BASIS[i], unten: 1, mass: 1 } : lage(i, st.pos, d.kaufenAb);
         const zustand = st.st === 'nachdenklich' ? t.marktNachdenklich : st.st === 'gekauft' ? t.marktGekauft : (st.pos >= d.kaufenAb - 1 ? d.nahAmKasten : '');
-        return h('button', { type: 'button', class: `markt-figur st-${st.st}${wahl === f.id ? ' gewaehlt' : ''}`, style: `--i:${i};--pos:${st.pos}`,
+        return h('button', { type: 'button', class: `markt-figur st-${st.st}${wahl === f.id ? ' gewaehlt' : ''}`,
+          style: `left:${l.x}%;bottom:${l.unten}%;--mass:${l.mass};z-index:${10 - st.pos}`,
           disabled: !rules.kann(z, f.id), 'aria-label': `${name}${zustand ? ', ' + zustand : ''}`,
           onclick: () => { wahl = f.id; z = { ...z, letzte: null }; zeichne(); } },
-          h('span', { class: 'figur', html: figurHtml(ctx.figuren[f.id]) }), h('span', { class: 'schild' }, name), zustand ? h('span', { class: 'zustand' }, zustand) : null);
+          h('span', { class: 'schild' }, name), h('span', { class: 'figur', html: figurHtml(ctx.figuren[f.id]) }), zustand ? h('span', { class: 'zustand' }, zustand) : null);
       }));
 
     const kopf = h('div', { class: 'zaehler' },
       h('span', {}, fuelle(t.marktRunde, { n: Math.min(z.runde, d.runden), von: d.runden })),
       h('span', {}, fuelle(t.marktGespraeche, { n: z.ende ? 0 : z.rest })),
       h('span', {}, fuelle(t.marktMuenzen, { n: z.muenzen })),
-      h('span', {}, fuelle(t.marktNachd, { n: nachd, von: d.figuren.length })));
+      h('strong', {}, fuelle(t.marktNachd, { n: nachd, von: d.figuren.length })));
 
-    let unten;
+    let seite;
     if (z.letzte) {
       const f = ctx.figuren[z.letzte.figur];
-      unten = h('div', { class: 'markt-unten' },
-        h('p', { class: `antwort ${z.letzte.passt ? 'gut' : 'offen'}` }, h('strong', {}, `${f.name}: `), rich(z.letzte.text)),
+      seite = h('div', { class: 'markt-seite' },
+        h('div', { class: `sprechblase antwort ${z.letzte.passt ? 'gut' : 'offen'}` }, h('strong', { class: 'sprecher' }, f.name), h('p', {}, '„', rich(z.letzte.text), '“')),
         z.letzte.glocke && !z.ende ? h('p', { class: 'glocke' }, d.glocke) : null,
         z.ende ? h('p', { class: 'auswertung' }, d.auswertung[rules.stufe(z, d)]) : null,
         h('div', { class: 'reihe' },
@@ -76,14 +88,14 @@ export function view(el, schritt, ctx, fertig) {
           knopf(t.weiter, () => { if (z.ende) fertig({ stufe: { markt: rules.stufe(z, d) } }); else { z = { ...z, letzte: null }; wahl = null; zeichne(); } }, 'haupt')));
     } else if (wahl) {
       const f = d.figuren.find((x) => x.id === wahl);
-      unten = h('div', { class: 'markt-unten' },
-        h('p', { class: 'anliegen' }, h('strong', {}, `${ctx.figuren[wahl].name}: `), rich(f.anliegen)),
-        h('p', { class: 'klein' }, t.marktKarteWaehlen),
-        h('div', { class: 'hand' }, beutel.map((k) => kartenChip(k, { klein: true, onclick: () => { z = rules.zug(z, d, { figur: wahl, karte: k.id }); zeichne(); } }))));
+      seite = h('div', { class: 'markt-seite' },
+        h('div', { class: 'sprechblase' }, h('strong', { class: 'sprecher' }, ctx.figuren[wahl].name), h('p', {}, '„', rich(f.anliegen), '“')),
+        h('p', { class: 'kicker' }, t.marktKarteWaehlen),
+        h('div', { class: 'hand karten-hand' }, beutel.map((k) => kartenChip(k, { klein: true, onclick: () => { z = rules.zug(z, d, { figur: wahl, karte: k.id }); zeichne(); } }))));
     } else {
-      unten = h('div', { class: 'markt-unten' }, h('p', {}, z.runde === 1 && z.rest === d.gespraecheJeRunde ? d.einleitung : t.marktWaehle));
+      seite = h('div', { class: 'markt-seite' }, h('p', {}, z.runde === 1 && z.rest === d.gespraecheJeRunde ? d.einleitung : t.marktWaehle));
     }
-    setzeInhalt(el, kopf, feld, unten);
+    setzeInhalt(el, kopf, h('div', { class: 'markt-rahmen' }, feld, seite));
   };
   zeichne();
 }

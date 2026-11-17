@@ -5,7 +5,7 @@ import { puzzles } from '../../data/puzzles.js';
 
 export const neuerStand = () => ({
   v: 1, szene: null, done: [], flags: [], cards: [], thesen: [], rat: '',
-  stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, vorlesen: false, flug: null
+  stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, flug: null
 });
 
 const liste = (x) => (Array.isArray(x) ? x : [x]);

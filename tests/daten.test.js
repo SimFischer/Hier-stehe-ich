@@ -148,7 +148,7 @@ test('Inhalt und Logik sind getrennt: kein Lesetext in js/, alle Bedientexte in 
     const code = readFileSync(join(wurzel, datei), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
     for (const m of code.matchAll(/'([^'\n]*)'|"([^"\n]*)"/g)) {
       const s = m[1] ?? m[2];
-      if (/[<=]|^\.\.?\/|\d+px/.test(s)) continue; // Markup, Attribute, Importpfade, Schriftangaben
+      if (/[<=]|^\.\.?\/|\d+px|^[a-z0-9 -]+$/.test(s)) continue; // Markup, Attribute, Importpfade, Schriftangaben, Klassennamen
       const worte = s.split(/\s+/).filter((w) => /^[A-Za-zÄÖÜäöüß]{3,}[.,!?:]?$/.test(w));
       assert.ok(worte.length < 3, `${datei}: Text gehört nach data/: „${s}“`);
     }
@@ -170,6 +170,7 @@ test('Zeit: Kernpfad liegt bei rund 40 Minuten', () => {
   const zeiten = zeitJeStation();
   const summe = Object.values(zeiten).reduce((a, b) => a + b, 0);
   console.log('Geschätzte Minuten je Station:', Object.entries(zeiten).map(([k, v]) => `${k} ${v.toFixed(1)}`).join(' · '), `· Summe ${summe.toFixed(1)}`);
-  assert.ok(summe >= 34 && summe <= 45, `Kernpfad ${summe.toFixed(1)} Minuten`);
+  // Ziel laut Konzept: rund 40 Minuten. Seit Überarbeitung 1 (mehr Spiel an Waage und Gleichnis) bewusst bis 48 erlaubt, siehe docs/UEBERARBEITUNG-1.md.
+  assert.ok(summe >= 34 && summe <= 48, `Kernpfad ${summe.toFixed(1)} Minuten`);
   for (const st of game.stationen) assert.ok(Math.abs(zeiten[st.id] - st.minuten) <= 2.5, `${st.id}: geplant ${st.minuten}, geschätzt ${zeiten[st.id].toFixed(1)} Minuten`);
 });

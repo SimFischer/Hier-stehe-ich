@@ -83,7 +83,7 @@ export function view(el, schritt, ctx, fertig) {
         schritt.schlagzeilen.map((sz) => h('button', { type: 'button', class: `wahlknopf${!f.eigene && f.schlagzeile === sz ? ' gewaehlt' : ''}`, onclick: () => { f = { ...f, eigene: false, schlagzeile: sz }; zeichne(); } }, sz)),
         eingabe, h('span', { class: 'klein' }, schritt.namenHinweis)),
       h('fieldset', {}, h('legend', {}, fuelle(t.flugKarten, { n: f.karten.length, von: schritt.karten })),
-        h('div', { class: 'hand fb-karten' }, beutel.map((k) => kartenChip(k, { klein: true, gewaehlt: f.karten.includes(k.id), onclick: () => { f = rules.umschalten(f, k.id, schritt); zeichne(); } })))));
+        h('div', { class: 'hand fb-karten' }, beutel.map((k) => kartenChip(k, { mini: true, gewaehlt: f.karten.includes(k.id), onclick: () => { f = rules.umschalten(f, k.id, schritt); zeichne(); } })))));
     const rechts = h('div', { class: 'fb-rechts' }, vorschau,
       h('fieldset', {}, h('legend', {}, t.flugBild),
         schritt.motive.map((m) => h('button', { type: 'button', class: `wahlknopf${f.motiv === m.id ? ' gewaehlt' : ''}`, onclick: () => { f = { ...f, motiv: m.id }; zeichne(); } }, m.label))),

@@ -38,11 +38,14 @@ function loeseSchritt(s, schritt, sammel, gut) {
       return {};
     }
     case 'waage': {
-      let z = waage.start();
-      for (const w of schritt.werke) z = waage.zug(z, schritt, { werk: w.id });
-      for (let i = 0; i < 30; i++) z = waage.zug(z, schritt, { werk: 'mehr' });
-      assert.ok(waage.fertig(z, schritt));
-      assert.equal(waage.kippt(z, schritt), false, 'Die Waage kippt nie');
+      let z = waage.start(schritt);
+      let klicks = 0;
+      while (!waage.fertig(z, schritt)) {
+        z = waage.zug(z, schritt, { werk: schritt.werke[klicks % schritt.werke.length].id });
+        assert.equal(waage.kippt(z, schritt), false, 'Die Waage kippt nie');
+        assert.ok(++klicks < 40, 'Die Waage endet nach wenigen Klicks');
+      }
+      assert.equal(z.gefallen, schritt.suenden.length, 'Alle Sünden sind gefallen');
       return {};
     }
     case 'standbild': {
@@ -73,7 +76,7 @@ function loeseSchritt(s, schritt, sammel, gut) {
         assert.ok(auswahl.erinnert(fehlt, wahlRules.loesung(fehlt.frage)));
         S.gibKarte(s, fehlt.id);
       }
-      const wunsch = gut ? systeme.verhoer.einwaende.map((e) => Object.keys(e.gut)[0]) : ['k1', 'k2', 'w1', 'w2', 'k6'];
+      const wunsch = gut ? systeme.verhoer.einwaende.map((e) => verhoer.passend(e)[0]) : ['k1', 'k2', 'w1', 'w2', 'k6'];
       let wahl = [];
       for (const k of [...wunsch.filter((x) => vorrat.includes(x)), ...vorrat]) wahl = wahl.includes(k) ? wahl : auswahl.umschalten(wahl, k, schritt.anzahl);
       assert.ok(auswahl.fertig(wahl, schritt.anzahl));
@@ -84,7 +87,7 @@ function loeseSchritt(s, schritt, sammel, gut) {
       let z = verhoer.start(d, sammel.hand);
       while (!z.ende) {
         const e = d.einwaende[z.runde];
-        z = verhoer.zug(z, d, { karte: (gut && z.hand.find((k) => k in e.gut)) || z.hand[0] });
+        z = verhoer.zug(z, d, { karte: (gut && z.hand.find((k) => verhoer.bewerte(e, k) === 'gut')) || z.hand[0] });
         assert.ok(z.letzte.text, 'Jede Karte bekommt eine Erklärung');
       }
       assert.equal(z.runde, d.einwaende.length);

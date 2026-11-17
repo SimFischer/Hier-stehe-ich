@@ -3,7 +3,8 @@
 export const game = {
   titel: 'Hier stehe ich',
   untertitel: 'Ein Lehrling. Sieben Druckplatten. Ein Mönch, über den alle reden.',
-  start: 'druckerei', startBild: 'bg-druckerei',
+  start: 'druckerei', startBild: 'bg-saal', startFigur: 'fig-luther-worms',
+  startModus: { allein: ['fig-junge'], zuZweit: ['fig-junge', 'fig-kind'] },
   stationen: [
     { id: 'p', nr: 0, name: 'Die Druckerei', ort: 'Wittenberg', zeit: 'Herbst 1522', szene: 'druckerei', minuten: 2, offen: [],
       fertigWenn: { flag: ['g:meister', 'h:druckerei.setzkasten'] },

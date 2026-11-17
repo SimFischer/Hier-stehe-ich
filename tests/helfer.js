@@ -47,7 +47,7 @@ export function spieleDruck(d, typ, rnd) {
 }
 
 export function spieleVerhoer(d, beutel, typ, rnd) {
-  const gute = d.einwaende.map((e) => Object.keys(e.gut)[0]);
+  const gute = d.einwaende.map((e) => verhoer.passend(e)[0]);
   const klugDeck = kenntEs(typ, rnd);
   let hand = klugDeck ? gute.filter((k) => beutel.includes(k)) : [];
   const rest = beutel.filter((k) => !hand.includes(k)).sort(() => rnd() - 0.5);
@@ -55,7 +55,7 @@ export function spieleVerhoer(d, beutel, typ, rnd) {
   let z = verhoer.start(d, hand);
   while (!z.ende) {
     const e = d.einwaende[z.runde];
-    const beste = z.hand.find((k) => k in e.gut) || z.hand.find((k) => k in (e.halb || {}));
+    const beste = z.hand.find((k) => verhoer.bewerte(e, k) === 'gut') || z.hand.find((k) => verhoer.bewerte(e, k) === 'halb');
     z = verhoer.zug(z, d, { karte: kenntEs(typ, rnd) && beste ? beste : aus(rnd, z.hand) });
   }
   return { z, stufe: verhoer.stufe(z, d) };

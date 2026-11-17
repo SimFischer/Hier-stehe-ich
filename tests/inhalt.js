@@ -32,7 +32,7 @@ export function texte() {
 
 // Sekunden je Rätselschritt: Bedienzeit zusätzlich zum Lesen.
 const BEDIENZEIT = {
-  zuordnen: (s) => 7 * (s.items?.length || 5), waage: () => 35, standbild: (s) => 40 * s.strophen.length, markt: () => 90, druck: () => 150,
+  zuordnen: (s) => 7 * (s.items?.length || 5), waage: () => 50, standbild: (s) => 40 * s.strophen.length, markt: () => 90, druck: () => 150,
   auswahl: (s) => 12 * s.anzahl, verhoer: () => 60, wahl: () => 15, text: () => 0, gespraech: () => 0, uebersetzung: (s) => 35 * s.verse.length, flugschrift: () => 100
 };
 // Welcher Teil eines Spielsystems in einem Durchgang gelesen wird.

@@ -30,18 +30,17 @@ export const bonus = {
     schritte: [
       { art: 'presse', titel: 'Die Druckerpresse', sekunden: 45,
         bilder: ['bonus-presse-teile-1', 'bonus-presse-teile-2', 'bonus-presse-teile-3', 'bonus-presse-teile-4'],
-        anweisung: 'Ein Flugblatt braucht vier Handgriffe, immer in derselben Reihenfolge. Wie viele Blätter schaffst du in 45 Sekunden?',
-        handgriffe: [
-          { id: 'farbe', label: 'Einfärben' }, { id: 'bogen', label: 'Bogen einlegen' },
-          { id: 'druck', label: 'Pressen' }, { id: 'ab', label: 'Abnehmen' }
-        ],
-        start: 'Los!', fehldruck: 'Fehldruck! Der Bogen ist verdorben. Fang wieder beim Einfärben an.',
-        zaehler: 'Gedruckte Blätter: {n}', zeit: 'Noch {n} Sekunden',
-        ende: 'Die Zeit ist um. Du hast {n} Blätter gedruckt. Mit der Feder hätte ein Schreiber in dieser Zeit kaum eine Zeile geschafft. Darum war die Druckerpresse so wichtig.',
+        anweisung: 'Ein Flugblatt braucht vier Handgriffe: einfärben, Bogen einlegen, pressen, abnehmen. Drücke immer dann, wenn der Zeiger im grünen Feld steht. Wie viele Blätter schaffst du in 45 Sekunden?',
+        schritte: ['Einfärben', 'Bogen einlegen', 'Pressen', 'Abnehmen'],
+        // Zeiger: Durchläufe pro Sekunde; Zone: Breite in Prozent. Beides wird mit jedem Blatt schwieriger.
+        takt: { start: 0.55, plus: 0.05, max: 1.3 }, zone: { start: 30, minus: 2, min: 12 }, strafe: 2,
+        start: 'Los!', knopf: 'Drücken!', fehldruck: 'Daneben! Der Bogen ist verdorben. Das kostet 2 Sekunden.',
+        zaehler: 'Gedruckte Blätter: {n}', zeit: 'Noch {n} Sekunden', bestwert: 'Dein Bestwert: {n}', jetzt: 'Jetzt: {schritt}',
+        ende: 'Die Zeit ist um. Du hast {n} Blätter gedruckt. Ein Schreiber mit der Feder hätte in dieser Zeit kaum eine Zeile geschafft. Darum war die Druckerpresse so wichtig.',
         hilfen: [
-          'Die Reihenfolge ist immer gleich. Lies die Knöpfe von links nach rechts.',
-          'Erst kommt Farbe auf die Lettern, dann das Papier. Zum Schluss nimmst du das Blatt ab.',
-          'Einfärben, Bogen einlegen, Pressen, Abnehmen. Und wieder von vorn.'
+          'Warte, bis der Zeiger im grünen Feld ist. Dann tippe auf „Drücken!“ oder drücke die Leertaste.',
+          'Nicht zu früh tippen. Lieber einmal abwarten, bis der Zeiger zurückkommt.',
+          'Jeder Treffer ist ein Handgriff. Vier Treffer ergeben ein Blatt. Ein Fehler kostet zwei Sekunden.'
         ] }
     ]
   },
@@ -55,19 +54,29 @@ export const bonus = {
           { text: 'Im Thüringer Wald halten Reiter seinen Wagen an. Es sieht aus wie ein Überfall. In Wahrheit schickt sie sein Kurfürst, Friedrich der Weise. Sie sollen Luther heimlich in Sicherheit bringen.' },
           { text: 'Du führst die Reiter. Niemand darf euch sehen.' }
         ] },
-      { art: 'weg', titel: 'Durch den Wald', maxZuege: 16,
-        anweisung: 'Tippe ein Nachbarfeld an, um weiterzureiten. Meide die Dörfer und erreiche die Burg, bevor es hell wird.',
-        // S Start, Z Wartburg, W dichter Wald (kein Durchkommen), D Dorf (dort wird man gesehen), . Weg
-        karte: ['S..W....', '.W.D.W..', '.W...WD.', '..DW....', 'W....W.Z'],
-        legende: { S: 'Überfall', Z: 'Wartburg', W: 'Dickicht', D: 'Dorf', R: 'Reiter' },
-        zuege: 'Schritte: {n} von {von}',
-        gesehen: 'Hunde bellen, ein Fenster geht auf. Man hat euch gesehen. Zurück und noch einmal.',
-        zuSpaet: 'Der Morgen graut, und ihr seid noch unterwegs. Versucht es noch einmal.',
-        ende: 'Geschafft. Die Zugbrücke geht hoch. Niemand weiß, wo Luther ist.',
+      { art: 'fahrt', titel: 'Durch den Wald',
+        anweisung: 'Lenke den Wagen mit Luther zur Wartburg. Die Spitzel dürfen euch nicht sehen: Bleib aus ihrem Blickfeld. Steuern mit den Pfeiltasten oder: Finger auf das Bild halten, der Wagen fährt dorthin.',
+        // Welt 1600 × 1200. Wachen laufen zwischen Wegpunkten hin und her oder stehen und schwenken den Blick.
+        welt: { w: 1600, h: 1200, bild: 'bonus-wald' }, wagen: 'bonus-wagen', spitzel: 'bonus-reiter', burg: 'stadt-knoten',
+        start: { x: 110, y: 600 }, ziel: { x: 1500, y: 560, r: 70 }, tempo: 170,
+        rast: [{ x: 110, y: 600 }, { x: 560, y: 300 }, { x: 1020, y: 860 }, { x: 1350, y: 640 }],
+        sicht: { weite: 230, winkel: 32 },
+        wachen: [
+          { weg: [[330, 140], [330, 1060]], tempo: 120 },
+          { weg: [[760, 1080], [760, 160]], tempo: 135 },
+          { weg: [[560, 700], [980, 520], [560, 520]], tempo: 110 },
+          { weg: [[1210, 120], [1210, 1080]], tempo: 150 },
+          { posten: [1500, 920], von: 180, bis: 250, schwenk: 0.7 },
+          { posten: [1000, 120], von: 60, bis: 150, schwenk: 0.6 }
+        ],
+        zeit: 'Zeit: {n} s', erwischt: 'Gesehen: {n}', bestwert: 'Bestzeit: {n} s', startKnopf: 'Los!',
+        gesehen: 'Ein Spitzel hat euch gesehen! Zurück zum letzten Rastplatz.',
+        rastErreicht: 'Rastplatz erreicht. Wer jetzt gesehen wird, beginnt hier.',
+        ende: 'Geschafft! Die Zugbrücke geht hoch. Niemand weiß, wo Luther ist.',
         hilfen: [
-          'Reite nicht geradeaus. Zwischen Dickicht und Dörfern gibt es einen ruhigen Weg.',
-          'Reite erst nach rechts, dann zwei Felder nach unten, dann weiter nach rechts.',
-          'Zweimal rechts, zweimal runter, zweimal rechts, einmal runter, zweimal rechts, einmal runter, einmal rechts.'
+          'Die roten Kegel zeigen, wohin ein Spitzel schaut. Warte, bis er sich wegdreht oder vorbeigeritten ist.',
+          'Fahre hinter einem Spitzel her, dann sieht er dich nicht. Die gelben Kreise sind Rastplätze.',
+          'Fahre von Rastplatz zu Rastplatz: erst nach oben, dann nach unten rechts, dann nach rechts. Warte jeweils, bis der nächste Spitzel vorbei ist.'
         ] },
       { art: 'text', titel: 'Junker Jörg',
         absaetze: [
@@ -79,7 +88,23 @@ export const bonus = {
     id: 'lutherrose', titel: 'Die Lutherrose', nach: 's7', minuten: 3,
     kurz: 'Deute Luthers Wappen.',
     schritte: [
-      { art: 'zuordnen', titel: 'Die Lutherrose', layout: 'liste', einzeln: true,
+      { art: 'rose', titel: 'Die Rose zusammensetzen',
+        anweisung: 'Setze Luthers Wappen zusammen: von außen nach innen. Tippe das Teil an, das als Nächstes kommt.',
+        schichten: [
+          { id: 'ring', bild: 'rose-5', label: 'Goldener Ring', groesse: 100 },
+          { id: 'blau', bild: 'rose-4', label: 'Blaues Feld', groesse: 88 },
+          { id: 'rose', bild: 'rose-3', label: 'Weiße Rose', groesse: 72 },
+          { id: 'herz', bild: 'rose-2', label: 'Rotes Herz', groesse: 46 },
+          { id: 'kreuz', bild: 'rose-1', label: 'Schwarzes Kreuz', groesse: 26 }
+        ],
+        falsch: 'Das liegt weiter innen. Was umschließt noch alles andere?',
+        ende: 'Fertig. So sah Luthers Siegel aus.',
+        hilfen: [
+          'Ganz außen liegt das, was alles umschließt.',
+          'Erst der Ring, dann das blaue Feld. In der Mitte liegt das Kreuz.',
+          'Ring, blaues Feld, weiße Rose, rotes Herz, schwarzes Kreuz.'
+        ] },
+      { art: 'zuordnen', titel: 'Die Lutherrose', layout: 'liste', einzeln: true, stapel: true,
         anweisung: 'Die Lutherrose ist Luthers Wappen. Im Jahr 1530 hat er selbst erklärt, was die Teile bedeuten. Ordne zu.',
         falsch: 'Das gehört zu einem anderen Teil der Rose.',
         ziele: [

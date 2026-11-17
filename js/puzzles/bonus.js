@@ -1,7 +1,7 @@
-// Schrittarten der Bonusspiele: Silbenrätsel, Druckerpresse, Weg durch den Wald, Nachdenken.
+// Schrittarten der Bonusspiele: Silbenrätsel, Druckerpresse, Fahrt durch den Wald, Lutherrose, Nachdenken.
 // Wie überall: oben die Regeln (in Node testbar), unten die Anzeige.
 import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
-import { bildHtml } from '../engine/bilder.js';
+import { bildHtml, bildUrl } from '../engine/bilder.js';
 
 // ---------- Silbenrätsel ----------
 export const silbenRules = {
@@ -41,97 +41,238 @@ export function silben(el, schritt, ctx, fertig) {
   zeichne();
 }
 
-// ---------- Druckerpresse ----------
+// ---------- Gemeinsam: Bestwerte auf diesem Gerät ----------
+function bestwert(id, wert, kleinerBesser) {
+  const schluessel = `hier-stehe-ich.best.${id}`;
+  let alt = null;
+  try { alt = JSON.parse(localStorage.getItem(schluessel)); } catch { /* privat: kein Bestwert */ }
+  if (wert == null) return alt;
+  const besser = alt == null || (kleinerBesser ? wert < alt : wert > alt);
+  if (besser) try { localStorage.setItem(schluessel, JSON.stringify(wert)); } catch { /* egal */ }
+  return besser ? wert : alt;
+}
+const ladeBild = (name) => { const url = bildUrl(name); if (!url) return null; const i = new Image(); i.src = url; return i; };
+
+// ---------- Druckerpresse: Taktspiel ----------
 export const presseRules = {
-  start: () => ({ i: 0, blaetter: 0, fehler: 0, letzte: null }),
-  zug(z, s, id) {
-    if (id !== s.handgriffe[z.i].id) return { ...z, i: 0, fehler: z.fehler + 1, letzte: 'falsch' };
-    const i = z.i + 1;
-    return i === s.handgriffe.length ? { ...z, i: 0, blaetter: z.blaetter + 1, letzte: 'blatt' } : { ...z, i, letzte: 'gut' };
+  /** Liegt der Zeiger (0–1) in der grünen Zone? */
+  treffer: (zeiger, mitte, breite) => Math.abs(zeiger - mitte) <= breite / 200,
+  takt: (s, blaetter) => Math.min(s.takt.max, s.takt.start + s.takt.plus * blaetter),
+  zone: (s, blaetter) => Math.max(s.zone.min, s.zone.start - s.zone.minus * blaetter),
+  /** Zeiger läuft hin und her: Phase 0–1 vorwärts, 1–2 zurück. */
+  zeiger: (phase) => { const p = phase % 2; return p <= 1 ? p : 2 - p; },
+  start: () => ({ schritt: 0, blaetter: 0, fehler: 0 }),
+  druecke(z, s, getroffen) {
+    if (!getroffen) return { ...z, schritt: 0, fehler: z.fehler + 1, letzte: 'daneben' };
+    const schritt = z.schritt + 1;
+    return schritt >= s.schritte.length ? { ...z, schritt: 0, blaetter: z.blaetter + 1, letzte: 'blatt' } : { ...z, schritt, letzte: 'treffer' };
   }
 };
 
 export function presse(el, schritt, ctx, fertig) {
+  const t = ctx.t;
   let z = presseRules.start();
-  let rest = schritt.sekunden;
-  let uhr = null;
-  const zeichne = () => {
-    const laeuft = uhr !== null && rest > 0;
-    const vorbei = rest <= 0;
-    setzeInhalt(el,
-      h('p', { class: 'anweisung' }, schritt.anweisung),
-      h('div', { class: 'zaehler' }, h('span', {}, fuelle(schritt.zeit, { n: Math.max(0, rest) })), h('strong', {}, fuelle(schritt.zaehler, { n: z.blaetter }))),
-      schritt.bilder ? h('div', { class: 'presse-bild', 'aria-hidden': 'true', html: bildHtml(schritt.bilder[z.i]) }) : null,
-      h('div', { class: 'presse-stapel', 'aria-hidden': 'true' }, Array.from({ length: Math.min(z.blaetter, 30) }, () => h('span', {}))),
-      uhr === null ? h('div', { class: 'reihe mitte' }, knopf(schritt.start, starte, 'haupt gross')) : null,
-      h('div', { class: 'presse-knoepfe' }, schritt.handgriffe.map((g, i) => h('button', { type: 'button', class: `knopf gross${laeuft && i === z.i ? ' dran' : ''}`,
-        disabled: !laeuft, onclick: () => { z = presseRules.zug(z, schritt, g.id); zeichne(); } }, g.label))),
-      h('div', { class: 'reihe fuss' },
-        h('p', { class: `rueck${z.letzte === 'falsch' && !vorbei ? ' offen' : ''}`, role: 'status' }, vorbei ? fuelle(schritt.ende, { n: z.blaetter }) : z.letzte === 'falsch' ? schritt.fehldruck : ''),
-        vorbei ? knopf(ctx.t.weiter, () => fertig({}), 'haupt') : null));
+  let rest = schritt.sekunden, phase = 0, mitte = 0.5, laeuft = false, vorbei = false, letzt = 0, raf = 0;
+  const bild = h('div', { class: 'presse-bild', 'aria-hidden': 'true' });
+  const zone = h('span', { class: 'p-zone' });
+  const zeigerEl = h('span', { class: 'p-zeiger' });
+  const leiste = h('div', { class: 'p-leiste', 'aria-hidden': 'true' }, zone, zeigerEl);
+  const info = h('div', { class: 'zaehler' });
+  const meldung = h('p', { class: 'rueck', role: 'status' });
+  const stapel = h('div', { class: 'presse-stapel', 'aria-hidden': 'true' });
+  const druck = knopf(schritt.knopf, () => tippe(), 'haupt gross p-knopf', { disabled: true });
+  const startKnopf = knopf(schritt.start, () => los(), 'haupt gross');
+  const unten = h('div', { class: 'reihe fuss' }, meldung);
+  const zeigeInfo = () => {
+    setzeInhalt(info, h('span', {}, fuelle(schritt.zeit, { n: Math.max(0, Math.ceil(rest)) })), h('span', {}, fuelle(schritt.jetzt, { schritt: schritt.schritte[z.schritt] })),
+      h('strong', {}, fuelle(schritt.zaehler, { n: z.blaetter })));
+    bild.innerHTML = bildHtml(schritt.bilder[z.schritt]);
+    const breite = presseRules.zone(schritt, z.blaetter);
+    zone.style.left = `${(mitte * 100) - breite / 2}%`; zone.style.width = `${breite}%`;
   };
-  function starte() {
-    uhr = setInterval(() => {
-      rest -= 1;
-      // Die Uhr hört auf, wenn die Zeit um ist oder das Blatt geschlossen wurde.
-      if (rest <= 0 || !el.isConnected) { clearInterval(uhr); if (el.isConnected) zeichne(); return; }
-      const anzeige = el.querySelector('.zaehler span');
-      if (anzeige) anzeige.textContent = fuelle(schritt.zeit, { n: rest });
-    }, 1000);
-    zeichne();
+  function tippe() {
+    if (!laeuft) return;
+    const breite = presseRules.zone(schritt, z.blaetter);
+    const getroffen = presseRules.treffer(presseRules.zeiger(phase), mitte, breite);
+    const vorher = z.blaetter;
+    z = presseRules.druecke(z, schritt, getroffen);
+    if (!getroffen) { rest -= schritt.strafe; meldung.textContent = schritt.fehldruck; meldung.className = 'rueck offen'; leiste.classList.remove('wackeln'); void leiste.offsetWidth; leiste.classList.add('wackeln'); }
+    else { meldung.textContent = ''; meldung.className = 'rueck'; mitte = 0.2 + Math.random() * 0.6; }
+    if (z.blaetter > vorher) stapel.append(h('span', { class: 'neu' }));
+    zeigeInfo();
   }
-  zeichne();
+  const taste = (e) => { if (e.code === 'Space' && laeuft) { e.preventDefault(); tippe(); } };
+  function schleife(ms) {
+    if (!el.isConnected) { stop(); return; }
+    const dt = letzt ? (ms - letzt) / 1000 : 0; letzt = ms;
+    if (laeuft) {
+      phase += dt * presseRules.takt(schritt, z.blaetter) * 2;
+      rest -= dt;
+      zeigerEl.style.left = `${presseRules.zeiger(phase) * 100}%`;
+      if (Math.ceil(rest) !== Math.ceil(rest + dt)) zeigeInfo();
+      if (rest <= 0) return ende();
+    }
+    raf = requestAnimationFrame(schleife);
+  }
+  function stop() { laeuft = false; cancelAnimationFrame(raf); document.removeEventListener('keydown', taste); }
+  function los() { startKnopf.remove(); druck.disabled = false; druck.focus(); laeuft = true; letzt = 0; document.addEventListener('keydown', taste); raf = requestAnimationFrame(schleife); }
+  function ende() {
+    stop(); vorbei = true; rest = 0; druck.disabled = true; zeigeInfo();
+    const best = bestwert('presse', z.blaetter, false);
+    meldung.className = 'rueck'; setzeInhalt(meldung, fuelle(schritt.ende, { n: z.blaetter }), ' ', h('strong', {}, fuelle(schritt.bestwert, { n: best })));
+    unten.append(knopf(t.nochmal, () => presse(el, schritt, ctx, fertig), 'still'), knopf(t.weiter, () => fertig({}), 'haupt'));
+  }
+  const best = bestwert('presse');
+  zeigeInfo();
+  setzeInhalt(el, h('p', { class: 'anweisung' }, schritt.anweisung), info,
+    h('div', { class: 'presse-feld' }, bild, h('div', { class: 'presse-steuer' }, leiste, h('div', { class: 'reihe mitte' }, startKnopf, druck),
+      best != null ? h('p', { class: 'klein' }, fuelle(schritt.bestwert, { n: best })) : null, stapel)), unten);
+  if (vorbei) ende();
 }
 
-// ---------- Weg durch den Wald ----------
-const feld = (s, x, y) => (s.karte[y] && s.karte[y][x]) || 'W';
-const finde = (s, zeichen) => { for (let y = 0; y < s.karte.length; y++) { const x = s.karte[y].indexOf(zeichen); if (x >= 0) return { x, y }; } return null; };
-
-export const wegRules = {
-  feld, finde,
-  start: (s) => ({ ...finde(s, 'S'), zuege: 0, ende: false, letzte: null }),
-  kann: (z, s, x, y) => !z.ende && Math.abs(x - z.x) + Math.abs(y - z.y) === 1 && feld(s, x, y) !== 'W',
-  zug(z, s, x, y) {
-    if (!wegRules.kann(z, s, x, y)) return z;
-    const zuege = z.zuege + 1;
-    const f = feld(s, x, y);
-    if (f === 'D') return { ...wegRules.start(s), letzte: 'gesehen' };
-    if (f === 'Z') return { x, y, zuege, ende: true, letzte: 'ziel' };
-    if (zuege >= s.maxZuege) return { ...wegRules.start(s), letzte: 'zuSpaet' };
-    return { x, y, zuege, ende: false, letzte: null };
-  },
-  /** Kürzester Weg in Schritten (Breitensuche), oder -1. Für Tests. */
-  kuerzester(s) {
-    const start = finde(s, 'S'); const offen = [[start.x, start.y, 0]]; const war = new Set([`${start.x},${start.y}`]);
-    while (offen.length) {
-      const [x, y, n] = offen.shift();
-      if (feld(s, x, y) === 'Z') return n;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const f = feld(s, x + dx, y + dy); const k = `${x + dx},${y + dy}`;
-        if (f === 'W' || f === 'D' || war.has(k)) continue;
-        war.add(k); offen.push([x + dx, y + dy, n + 1]);
-      }
+// ---------- Entführung: Steuerspiel von oben ----------
+const RAD = Math.PI / 180;
+export const fahrtRules = {
+  /** Lage und Blickrichtung einer Wache zur Zeit t (Sekunden). */
+  wachePos(w, t) {
+    if (w.posten) {
+      const mitte = (w.von + w.bis) / 2, halb = (w.bis - w.von) / 2;
+      return { x: w.posten[0], y: w.posten[1], a: (mitte + halb * Math.sin(t * w.schwenk)) * RAD };
     }
-    return -1;
-  }
+    const p = w.weg; const laengen = []; let gesamt = 0;
+    for (let i = 0; i < p.length - 1; i++) { const l = Math.hypot(p[i + 1][0] - p[i][0], p[i + 1][1] - p[i][1]); laengen.push(l); gesamt += l; }
+    let d = (t * w.tempo) % (2 * gesamt); const zurueck = d > gesamt; if (zurueck) d = 2 * gesamt - d;
+    for (let i = 0; i < laengen.length; i++) {
+      if (d <= laengen[i] || i === laengen.length - 1) {
+        const f = laengen[i] ? Math.min(1, d / laengen[i]) : 0;
+        const [ax, ay] = p[i], [bx, by] = p[i + 1];
+        const a = Math.atan2(by - ay, bx - ax) + (zurueck ? Math.PI : 0);
+        return { x: ax + (bx - ax) * f, y: ay + (by - ay) * f, a };
+      }
+      d -= laengen[i];
+    }
+    return { x: p[0][0], y: p[0][1], a: 0 };
+  },
+  /** Steht der Wagen im Blickkegel der Wache? Ganz nah wird man immer gesehen. */
+  gesehen(p, w, sicht) {
+    const dx = p.x - w.x, dy = p.y - w.y, d = Math.hypot(dx, dy);
+    if (d > sicht.weite) return false;
+    if (d < 45) return true;
+    let diff = Math.atan2(dy, dx) - w.a;
+    while (diff > Math.PI) diff -= 2 * Math.PI;
+    while (diff < -Math.PI) diff += 2 * Math.PI;
+    return Math.abs(diff) <= sicht.winkel * RAD;
+  },
+  bewege(p, dx, dy, weite, welt) {
+    const l = Math.hypot(dx, dy); if (!l) return p;
+    const s = Math.min(weite, l);
+    return { x: Math.max(30, Math.min(welt.w - 30, p.x + (dx / l) * s)), y: Math.max(30, Math.min(welt.h - 30, p.y + (dy / l) * s)), a: Math.atan2(dy, dx) };
+  },
+  amZiel: (p, ziel) => Math.hypot(p.x - ziel.x, p.y - ziel.y) <= ziel.r
 };
 
-export function weg(el, schritt, ctx, fertig) {
-  let z = wegRules.start(schritt);
+export function fahrt(el, schritt, ctx, fertig) {
+  const t = ctx.t, W = schritt.welt;
+  const bilder = { wald: ladeBild(W.bild), wagen: ladeBild(schritt.wagen), spitzel: ladeBild(schritt.spitzel), burg: ladeBild(schritt.burg) };
+  const leinwand = h('canvas', { width: W.w, height: W.h, class: 'fahrt-leinwand', 'aria-label': schritt.anweisung });
+  const g = leinwand.getContext('2d');
+  const info = h('div', { class: 'zaehler' });
+  const meldung = h('p', { class: 'rueck', role: 'status' });
+  const unten = h('div', { class: 'reihe fuss' }, meldung);
+  const startKnopf = knopf(schritt.startKnopf, () => los(), 'haupt gross fahrt-start');
+  let p = { ...schritt.start, a: 0 }, rast = 0, zeit = 0, erwischt = 0, laeuft = false, fertigGefahren = false, letzt = 0, raf = 0, blitz = 0;
+  const tasten = new Set(); let ziel = null;
+  const zeigeInfo = () => setzeInhalt(info, h('span', {}, fuelle(schritt.zeit, { n: Math.floor(zeit) })), h('span', {}, fuelle(schritt.erwischt, { n: erwischt })),
+    bestwert('fahrt') != null ? h('strong', {}, fuelle(schritt.bestwert, { n: bestwert('fahrt') })) : null);
+  const weltPunkt = (e) => { const r = leinwand.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * W.w, y: ((e.clientY - r.top) / r.height) * W.h }; };
+  leinwand.addEventListener('pointerdown', (e) => { if (!laeuft) return; leinwand.setPointerCapture(e.pointerId); ziel = weltPunkt(e); });
+  leinwand.addEventListener('pointermove', (e) => { if (ziel) ziel = weltPunkt(e); });
+  const loslassen = () => { ziel = null; };
+  leinwand.addEventListener('pointerup', loslassen); leinwand.addEventListener('pointercancel', loslassen);
+  const PFEILE = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1], KeyA: [-1, 0], KeyD: [1, 0], KeyW: [0, -1], KeyS: [0, 1] };
+  const runter = (e) => { if (PFEILE[e.code] && laeuft) { e.preventDefault(); tasten.add(e.code); } };
+  const hoch = (e) => tasten.delete(e.code);
+
+  function bildMittig(img, x, y, b, winkel = 0) {
+    if (!img?.complete || !img.naturalWidth) return false;
+    const hgt = (b * img.naturalHeight) / img.naturalWidth;
+    g.save(); g.translate(x, y); g.rotate(winkel); g.drawImage(img, -b / 2, -hgt / 2, b, hgt); g.restore(); return true;
+  }
+  function male() {
+    if (bilder.wald?.complete && bilder.wald.naturalWidth) g.drawImage(bilder.wald, 0, 0, W.w, W.h); else { g.fillStyle = '#3e5b45'; g.fillRect(0, 0, W.w, W.h); }
+    schritt.rast.forEach((r, i) => { g.beginPath(); g.arc(r.x, r.y, 46, 0, 2 * Math.PI); g.fillStyle = i <= rast ? 'rgba(240,217,166,0.55)' : 'rgba(240,217,166,0.25)'; g.fill(); g.lineWidth = 5; g.strokeStyle = '#c8963e'; g.stroke(); });
+    if (!bildMittig(bilder.burg, schritt.ziel.x, schritt.ziel.y, 170)) { g.fillStyle = '#3f5870'; g.fillRect(schritt.ziel.x - 50, schritt.ziel.y - 50, 100, 100); }
+    for (const w of schritt.wachen) {
+      const wp = fahrtRules.wachePos(w, zeit);
+      g.beginPath(); g.moveTo(wp.x, wp.y); g.arc(wp.x, wp.y, schritt.sicht.weite, wp.a - schritt.sicht.winkel * RAD, wp.a + schritt.sicht.winkel * RAD); g.closePath();
+      g.fillStyle = 'rgba(166,67,46,0.33)'; g.fill(); g.lineWidth = 3; g.strokeStyle = 'rgba(127,47,31,0.7)'; g.stroke();
+      if (!bildMittig(bilder.spitzel, wp.x, wp.y, 95, wp.a + Math.PI / 2)) { g.beginPath(); g.arc(wp.x, wp.y, 26, 0, 2 * Math.PI); g.fillStyle = '#7f2f1f'; g.fill(); }
+    }
+    if (!bildMittig(bilder.wagen, p.x, p.y, 110, p.a + Math.PI / 2)) { g.fillStyle = '#c8963e'; g.fillRect(p.x - 30, p.y - 45, 60, 90); }
+    if (blitz > 0) { g.fillStyle = `rgba(166,67,46,${Math.min(0.5, blitz)})`; g.fillRect(0, 0, W.w, W.h); }
+  }
+  function schleife(ms) {
+    if (!el.isConnected) { stop(); return; }
+    const dt = letzt ? Math.min(0.05, (ms - letzt) / 1000) : 0; letzt = ms;
+    if (laeuft) {
+      zeit += dt; blitz = Math.max(0, blitz - dt);
+      let dx = 0, dy = 0;
+      for (const k of tasten) { dx += PFEILE[k][0]; dy += PFEILE[k][1]; }
+      if (!dx && !dy && ziel) { dx = ziel.x - p.x; dy = ziel.y - p.y; if (Math.hypot(dx, dy) < 8) dx = dy = 0; }
+      if (dx || dy) p = fahrtRules.bewege(p, dx, dy, schritt.tempo * dt, W);
+      schritt.rast.forEach((r, i) => { if (i > rast && Math.hypot(p.x - r.x, p.y - r.y) < 46) { rast = i; meldung.textContent = schritt.rastErreicht; meldung.className = 'rueck'; } });
+      if (schritt.wachen.some((w) => fahrtRules.gesehen(p, fahrtRules.wachePos(w, zeit), schritt.sicht))) {
+        erwischt += 1; blitz = 0.6; p = { ...schritt.rast[rast], a: 0 }; meldung.textContent = schritt.gesehen; meldung.className = 'rueck offen';
+      }
+      if (fahrtRules.amZiel(p, schritt.ziel)) { male(); return ende(); }
+      if (Math.floor(zeit) !== Math.floor(zeit - dt)) zeigeInfo();
+    }
+    male();
+    raf = requestAnimationFrame(schleife);
+  }
+  function stop() { laeuft = false; cancelAnimationFrame(raf); document.removeEventListener('keydown', runter); document.removeEventListener('keyup', hoch); }
+  function los() { startKnopf.remove(); laeuft = true; letzt = 0; leinwand.focus(); }
+  function ende() {
+    stop(); fertigGefahren = true;
+    const best = bestwert('fahrt', Math.floor(zeit), true);
+    meldung.className = 'rueck'; setzeInhalt(meldung, schritt.ende, ' ', h('strong', {}, fuelle(schritt.bestwert, { n: best })));
+    unten.append(knopf(t.nochmal, () => fahrt(el, schritt, ctx, fertig), 'still'), knopf(t.weiter, () => fertig({}), 'haupt'));
+  }
+  document.addEventListener('keydown', runter); document.addEventListener('keyup', hoch);
+  zeigeInfo();
+  setzeInhalt(el, h('p', { class: 'anweisung' }, schritt.anweisung), info, h('div', { class: 'fahrt-rahmen' }, leinwand, startKnopf), unten);
+  leinwand.tabIndex = 0;
+  raf = requestAnimationFrame(schleife);
+  void fertigGefahren;
+}
+
+// ---------- Lutherrose: Schichten zusammensetzen ----------
+export const roseRules = {
+  start: () => ({ gelegt: [], fehler: 0, letzte: null }),
+  zug(z, s, id) {
+    if (roseRules.fertig(z, s)) return z;
+    const naechste = s.schichten[z.gelegt.length];
+    return id === naechste.id ? { ...z, gelegt: [...z.gelegt, id], letzte: 'gut' } : { ...z, fehler: z.fehler + 1, letzte: 'falsch' };
+  },
+  fertig: (z, s) => z.gelegt.length === s.schichten.length
+};
+// Feste, gemischte Reihenfolge im Vorrat, damit die Lösung nicht einfach von links nach rechts geht.
+const MISCHUNG = [2, 4, 0, 3, 1];
+
+export function rose(el, schritt, ctx, fertig) {
+  const t = ctx.t;
+  let z = roseRules.start();
   const zeichne = () => {
-    const zellen = schritt.karte.flatMap((zeile, y) => [...zeile].map((f, x) => {
-      const hier = z.x === x && z.y === y;
-      const name = hier ? schritt.legende.R : schritt.legende[f] || '';
-      return h('button', { type: 'button', class: `zelle f-${f}${hier ? ' hier' : ''}`, disabled: !wegRules.kann(z, schritt, x, y), 'aria-label': name || `${x + 1}, ${y + 1}`,
-        onclick: () => { z = wegRules.zug(z, schritt, x, y); zeichne(); } }, hier || f !== '.' ? h('span', {}, name) : null);
-    }));
-    setzeInhalt(el,
-      h('p', { class: 'anweisung' }, schritt.anweisung),
-      h('div', { class: 'zaehler' }, h('span', {}, fuelle(schritt.zuege, { n: z.zuege, von: schritt.maxZuege }))),
-      h('div', { class: 'wald', style: `--spalten:${schritt.karte[0].length}` }, zellen),
+    const vorrat = MISCHUNG.map((i) => schritt.schichten[i]).filter((s) => s && !z.gelegt.includes(s.id));
+    const bild = h('div', { class: 'rose-bild', role: 'img', 'aria-label': z.gelegt.map((id) => schritt.schichten.find((s) => s.id === id).label).join(', ') },
+      z.gelegt.map((id) => { const s = schritt.schichten.find((x) => x.id === id); return h('span', { class: 'rose-schicht', style: `width:${s.groesse}%`, html: bildHtml(s.bild) }); }));
+    setzeInhalt(el, h('p', { class: 'anweisung' }, schritt.anweisung),
+      h('div', { class: 'rose-feld' }, bild,
+        h('div', { class: 'rose-vorrat' }, vorrat.map((s) => h('button', { type: 'button', class: 'teil mit-bild rose-teil', onclick: () => { z = roseRules.zug(z, schritt, s.id); zeichne(); } },
+          h('span', { class: 'zu-bild', 'aria-hidden': 'true', html: bildHtml(s.bild) }), h('span', {}, s.label))))),
       h('div', { class: 'reihe fuss' },
-        h('p', { class: `rueck${z.letzte && !z.ende ? ' offen' : ''}`, role: 'status' }, z.ende ? schritt.ende : z.letzte ? schritt[z.letzte] : ''),
-        z.ende ? knopf(ctx.t.weiter, () => fertig({}), 'haupt') : null));
+        h('p', { class: `rueck${z.letzte === 'falsch' ? ' offen' : ''}`, role: 'status' }, roseRules.fertig(z, schritt) ? schritt.ende : z.letzte === 'falsch' ? schritt.falsch : ''),
+        roseRules.fertig(z, schritt) ? knopf(t.weiter, () => fertig({}), 'haupt') : null));
   };
   zeichne();
 }

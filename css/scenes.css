@@ -263,3 +263,138 @@ textarea { font: inherit; padding: var(--ab-2) var(--ab-3); border: var(--rand);
 .art-auswahl .erinnerung { padding: 2px var(--ab-2); }
 .saal { flex-wrap: wrap; }
 @media (orientation: portrait), (max-width: 760px) { .saal .kopf:has(.figurbild) { height: clamp(60px, 8vh, 90px); } }
+
+/* ===== Überarbeitung 1: Figuren im Gespräch ===== */
+.hotspot:disabled { opacity: 1; cursor: default; }
+.hotspot.spricht .figurbild { filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 12px #f0d9a6); }
+.hotspot.spricht .schild { background: var(--rot); color: #fff; }
+.frage-blase { margin: 0; max-width: none; text-align: left; }
+.frage-blase .sprecher { display: block; font-size: var(--text-klein); color: var(--rot-dunkel); margin-bottom: var(--ab-1); }
+.frage-blase .frage { font-size: var(--text-gross); }
+/* Gewitter: alle paar Sekunden ein Blitz */
+#szene.gewitter #bild { animation: blitzfolge 6.5s infinite; }
+@keyframes blitzfolge { 0%, 84%, 100% { filter: none; } 86% { filter: brightness(3) contrast(0.7); } 88% { filter: brightness(1.1); } 90% { filter: brightness(2.4); } 94% { filter: none; } }
+
+/* ===== Überarbeitung 1: Zuordnen als Stapel ===== */
+.zu-teile.stapel { display: grid; align-content: start; gap: var(--ab-2); }
+.zu-teile.stapel .teil { display: grid; grid-template-columns: 1fr; justify-items: center; gap: var(--ab-2); padding: var(--ab-3); font-size: var(--text); font-weight: bold; text-align: center; background: #fff; box-shadow: var(--schatten); animation: reinflattern 0.35s ease-out; cursor: default; }
+.zu-teile.stapel .teil .zu-bild img { max-height: 46cqh; width: auto; max-width: 100%; margin: 0 auto; }
+.zu-teile.stapel .teil.mit-bild { grid-template-columns: 1fr; }
+@keyframes reinflattern { from { transform: translateY(-14px) rotate(-3deg); opacity: 0; } to { transform: none; opacity: 1; } }
+details.info { background: #fff; border: 2px solid var(--blau); border-radius: var(--rund); padding: var(--ab-1) var(--ab-3); }
+details.info summary { min-height: var(--tipp); display: flex; align-items: center; font-weight: bold; color: var(--blau); cursor: pointer; }
+details.info .lesetext { max-width: none; }
+
+/* ===== Überarbeitung 1: Waage ===== */
+.waage-feld { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--ab-4); align-items: center; flex: 1; min-height: 0; }
+.waage2 { position: relative; width: min(100%, calc(78cqh * 4 / 3)); aspect-ratio: 4 / 3; margin: 0 auto; }
+.waage2 > span img, .w-schale > span:first-child img { display: block; width: 100%; height: auto; }
+.w-staender { position: absolute; left: 11%; bottom: 0; width: 78%; }
+.w-balken { position: absolute; left: 10%; top: -5%; width: 80%; transform-origin: 50% 60%; transition: transform 0.6s cubic-bezier(0.3, 1.4, 0.5, 1); z-index: 2; }
+.w-schale { position: absolute; z-index: 3; transition: left 0.6s cubic-bezier(0.3, 1.4, 0.5, 1), top 0.6s cubic-bezier(0.3, 1.4, 0.5, 1); }
+.w-inhalt { position: absolute; left: 22%; right: 22%; bottom: 26%; display: flex; flex-wrap: wrap-reverse; justify-content: center; gap: 1px; }
+.w-stein, .w-werk { width: 26%; animation: fallen 0.45s ease-in; }
+.w-stein img, .w-werk img { width: 100%; height: auto; display: block; }
+@keyframes fallen { from { transform: translateY(-140%); opacity: 0; } to { transform: none; opacity: 1; } }
+.w-name { position: absolute; bottom: 0; font-size: var(--text-klein); font-weight: bold; background: var(--pergament-hell); padding: 0 var(--ab-2); border-radius: var(--rund); }
+.w-name.links { left: 2%; } .w-name.rechts { right: 2%; }
+.waage-seite { display: grid; gap: var(--ab-3); align-content: center; }
+.werk-knoepfe { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ab-2); }
+.werk-knoepfe .knopf { display: flex; align-items: center; gap: var(--ab-2); justify-content: flex-start; }
+.w-meldung { margin: 0; min-height: 3.2em; padding: var(--ab-2) var(--ab-3); background: #fff; border-radius: var(--rund); border-left: 6px solid var(--ocker); }
+.w-meldung.art-suende { border-left-color: var(--tinte); background: #efe4dc; animation: wackeln 0.4s; }
+.w-meldung.art-ende { border-left-color: var(--rot); font-weight: bold; }
+@media (orientation: portrait), (max-width: 760px) { .waage-feld { grid-template-columns: 1fr; } .waage2 { width: min(100%, calc(40cqh * 4 / 3)); } }
+
+/* ===== Überarbeitung 1: Marktplatz ===== */
+.markt-rahmen { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--ab-3); flex: 1; min-height: 0; }
+.markt-feld { container-type: size; min-height: 0; height: 100%; background: var(--ort, none) center 85% / cover; border-radius: var(--rund); }
+.markt-kasten { top: auto; right: auto; transform: translateX(-50%); height: 24%; width: auto; }
+.markt-kasten span { bottom: -10px; }
+.markt-figur { transform: translateX(-50%) scale(var(--mass)); transform-origin: 50% 100%; transition: left 0.9s ease-in-out, bottom 0.9s ease-in-out, transform 0.9s; }
+.markt-figur .figur:has(.figurbild) { height: 40cqh; }
+.markt-figur .schild { order: -1; }
+.markt-figur.st-gekauft .figurbild { filter: saturate(0.5) brightness(0.85); }
+.markt-figur.st-nachdenklich .figurbild { filter: drop-shadow(0 0 6px #dbe7d6); }
+.markt-statist { top: auto; right: auto; transform: translateX(-50%); transition: left 1.2s, opacity 1.2s; }
+.markt-statist:has(.figurbild) { height: 26cqh; }
+.markt-statist.weg { opacity: 0; left: 105% !important; }
+.markt-seite { display: grid; gap: var(--ab-2); align-content: start; overflow: auto; }
+.markt-seite p { margin: 0; }
+.markt-seite .sprechblase { margin: 0; font-size: var(--text); padding: var(--ab-3); }
+.markt-seite .sprechblase .sprecher { display: block; font-size: var(--text-klein); color: var(--rot-dunkel); }
+.markt-seite .sprechblase.gut { border-color: var(--gruen); background: var(--gruen-hell); }
+@media (orientation: portrait), (max-width: 760px) { .markt-rahmen { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1.2fr) auto; } }
+.markt-figur .figur:has(.figurbild) { height: 30cqh; }
+.markt-statist:has(.figurbild) { height: 17cqh; }
+.markt-kasten { height: 18%; z-index: 1; }
+.markt-figur .schild { font-size: 0.875rem; }
+
+/* ===== Kartenduell in Worms ===== */
+.blatt-koerper.art-verhoer { gap: var(--ab-2); }
+.duell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--ab-3); align-items: center; }
+.duell-gegner { display: grid; grid-template-columns: auto 1fr; gap: var(--ab-2); align-items: end; }
+.duell-sprecher { height: clamp(110px, 24cqh, 200px); }
+.duell-sprecher img { height: 100%; width: auto; display: block; }
+.duell-gegner .sprechblase { margin: 0; font-size: var(--text); padding: var(--ab-2) var(--ab-3); }
+.duell-gegner .sprechblase .sprecher { display: block; font-size: var(--text-klein); color: var(--rot-dunkel); }
+.duell-tisch { display: grid; grid-template-columns: minmax(0, 150px) auto minmax(0, 150px); justify-content: center; align-items: center; gap: var(--ab-3); padding: var(--ab-2); background: radial-gradient(ellipse at center, #6d5435, #4a3826); border: 3px double var(--tinte); border-radius: 14px; }
+.duell-platz { grid-column: 3; aspect-ratio: 5 / 7; display: grid; place-items: center; border: 3px dashed rgba(239, 227, 200, 0.6); border-radius: 12px; color: var(--pergament); font-weight: bold; }
+.duell-tisch .einwand { animation: reinflattern 0.4s ease-out; }
+.duell-tisch .gespielt { animation: ausspielen 0.45s ease-out; }
+@keyframes ausspielen { from { transform: translateY(80%) scale(0.8); opacity: 0.2; } to { transform: none; opacity: 1; } }
+.duell-vergleich { display: grid; justify-items: center; color: var(--pergament); font-weight: bold; gap: 2px; }
+.duell-vergleich .zahl { font-size: 2.2rem; line-height: 1; }
+.duell-vergleich strong { font-size: var(--text-klein); text-align: center; max-width: 9em; }
+.duell-tisch.w-gut { box-shadow: 0 0 0 4px var(--gruen); } .duell-tisch.w-gut .einwand { filter: grayscale(0.7) brightness(0.8); transform: rotate(-6deg); }
+.duell-tisch.w-sonst { box-shadow: 0 0 0 4px var(--rot); }
+.duell-unten { display: grid; gap: var(--ab-2); }
+.duell-unten p { margin: 0; }
+.duell-hand { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+@media (orientation: portrait), (max-width: 760px) { .duell { grid-template-columns: 1fr; } .duell-hand { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
+.karte.sammel.klein .k-bild { aspect-ratio: 16 / 10; }
+.art-auswahl .hand:has(> .karte.sammel.klein) { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); }
+.art-verhoer .saal .kopf:has(.figurbild) { height: clamp(52px, 11cqh, 96px); }
+.duell-hand .karte.sammel .k-bild { aspect-ratio: 2 / 1; }
+.duell-hand .karte.sammel { min-height: 0; }
+.duell-tisch .karte.sammel { width: 100%; }
+.duell-tisch .k-bild { aspect-ratio: 4 / 3; }
+.duell-tisch .k-text { display: none; }
+.duell-sprecher { height: clamp(100px, 20cqh, 170px); }
+.duell-hand .karte.sammel .k-bild { aspect-ratio: auto; height: clamp(54px, 12cqh, 110px); }
+.duell-tisch { padding: var(--ab-1) var(--ab-2); grid-template-columns: minmax(0, 130px) auto minmax(0, 130px); }
+.duell-tisch .k-bild { aspect-ratio: auto; height: clamp(60px, 14cqh, 120px); }
+
+/* ===== Minispiele ===== */
+.presse-feld { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--ab-4); align-items: center; flex: 1; min-height: 0; }
+.presse-feld .presse-bild img { height: clamp(140px, 48cqh, 340px); width: auto; display: block; margin: 0 auto; }
+.presse-steuer { display: grid; gap: var(--ab-3); }
+.p-leiste { position: relative; height: 54px; background: linear-gradient(#e8dcc0, #d8c69e); border: 3px solid var(--tinte); border-radius: 27px; overflow: hidden; }
+.p-zone { position: absolute; top: 0; bottom: 0; background: linear-gradient(#9fd09a, #5e9b59); border-left: 2px solid var(--gruen); border-right: 2px solid var(--gruen); transition: left 0.2s, width 0.2s; }
+.p-zeiger { position: absolute; top: -4px; bottom: -4px; width: 8px; margin-left: -4px; background: var(--rot); border: 2px solid var(--tinte); border-radius: 4px; }
+.p-leiste.wackeln { animation: wackeln 0.35s; }
+.p-knopf { min-width: 12rem; min-height: 64px; font-size: 1.4rem; }
+.presse-stapel span.neu { animation: fallen 0.4s ease-out; }
+.fahrt-rahmen { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; }
+.fahrt-leinwand { display: block; max-width: 100%; max-height: 100%; width: auto; height: 100%; aspect-ratio: 4 / 3; border: 3px double var(--tinte); border-radius: 8px; touch-action: none; background: #3e5b45; }
+.fahrt-start { position: absolute; font-size: 1.6rem; padding: var(--ab-3) var(--ab-6); }
+.rose-feld { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--ab-4); align-items: center; flex: 1; min-height: 0; }
+.rose-bild { position: relative; width: min(100%, 60cqh); aspect-ratio: 1; margin: 0 auto; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 18px, rgba(31, 26, 23, 0.06) 18px 20px); border: 3px dashed #b9ad97; }
+.rose-schicht { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); animation: einsetzen 0.35s ease-out; }
+.rose-schicht img { display: block; width: 100%; height: auto; }
+@keyframes einsetzen { from { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+.rose-vorrat { display: grid; gap: var(--ab-2); }
+.rose-teil { grid-template-columns: 56px 1fr !important; font-weight: bold; }
+@media (orientation: portrait), (max-width: 760px) { .presse-feld, .rose-feld { grid-template-columns: 1fr; } }
+.fahrt-rahmen { container-type: size; width: 100%; }
+.fahrt-leinwand { width: min(100cqw, calc(100cqh * 4 / 3)); height: auto; }
+.art-fahrt .anweisung { font-size: var(--text-klein); }
+
+.art-auswahl .karte.sammel.klein .k-bild { aspect-ratio: 2 / 1; }
+@media (orientation: portrait), (max-width: 760px) {
+  .duell-sprecher { display: none; }
+  .duell-hand .karte.sammel .k-bild { display: none; }
+  .duell-tisch .k-bild { height: clamp(50px, 8cqh, 90px); }
+  .rose-bild { width: min(100%, 36cqh); }
+}
+.art-auswahl .karte.sammel.klein .k-bild { aspect-ratio: auto; height: clamp(40px, 9cqh, 76px); }

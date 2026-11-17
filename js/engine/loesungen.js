@@ -18,11 +18,12 @@ export function loesung(schritt, { cards, systeme, figuren }) {
     case 'standbild': return schritt.strophen.map((st) => `${st.nr}: ${Object.entries(schritt.regler)
       .map(([k, r]) => `${r.label} ${st.passt[k].map((w) => r.werte.find((x) => x.id === w).label).join(' / ')}`).join('; ')}`);
     case 'markt': return system.figuren.map((f) => `${figuren[f.id].name}${PFEIL}${Object.keys(f.ja).map(karte).join(' / ')}`);
-    case 'verhoer': return system.einwaende.map((e) => `${e.text.split(/[.!?]/)[0]}${PFEIL}${Object.keys(e.gut).map(karte).join(' / ')}`);
+    case 'verhoer': return system.einwaende.map((e) => `${e.titel} (Stärke ${e.staerke})${PFEIL}${cards.filter((k) => (k.staerke || 0) + (k.gegen?.[e.art] || 0) > e.staerke).map((k) => k.titel).join(' / ')}`);
     case 'uebersetzung': return schritt.verse.map((v) => v.optionen.find((o) => o.richtig).text);
     case 'silben': return schritt.fragen.map((f) => `${f.frage}${PFEIL}${f.silben.join('')}`);
-    case 'presse': return [schritt.handgriffe.map((g) => g.label).join(PFEIL)];
-    case 'druck': case 'weg': return [schritt.hilfen[2]];
+    case 'presse': return [schritt.schritte.join(PFEIL)];
+    case 'rose': return [schritt.schichten.map((x) => x.label).join(PFEIL)];
+    case 'druck': case 'fahrt': return [schritt.hilfen[2]];
     case 'auswahl': return schritt.hilfen ? [schritt.hilfen[2]] : [];
     default: return [];
   }

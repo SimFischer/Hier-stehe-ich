@@ -43,7 +43,7 @@ export const scenes = [
     ]
   },
   {
-    id: 'stotternheim', name: 'Bei Stotternheim', zeit: '2. Juli 1505', bild: { typ: 'feld', datei: 'bg-stotternheim-1' }, weiter: 'kloster',
+    id: 'stotternheim', name: 'Bei Stotternheim', zeit: '2. Juli 1505', gewitter: true, bild: { typ: 'feld', datei: 'bg-stotternheim-1' }, weiter: 'kloster',
     film: [
       { text: '2. Juli 1505. Ein Student wandert nach Erfurt. Er heißt Martin Luder und ist 21 Jahre alt.' },
       { text: 'Bei dem Dorf Stotternheim zieht ein Gewitter auf. Weit und breit gibt es keinen Schutz.' },
@@ -66,7 +66,7 @@ export const scenes = [
         text: 'Der Tagesplan: sieben Gebetszeiten, die erste um zwei Uhr nachts. Dazu Fasten, Schweigen, Arbeit und Beichte.' },
       { id: 'zelle', label: 'Zelle', x: 20, y: 66, art: 'ansehen', optional: true,
         text: 'Eine Pritsche, ein Betpult, eine Kerze. Bruder Martin schläft oft kaum. Er fürchtet, nicht genug getan zu haben.' },
-      { id: 'waage', label: 'Waage', x: 63, y: 69, objekt: { bild: 'waage', breite: 21 }, art: 'raetsel', ziel: 'waage', wenn: { flag: 'g:mitbruder' }, zeigtWenn: { nichtDone: 's2' },
+      { id: 'waage', label: 'Waage', x: 66, y: 63, objekt: { bild: 'waage', breite: 15 }, art: 'raetsel', ziel: 'waage', wenn: { flag: 'g:mitbruder' }, zeigtWenn: { nichtDone: 's2' },
         gesperrt: 'Eine große Waage. Wozu steht sie hier? Frag den Mönch.' }
     ]
   },

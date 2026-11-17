@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { zufall, spieleMarkt, spieleDruck, spieleVerhoer, verteilung, mittel } from './helfer.js';
 import { rules as druck } from '../js/puzzles/druckwelle.js';
+import { rules as duell } from '../js/puzzles/verhoer.js';
 import { marktplatz } from '../data/systems/marktplatz.js';
 import { druckwelle } from '../data/systems/druckwelle.js';
 import { verhoer } from '../data/systems/verhoer.js';
@@ -58,7 +59,9 @@ test('Verhör: lösbar, ausgewogen, vier Runden', () => {
   assert.deepEqual(Object.keys(verteilung(alle)).sort(), ['1', '2', '3']);
   assert.ok(alle.every((x) => x.z.runde === verhoer.einwaende.length));
   for (const e of verhoer.einwaende) {
-    assert.ok(Object.keys(e.gut).some((k) => beutelVerhoer.includes(k)), `Einwand ${e.id} hat eine Pflichtkarte als gute Antwort`);
-    for (const k of [...Object.keys(e.gut), ...Object.keys(e.halb || {})]) assert.ok(cards.some((c) => c.id === k), `Karte ${k} existiert`);
+    assert.ok(duell.passend(e).some((k) => beutelVerhoer.includes(k)), `Einwand ${e.id} hat eine Pflichtkarte als gute Antwort`);
+    for (const k of Object.keys(e.antworten)) assert.ok(cards.some((c) => c.id === k), `Karte ${k} existiert`);
+    // Keine Karte ohne Bonus schlägt einen Einwand: Es kommt auf das passende Argument an.
+    for (const c of cards) if (!c.gegen?.[e.art]) assert.notEqual(duell.bewerte(e, c.id), 'gut', `${c.id} schlägt ${e.id} ohne Bonus`);
   }
 });

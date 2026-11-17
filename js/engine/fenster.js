@@ -3,7 +3,6 @@ import { h, setzeInhalt, knopf, rich, fenster, kartenChip, fuelle, melde } from 
 import { store, aendere, ersetze } from './save.js';
 import { neuerStand, station, szene, stationOffen, hotspotFlag, platten, loeseStation, springeZu } from './state.js';
 import { oeffneRaetsel } from './raetsel.js';
-import { kannSprechen, still } from './speech.js';
 import { bonus } from '../../data/bonus.js';
 import { kodiere, lies } from './code.js';
 import { zeigeSzene } from './szenen.js';
@@ -37,10 +36,15 @@ export function zeigeKarte() {
 }
 
 export function zeigeBeutel() {
-  const meine = cards.filter((k) => store.state.cards.includes(k.id));
-  fenster(t.beutel, meine.length
-    ? h('div', { class: 'hand beutel' }, meine.map((k) => kartenChip(k)))
-    : h('p', {}, t.beutelLeer), { breit: true });
+  const hat = (k) => store.state.cards.includes(k.id);
+  const n = cards.filter(hat).length;
+  const leer = (k) => h('div', { class: 'karte sammel leer', 'aria-label': t.albumFehlt },
+    h('span', { class: 'k-frage', 'aria-hidden': 'true' }, '?'),
+    h('span', { class: 'k-typ' }, fuelle(t.albumWo, { nr: station(k.station).nr })));
+  fenster(t.beutel, h('div', { class: 'album' },
+    h('p', { class: 'kicker' }, fuelle(t.albumStand, { n, von: cards.length })),
+    n ? null : h('p', {}, t.beutelLeer),
+    h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k) : leer(k))))), { breit: true });
 }
 
 export function zeigeNotizbuch() {
@@ -75,7 +79,6 @@ export function zeigeMenue() {
     h('h3', {}, t.codeEingeben), codeEingabe(() => { dlg.close(); zeigeSzene(game.start); melde(t.codeGeladen); }),
     h('h3', {}, t.einstellungen),
     h('label', { class: 'schalter' }, h('input', { type: 'checkbox', checked: s.zuZweit, onchange: (e) => aendere((st) => { st.zuZweit = e.target.checked; }) }), t.zuZweit),
-    kannSprechen() ? h('label', { class: 'schalter' }, h('input', { type: 'checkbox', checked: s.vorlesen, onchange: (e) => { aendere((st) => { st.vorlesen = e.target.checked; }); if (!e.target.checked) still(); } }), t.vorlesenAuto) : null,
     h('p', { class: 'klein' }, fuelle(t.hilfenGezaehlt, { n: s.hilfen })),
     h('div', { class: 'reihe' }, knopf(sicher ? t.neuSicher : t.neu, () => {
       if (!sicher) { sicher = true; zeichne(); return; }
@@ -123,7 +126,6 @@ export function zeigeAbschluss(ids) {
       h('p', {}, rich(st.abschluss)),
       neu.length ? h('div', {}, h('h3', {}, t.neueKarten), h('div', { class: 'hand' }, neu.map((k) => kartenChip(k)))) : null,
       ende ? h('p', {}, t.endeText) : null,
-      h('p', { class: 'klein' }, `${t.codeKurz} `, h('span', { class: 'code klein' }, kodiere(store.state))),
       h('div', { class: 'reihe' }, ende ? knopf(t.schliessen, () => dlg.close(), 'haupt')
         : knopf(st.id === 's7' ? t.zurDruckerei : t.zurKarte, () => { dlg.close(); if (st.id === 's7') zeigeSzene(game.start); else zeigeKarte(); }, 'haupt'))));
 }
@@ -132,14 +134,21 @@ export function zeigeStart() {
   const el = document.getElementById('start');
   const los = (zuZweit) => { aendere((s) => { s.zuZweit = zuZweit; if (!s.szene) s.szene = game.start; }); el.hidden = true; zeigeSzene(store.state.szene); };
   const laeuft = Boolean(store.state.szene);
-  setzeInhalt(el, h('div', { class: 'start-karte' },
-    h('p', { class: 'kicker' }, t.startKicker), h('h1', {}, game.titel), h('p', { class: 'unter' }, game.untertitel),
-    laeuft ? h('div', { class: 'reihe mitte' }, knopf(t.weiterspielen, () => los(store.state.zuZweit), 'haupt gross')) : null,
-    h('div', { class: 'reihe mitte' },
-      knopf(laeuft ? t.neuAllein : t.startAllein, () => { ersetze(neuerStand()); los(false); }, laeuft ? 'still' : 'haupt gross'),
-      knopf(laeuft ? t.neuZuZweit : t.startZuZweit, () => { ersetze(neuerStand()); los(true); }, laeuft ? 'still' : 'gross')),
-    h('details', {}, h('summary', {}, t.codeEingeben), codeEingabe(() => { el.hidden = true; zeigeSzene(game.start); melde(t.codeGeladen); })),
-    h('p', { class: 'klein' }, t.datenschutz)));
+  const modus = (zuZweit) => h('button', { type: 'button', class: `modus${laeuft ? ' still' : ''}`, onclick: () => { ersetze(neuerStand()); los(zuZweit); } },
+    h('span', { class: 'modus-bild', 'aria-hidden': 'true', html: (zuZweit ? game.startModus.zuZweit : game.startModus.allein).map((b) => bildHtml(b)).join('') }),
+    h('strong', {}, laeuft ? (zuZweit ? t.neuZuZweit : t.neuAllein) : (zuZweit ? t.startZuZweit : t.startAllein)),
+    h('span', {}, zuZweit ? t.modusZuZweit : t.modusAllein));
+  setzeInhalt(el, h('div', { class: 'start-buehne' },
+    h('div', { class: 'start-luther', 'aria-hidden': 'true', html: bildHtml(game.startFigur) }),
+    h('div', { class: 'start-karte' },
+      h('p', { class: 'kicker' }, t.startKicker),
+      h('h1', {}, h('span', { class: 'initiale' }, game.titel.slice(0, 1)), game.titel.slice(1)),
+      h('p', { class: 'unter' }, t.startFrage),
+      h('p', { class: 'teaser' }, t.startTeaser),
+      laeuft ? h('div', { class: 'reihe mitte' }, knopf(t.weiterspielen, () => los(store.state.zuZweit), 'haupt gross')) : null,
+      h('div', { class: 'modi' }, modus(false), modus(true)),
+      h('details', {}, h('summary', {}, t.codeEingeben), codeEingabe(() => { el.hidden = true; zeigeSzene(game.start); melde(t.codeGeladen); })),
+      h('p', { class: 'klein' }, t.datenschutz))));
   const hinten = bildUrl(game.startBild);
   if (hinten) el.style.setProperty('--hinter', `url("${hinten}")`);
   el.hidden = false;

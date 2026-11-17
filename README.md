@@ -2,7 +2,7 @@
 
 Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an sieben Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
 
-**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen, Vorlesen, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Eine Erprobung am iPad und mit einer Klasse steht noch aus.
+**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Dazu Überarbeitung 1 nach dem ersten Durchspielen (`docs/UEBERARBEITUNG-1.md`): neue Startseite, Sammelkarten mit Kartenduell, neue Minispiele. Eine Erprobung am iPad und mit einer Klasse steht noch aus.
 
 ## Spielen
 
@@ -24,8 +24,8 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 - **Speichern:** Der Stand bleibt auf dem Gerät. Über den Titel oben öffnet sich das Menü mit dem Fortsetzungscode (acht Zeichen). Er merkt sich fertige Stationen und funktioniert auf jedem Gerät.
 - **Hilfen:** Jedes Rätsel hat drei gestufte Hilfen. Das Menü zeigt, wie viele genutzt wurden.
 - **Lehrkraftmodus:** Titel fünf Sekunden halten oder Umschalt + Enter. Dort lassen sich Stationen anspringen oder als gelöst markieren, und von dort geht es zum Kompendium (`lehrkraefte.html`) mit Schnellstart, Leitfaden, Lösungen, Fragen und Fachhinweisen.
-- **Bonusspiele:** Silbenrätsel, Druckerpresse, Entführung, Lutherrose, Gottesdienst und zwei Fragen zum Nachdenken. Sie stehen unten auf der Karte und öffnen sich nach der passenden Station.
-- **Vorlesen:** Der Lautsprecher in der Leiste liest alle Texte mit der Sprachausgabe des Geräts vor. Kopfhörer sind sinnvoll.
+- **Bonusspiele:** Silbenrätsel, Druckerpresse (Taktspiel), Entführung (Steuerspiel mit Spitzeln), Lutherrose (zusammensetzen), Gottesdienst und zwei Fragen zum Nachdenken. Sie stehen unten auf der Karte und öffnen sich nach der passenden Station.
+- **Karten:** Erkenntnisse werden Sammelkarten mit Bild, Stärke und „Stark gegen“. Im Duell in Worms gewinnt nur die passende Karte.
 - **Datenschutz:** keine Namen, keine Konten, kein Server, keine externen Abrufe.
 - **Flugschrift:** „Drucken / PDF“ öffnet den Druckdialog, „Als Bild teilen“ das Teilen-Menü des iPads.
 
@@ -61,13 +61,13 @@ npm test
 const { pruefe } = await import('./tests/layout-browser.js'); console.table(await pruefe());
 ```
 
-In 1024 × 768, 1180 × 820, 1366 × 1024 und 820 × 1180 gibt es derzeit keine Befunde. Die Prüfung überschreibt den Spielstand auf dem Gerät.
+In 1024 × 768, 1180 × 820, 1366 × 1024 und 820 × 1180 gibt es derzeit keine Befunde. Auf breiten Bildschirmen (Laptop) steht der Text neben dem Bild statt darunter. Die Prüfung überschreibt den Spielstand auf dem Gerät.
 
 ## Offene Punkte
 
-- **Spielzeit:** Die Schätzung liegt bei 45 statt 40 Minuten. Ob gekürzt werden muss, zeigt erst eine Erprobung mit einer Klasse.
+- **Spielzeit:** Die Schätzung liegt seit Überarbeitung 1 bei 46 statt 40 Minuten (der Test erlaubt bis 48). Ob gekürzt werden muss, zeigt erst eine Erprobung mit einer Klasse.
 - **Bilder:** Für den Kaplan in Jüterbog gibt es noch kein eigenes Bild; dort steht vorläufig der Mönch. Nicht verwendet werden bisher: Kaiser, Bote, Sprecher und Luther-Figuren außer Professor und Junker als Szenenfiguren, die Karte der Erinnerung, die Einzelteile der Waage, Kartenvorder- und -rückseite, Flugblatt- und Stadtzeichen, Münze, Geldweg Albrecht und Rom sowie Wald, Wagen und Reiter der Entführung.
-- **Druck, Teilen und Vorlesen** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser. Die Stimme hängt vom Gerät ab.
+- **Druck, Teilen und die Steuerung per Finger** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser.
 - **Lehrkraftmodus:** Das Öffnen über Umschalt + Enter ist geprüft, das Halten des Titels am Touchscreen noch nicht.
 
 ## Quellen und Rechte

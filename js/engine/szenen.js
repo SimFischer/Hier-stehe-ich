@@ -5,7 +5,6 @@ import { szene, erfuellt, hotspotSichtbar, hotspotAktiv, hotspotFlag, ansehen, g
 import { szeneHtml, szeneUrl, figurHtml, bildHtml } from './bilder.js';
 import { oeffneRaetsel } from './raetsel.js';
 import { zeilenFuer } from '../puzzles/schritte.js';
-import { liesVor } from './speech.js';
 import { game } from '../../data/game.js';
 import { dialogs } from '../../data/dialogs.js';
 import { cards } from '../../data/cards.js';
@@ -18,9 +17,14 @@ let bandInhalt = null; // { art: 'text' | 'dialog' | 'film', ... }
 const el = (id) => document.getElementById(id);
 const kartenMeldung = (ids) => ids.filter(Boolean).forEach((id) => melde(fuelle(t.neueKarte, { titel: cards.find((k) => k.id === id).titel })));
 
-function band(...kinder) { setzeInhalt(el('band'), ...kinder); if (store.state.vorlesen) liesVor(el('band')); }
-/** Liest den aktuellen Text im Band vor (für den Knopf in der Leiste). */
-export const liesBand = () => liesVor(el('band'));
+function band(...kinder) {
+  setzeInhalt(el('band'), ...kinder);
+  // Einmal im Spiel: Hinweis auf die antippbaren Wörter.
+  if (el('band').querySelector('.begriff') && !store.state.flags.includes('tipp:begriff')) {
+    el('band').querySelector('p').after(h('p', { class: 'tipp' }, t.tippBegriff));
+    aendere((s) => setze(s, 'tipp:begriff'));
+  }
+}
 function zeigeText(text, wer, bild) {
   bandInhalt = { art: 'text' };
   band(bild ? h('span', { class: 'band-bild', 'aria-hidden': 'true', html: bildHtml(bild) }) : null, wer ? h('strong', { class: 'sprecher' }, wer) : null, h('p', {}, rich(text)));
@@ -34,8 +38,9 @@ function spieleZeilen(zeilen, beiEnde, { filmBild = null } = {}) {
     const z = zeilen[i];
     const f = game.figuren[z.wer] || {};
     el('szene').classList.toggle('blitz', Boolean(z.blitz));
+    for (const b of el('hotspots').querySelectorAll('.hotspot')) b.classList.toggle('spricht', b.dataset.figur === z.wer);
     if (filmBild) el('bild').innerHTML = szeneHtml(z.bild ? { ...filmBild, datei: z.bild } : filmBild);
-    band(f.name ? h('strong', { class: 'sprecher' }, f.name, f.echt ? h('em', {}, ` ${t.nacherzaehltKurz}`) : null) : null,
+    band(f.name ? h('strong', { class: `sprecher wer-${z.wer}` }, f.name, f.echt ? h('em', {}, ` ${t.nacherzaehltKurz}`) : null) : null,
       h('p', {}, rich(z.text)),
       h('div', { class: 'reihe fuss' }, h('span', { class: 'klein' }, `${i + 1} / ${zeilen.length}`),
         knopf(t.weiter, () => { if (i < zeilen.length - 1) { i += 1; zeige(); } else { el('szene').classList.remove('blitz'); bandInhalt = null; beiEnde(); } }, 'haupt')));
@@ -73,7 +78,7 @@ function zeichneHotspots() {
   setzeInhalt(el('hotspots'), ...(sz.hotspots || []).filter((hs) => hotspotSichtbar(s, hs)).map((hs) => {
     const erledigt = hs.art === 'ansehen' && s.flags.includes(hotspotFlag(sz.id, hs.id));
     return h('button', { type: 'button', class: `hotspot art-${hs.art}${hs.figur ? ' mit-figur' : hs.objekt ? ' mit-objekt' : ''}${erledigt ? ' erledigt' : ''}${hotspotAktiv(s, hs) ? '' : ' zu'}`,
-      style: `left:${hs.x}%;top:${hs.y}%`, disabled: gesperrt, onclick: () => benutze(sz, hs) },
+      style: `left:${hs.x}%;top:${hs.y}%`, disabled: gesperrt, 'data-figur': hs.figur || null, onclick: () => benutze(sz, hs) },
       h('span', { class: 'schild' }, hs.label),
       hs.figur ? h('span', { class: 'figur', html: figurHtml(game.figuren[hs.figur]) })
         : hs.objekt ? h('span', { class: 'objekt', style: `--breite:${hs.objekt.breite}`, 'aria-hidden': 'true', html: bildHtml(hs.objekt.bild) })
@@ -91,6 +96,7 @@ export function zeigeSzene(id, { ruhig = false } = {}) {
   el('bild').innerHTML = szeneHtml(sz.bild);
   document.getElementById('buehne').style.setProperty('--hinter', `url("${szeneUrl(sz.bild)}")`);
   setzeInhalt(el('ort'), h('strong', {}, sz.name), h('span', {}, sz.zeit));
+  el('szene').classList.toggle('gewitter', Boolean(sz.gewitter));
   if (sz.film) {
     el('ziel').textContent = '';
     spieleZeilen(sz.film, () => { aendere((s) => setze(s, filmFlag)); zeigeSzene(sz.weiter); }, { filmBild: sz.bild });

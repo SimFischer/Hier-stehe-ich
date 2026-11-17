@@ -6,8 +6,8 @@ export const puzzles = {
   wandbild: {
     id: 'wandbild', station: 's1', titel: 'Der Weg der Seele', lernziel: [2],
     schritte: [
-      { art: 'zuordnen', titel: 'Das Wandbild', layout: 'bild', einzeln: true,
-        anweisung: 'Tippe erst ein Bildteil an, dann den Platz an der Wand.',
+      { art: 'zuordnen', titel: 'Das Wandbild', layout: 'bild', einzeln: true, stapel: true,
+        anweisung: 'Sieh dir das Bildteil an. Tippe dann auf den Platz an der Wand, an den es gehört.',
         falsch: 'Dieses Teil passt nicht zu dem, was an diesem Platz gesucht wird.',
         ziele: [
           { id: 'himmel', label: 'Oben links', unter: 'Das Ziel, auf das alle hoffen.' },
@@ -30,7 +30,7 @@ export const puzzles = {
           'Der Weg beginnt unten links mit dem Tod. Oben in der Mitte sitzt der Richter.',
           'Oben: goldene Stadt, Richter, dunkler Rachen. Unten: Sterbebett, Flammen, betende Angehörige. Das Fegefeuer liegt zwischen Tod und Himmel.'
         ] },
-      { art: 'zuordnen', titel: 'Vier Wege aus dem Feuer', layout: 'liste', einzeln: true,
+      { art: 'zuordnen', titel: 'Vier Wege aus dem Feuer', layout: 'liste', einzeln: true, stapel: true,
         anweisung: 'Wie wollten Menschen die Zeit im Fegefeuer verkürzen? Ordne jedem Weg seine Erklärung zu.',
         falsch: 'Das beschreibt einen anderen Weg.',
         ziele: [
@@ -50,10 +50,10 @@ export const puzzles = {
           'Der Pilger ist auf Wallfahrt. Im Kästchen liegen Reliquien.',
           'Wallfahrt: langer Weg. Reliquien: Überreste. Heiligenverehrung: Heilige bitten. Ablassbrief: Schreiben der Kirche.'
         ] },
-      { art: 'wahl', begruendung: true, wer: 'pilger', frage: 'Sag mir: Wovor fürchten wir uns am meisten?',
+      { art: 'wahl', begruendung: true, wer: 'pilger', frage: 'Was meinst du: Wovor haben die Menschen hier am meisten Angst?',
         optionen: [
           { text: 'Vor dem langen Weg der Wallfahrt.', rueck: 'Der Weg ist hart. Aber ich gehe ihn ja gerade wegen der Angst.' },
-          { text: 'Vor Gottes Gericht und der Zeit im Fegefeuer.', richtig: true, rueck: 'Ja. Für uns ist Gott vor allem ein strenger Richter.' },
+          { text: 'Vor Gottes Gericht und der Zeit im Fegefeuer.', richtig: true, rueck: 'Ja. Für uns Menschen hier ist Gott vor allem ein strenger Richter.' },
           { text: 'Davor, dass die Kirche einstürzt.', rueck: 'Nein, die Mauern halten. Meine Sorge gilt meiner Seele.' }
         ] }
     ]
@@ -62,20 +62,25 @@ export const puzzles = {
   waage: {
     id: 'waage', station: 's2', titel: 'Die Waage der Werke', lernziel: [1, 3],
     schritte: [
-      { art: 'waage', titel: 'Die Waage der Werke', last: 100, grenze: 70, lastBild: 'gewicht-suende',
-        anweisung: 'Links liegt die Last der Sünden. Rechts legst du Bruder Martins gute Werke hinein. Bringst du die Waage ins Gleichgewicht?',
+      { art: 'waage', titel: 'Die Waage der Werke', start: 40, schwelle: 6, rest: 3, lastBild: 'gewicht-suende',
+        anweisung: 'Links liegt die Last der Sünden. Lege Bruder Martins gute Werke in die rechte Schale. Du darfst jedes Werk so oft legen, wie du willst. Schaffst du den Ausgleich?',
         werke: [
-          { id: 'fasten', bild: 'werk-fasten', label: 'Fasten', gewicht: 12, text: 'Bruder Martin fastet tagelang. Die Schale senkt sich ein wenig.' },
-          { id: 'beten', bild: 'werk-beten', label: 'Beten', gewicht: 15, text: 'Sieben Gebetszeiten am Tag, auch nachts. Die Waage bewegt sich etwas.' },
-          { id: 'beichte', bild: 'werk-beichte', label: 'Beichte', gewicht: 18, text: 'Er beichtet stundenlang jede Kleinigkeit. Wieder ein Stück.' },
-          { id: 'wachen', bild: 'werk-wachen', label: 'Nachtwachen', gewicht: 10, text: 'Er wacht, bis ihm die Augen zufallen. Die Last bleibt schwerer.' }
+          { id: 'fasten', bild: 'werk-fasten', label: 'Fasten', gewicht: 6, text: 'Bruder Martin fastet tagelang. Die Schale senkt sich ein wenig.' },
+          { id: 'beten', bild: 'werk-beten', label: 'Beten', gewicht: 7, text: 'Sieben Gebetszeiten am Tag, auch nachts. Die Waage bewegt sich.' },
+          { id: 'beichte', bild: 'werk-beichte', label: 'Beichte', gewicht: 9, text: 'Er beichtet stundenlang jede Kleinigkeit. Wieder ein Stück.' },
+          { id: 'wachen', bild: 'werk-wachen', label: 'Nachtwachen', gewicht: 5, text: 'Er wacht, bis ihm die Augen zufallen.' }
         ],
-        mehr: { label: 'Noch mehr davon', gewicht: 5, text: 'Noch mehr Fasten, noch mehr Beten. Die Waage rührt sich kaum noch.' },
-        ende: 'Die Waage kippt nicht. So fühlt es sich für Bruder Martin an: Es reicht nie.',
+        suenden: [
+          { gewicht: 14, text: 'Beim Fasten denkt er stolz: Ich bin frommer als die anderen.' },
+          { gewicht: 12, text: 'Beim Beten schweifen seine Gedanken ab.' },
+          { gewicht: 13, text: 'Er ärgert sich über einen Mitbruder.' },
+          { gewicht: 16, text: 'Er zweifelt: Ist Gott mir überhaupt gnädig?' }
+        ],
+        ende: 'Immer wenn es fast reicht, kommt etwas Neues dazu. So fühlt es sich für Bruder Martin an: Es reicht nie.',
         hilfen: [
-          'Lege alle vier Werke nacheinander in die Schale und beobachte die Waage.',
-          'Probiere auch „Noch mehr davon“. Was verändert sich?',
-          'Die Waage kann nicht kippen. Genau das ist die Erkenntnis: Aus eigener Kraft schafft Luther es nicht.'
+          'Lege immer wieder Werke in die rechte Schale. Beobachte, was passiert, wenn es fast reicht.',
+          'Jedes Mal, wenn die Waage fast ausgeglichen ist, fällt eine neue Sünde in die linke Schale. Mach weiter, bis keine mehr kommt.',
+          'Die Waage kann nicht kippen. Genau das ist die Erkenntnis: Aus eigener Kraft findet Luther keinen Frieden mit Gott.'
         ] },
       { art: 'wahl', begruendung: true, wer: 'mitbruder', frage: 'Du hast es gesehen. Was bedeutet das für Bruder Martin?',
         optionen: [
@@ -130,6 +135,13 @@ export const puzzles = {
           'Strophe 2 und 3: weit, Licht scheint weg, Luther gebeugt, Licht schmal und fern. Strophe 4: nah, Licht scheint zu Luther, Luther aufrecht, Licht weit und warm.'
         ] },
       { art: 'wahl', begruendung: true, frage: 'Welche Figur im Gleichnis vom verlorenen Sohn zeigt, wie Luther Gott jetzt sieht?',
+        info: { knopf: 'Gleichnis nachlesen', titel: 'Der verlorene Sohn (nach Lukas 15)', absaetze: [
+          'Ein Vater hat zwei Söhne. Der jüngere lässt sich sein Erbe auszahlen und zieht in die Fremde.',
+          'Dort verprasst er alles. Er muss Schweine hüten und hat großen Hunger.',
+          'Da geht er nach Hause zurück. Er will den Vater nur noch um Arbeit bitten.',
+          'Doch der Vater sieht ihn schon von Weitem. Er läuft ihm entgegen, umarmt ihn und feiert ein Fest.',
+          'Der ältere Bruder ist wütend. Er hat immer gearbeitet und nie ein Fest bekommen.',
+          'Der Vater sagt: „Dein Bruder war verloren und ist wiedergefunden.“'] },
         optionen: [
           { text: 'Der ältere Bruder, der genau nachrechnet.', rueck: 'So hatte Luther Gott früher gesehen: als einen, der abrechnet.' },
           { text: 'Der Vater, der dem Sohn entgegenläuft.', richtig: true, rueck: 'Genau. Gott wartet nicht mit der Strafe. Er kommt dem Menschen entgegen.' },

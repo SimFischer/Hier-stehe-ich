@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import * as S from '../js/engine/state.js';
 import { kodiere, lies } from '../js/engine/code.js';
 import { loesung, loesungen } from '../js/engine/loesungen.js';
-import { silbenRules, presseRules, wegRules } from '../js/puzzles/bonus.js';
+import { silbenRules, presseRules, fahrtRules, roseRules } from '../js/puzzles/bonus.js';
 import { rules as zuordnen, aufbau } from '../js/puzzles/zuordnen.js';
 import { wahlRules } from '../js/puzzles/schritte.js';
 import { systeme, woerter } from './inhalt.js';
@@ -15,7 +15,7 @@ import { cards } from '../data/cards.js';
 import { teacher } from '../data/teacher.js';
 
 const daten = { cards, systeme, figuren: game.figuren };
-const BONUS_ARTEN = ['silben', 'presse', 'weg', 'reflexion', 'zuordnen', 'wahl', 'text'];
+const BONUS_ARTEN = ['silben', 'presse', 'fahrt', 'rose', 'reflexion', 'zuordnen', 'wahl', 'text'];
 
 test('Bonusspiele: Aufbau, Hilfen, Freischaltung', () => {
   for (const b of Object.values(bonus)) {
@@ -23,7 +23,7 @@ test('Bonusspiele: Aufbau, Hilfen, Freischaltung', () => {
     assert.ok(b.titel && b.kurz && b.minuten > 0 && b.minuten <= 10, `${b.id}: Titel, Kurztext, Zeit`);
     for (const s of b.schritte) {
       assert.ok(BONUS_ARTEN.includes(s.art), `${b.id}: Art ${s.art}`);
-      if (['silben', 'presse', 'weg', 'zuordnen'].includes(s.art)) assert.equal(s.hilfen?.length, 3, `${b.id}: drei Hilfen`);
+      if (['silben', 'presse', 'fahrt', 'rose', 'zuordnen'].includes(s.art)) assert.equal(s.hilfen?.length, 3, `${b.id}: drei Hilfen`);
       for (const text of [s.anweisung, s.ende, s.falsch, ...(s.absaetze || []).map((a) => a.text)].filter(Boolean)) {
         for (const satz of text.split(/(?<=[.!?:])\s+/)) assert.ok(woerter(satz) <= 19, `${b.id}: langer Satz: ${satz}`);
       }
@@ -52,34 +52,50 @@ test('Silbenrätsel: lösbar, Fehler setzen das Wort zurück', () => {
   assert.ok(silbenRules.fertig(z, s));
 });
 
-test('Druckerpresse: vier Handgriffe ergeben ein Blatt, ein Fehler verdirbt den Bogen', () => {
+test('Druckerpresse: Treffer nur in der Zone, vier Treffer ergeben ein Blatt, es wird schwerer', () => {
   const s = bonus.presse.schritte[0];
+  assert.ok(presseRules.treffer(0.5, 0.5, 20)); assert.ok(presseRules.treffer(0.59, 0.5, 20)); assert.ok(!presseRules.treffer(0.62, 0.5, 20));
   let z = presseRules.start();
-  for (const g of s.handgriffe) z = presseRules.zug(z, s, g.id);
-  assert.equal(z.blaetter, 1);
-  z = presseRules.zug(z, s, s.handgriffe[0].id);
-  z = presseRules.zug(z, s, s.handgriffe[2].id);
-  assert.equal(z.i, 0); assert.equal(z.fehler, 1); assert.equal(z.blaetter, 1);
+  for (let i = 0; i < s.schritte.length; i++) z = presseRules.druecke(z, s, true);
+  assert.equal(z.blaetter, 1); assert.equal(z.schritt, 0);
+  z = presseRules.druecke(z, s, true); z = presseRules.druecke(z, s, false);
+  assert.equal(z.schritt, 0); assert.equal(z.fehler, 1);
+  assert.ok(presseRules.zone(s, 10) < presseRules.zone(s, 0) && presseRules.zone(s, 99) === s.zone.min);
+  assert.ok(presseRules.takt(s, 10) > presseRules.takt(s, 0) && presseRules.takt(s, 99) === s.takt.max);
+  assert.equal(presseRules.zeiger(0.25), 0.25); assert.equal(presseRules.zeiger(1.75), 0.25);
 });
 
-test('Entführung: Weg ist in der erlaubten Zeit zu schaffen, Dörfer werfen zurück', () => {
-  const s = bonus.entfuehrung.schritte.find((x) => x.art === 'weg');
-  assert.ok(new Set(s.karte.map((z) => z.length)).size === 1, 'alle Zeilen gleich lang');
-  const kurz = wegRules.kuerzester(s);
-  assert.ok(kurz > 0 && kurz < s.maxZuege, `kürzester Weg ${kurz}, erlaubt ${s.maxZuege}`);
-  // Die dritte Hilfe beschreibt einen Weg, der wirklich ankommt.
-  let z = wegRules.start(s);
-  const schritte = { rechts: [1, 0], runter: [0, 1] };
-  for (const m of s.hilfen[2].toLowerCase().matchAll(/(ein|zwei)mal (rechts|runter)/g)) {
-    for (let i = 0; i < (m[1] === 'zwei' ? 2 : 1); i++) z = wegRules.zug(z, s, z.x + schritte[m[2]][0], z.y + schritte[m[2]][1]);
+test('Entführung: Blickkegel, Rastplätze sicher, ein vorsichtiger Fahrer kommt an', () => {
+  const s = bonus.entfuehrung.schritte.find((x) => x.art === 'fahrt');
+  const w0 = { x: 0, y: 0, a: 0 };
+  assert.ok(fahrtRules.gesehen({ x: 100, y: 0 }, w0, s.sicht), 'vor der Wache');
+  assert.ok(!fahrtRules.gesehen({ x: -100, y: 0 }, w0, s.sicht), 'hinter der Wache');
+  assert.ok(!fahrtRules.gesehen({ x: s.sicht.weite + 10, y: 0 }, w0, s.sicht), 'zu weit weg');
+  const gesehen = (p, t) => s.wachen.some((w) => fahrtRules.gesehen(p, fahrtRules.wachePos(w, t), s.sicht));
+  for (let t = 0; t < 90; t += 0.1) for (const r of s.rast) assert.ok(!gesehen(r, t), `Rastplatz ${r.x},${r.y} wird zur Zeit ${t.toFixed(1)} gesehen`);
+  // Ein Fahrer, der auf dem Weg zum nächsten Ziel wartet, wenn der nächste Schritt gesehen würde
+  const ziele = [...s.rast.slice(1), s.ziel];
+  let p = { ...s.start }, t = 0, n = 0, rast = 0, erwischt = 0;
+  const dt = 0.05;
+  while (!fahrtRules.amZiel(p, s.ziel) && t < 240) {
+    const z = ziele[n];
+    const weiter = fahrtRules.bewege(p, z.x - p.x, z.y - p.y, s.tempo * dt, s.welt);
+    if (!gesehen(weiter, t + dt)) p = weiter;
+    t += dt;
+    if (gesehen(p, t)) { erwischt += 1; p = { ...s.rast[rast] }; }
+    if (n < s.rast.length - 1 && Math.hypot(p.x - z.x, p.y - z.y) < 20) { rast = n + 1; n += 1; }
   }
-  assert.ok(z.ende, 'Hilfe 3 führt zur Wartburg');
-  // Ein Dorf wirft an den Start zurück.
-  let w = wegRules.start(s);
-  const dorf = wegRules.finde(s, 'D');
-  w = { ...w, x: dorf.x - 1, y: dorf.y };
-  w = wegRules.zug(w, s, dorf.x, dorf.y);
-  assert.equal(w.letzte, 'gesehen'); assert.equal(w.zuege, 0);
+  assert.ok(fahrtRules.amZiel(p, s.ziel), `Ziel nach ${t.toFixed(0)} s nicht erreicht`);
+  assert.ok(t < 150, `zu lang: ${t.toFixed(0)} s`);
+});
+
+test('Lutherrose: Schichten nur von außen nach innen', () => {
+  const s = bonus.lutherrose.schritte.find((x) => x.art === 'rose');
+  let z = roseRules.start();
+  z = roseRules.zug(z, s, 'kreuz'); assert.equal(z.letzte, 'falsch'); assert.equal(z.gelegt.length, 0);
+  for (const sch of s.schichten) z = roseRules.zug(z, s, sch.id);
+  assert.ok(roseRules.fertig(z, s));
+  for (let i = 1; i < s.schichten.length; i++) assert.ok(s.schichten[i].groesse < s.schichten[i - 1].groesse, 'jede Schicht kleiner als die davor');
 });
 
 test('Bonus-Zuordnungen und Fragen sind lösbar', () => {

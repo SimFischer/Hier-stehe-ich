@@ -1,5 +1,5 @@
 // Kleine Schritte, die in vielen Rätseln vorkommen: Auswahlfrage, Textseite, Gespräch.
-import { h, setzeInhalt, knopf, rich } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
 import { erfuellt } from '../engine/state.js';
 
 export const wahlRules = {
@@ -19,8 +19,13 @@ export function wahl(el, schritt, ctx, fertig) {
     const zusatz = ctx.state.zuZweit && schritt.begruendung ? `${t.zuZweitBesprecht} ` : '';
     setzeInhalt(el, 
       schritt.begruendung ? h('p', { class: 'kicker' }, t.begruendung) : null,
-      h('p', { class: 'frage' }, wer ? h('strong', {}, `${wer.name}: `) : null, zusatz, rich(schritt.frage)),
+      wer ? h('div', { class: 'sprechblase frage-blase' }, h('strong', { class: 'sprecher' }, fuelle(t.fragtDich, { name: wer.name })), h('p', { class: 'frage' }, '„', rich(schritt.frage), '“'))
+        : null,
+      wer && zusatz ? h('p', { class: 'kicker' }, zusatz) : null,
+      wer ? null : h('p', { class: 'frage' }, zusatz, rich(schritt.frage)),
       wer?.echt ? h('p', { class: 'klein' }, t.nacherzaehlt) : null,
+      schritt.info ? h('details', { class: 'info' }, h('summary', {}, schritt.info.knopf),
+        h('div', { class: 'lesetext' }, h('h3', {}, schritt.info.titel), schritt.info.absaetze.map((a) => h('p', {}, a)))) : null,
       h('div', { class: 'optionen' }, schritt.optionen.map((op, i) =>
         h('button', { type: 'button', class: `option${gewaehlt === i ? (ok ? ' richtig' : ' falsch') : ''}`, disabled: ok || falsche.has(i),
           onclick: () => { gewaehlt = i; if (!wahlRules.pruefe(schritt, i)) falsche.add(i); zeichne(); } }, op.text))),

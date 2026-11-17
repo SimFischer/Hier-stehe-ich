@@ -1,6 +1,7 @@
 // Kleine Helfer für den Bildschirm. Keine Spielinhalte.
 import { glossary } from '../../data/glossary.js';
 import { t } from '../../data/ui.js';
+import { bildHtml } from './bilder.js';
 
 /** Baut ein Element: h('button', { class: 'x', onclick: fn }, 'Text', kind) */
 export function h(tag, attrs = {}, ...kinder) {
@@ -30,10 +31,21 @@ export function rich(text) {
     const g = formen.get(teil);
     if (g && !gesehen.has(g.id)) {
       gesehen.add(g.id);
-      frag.append(h('button', { type: 'button', class: 'begriff', onclick: (e) => { e.stopPropagation(); melde(`${g.wort}: ${g.text}`, 9000); } }, teil));
+      frag.append(h('button', { type: 'button', class: 'begriff', onclick: (e) => { e.stopPropagation(); zeigeBegriff(g); } }, teil));
     } else frag.append(teil);
   }
   return frag;
+}
+
+/** Erklärkärtchen zu einem Fachbegriff. Schließt per Knopf oder beim nächsten Tippen daneben. */
+export function zeigeBegriff(g) {
+  document.getElementById('begriff')?.remove();
+  const karte = h('aside', { id: 'begriff', role: 'dialog', 'aria-label': g.wort },
+    h('div', { class: 'reihe' }, h('strong', {}, g.wort), h('button', { type: 'button', class: 'schliess', 'aria-label': t.schliessen, onclick: () => karte.remove() }, '✕')),
+    h('p', {}, g.text));
+  document.body.append(karte);
+  karte.querySelector('button').focus();
+  setTimeout(() => document.addEventListener('pointerdown', function weg(e) { if (!karte.contains(e.target)) { karte.remove(); document.removeEventListener('pointerdown', weg); } }), 0);
 }
 
 let toastZeit;
@@ -61,10 +73,20 @@ export function fenster(titel, inhalt, { breit = false } = {}) {
 }
 
 /** Kleine Karte aus dem Argumentebeutel. */
-export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = false, aus = false } = {}) {
-  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte art-${karte.art}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''}`,
-    'aria-pressed': onclick ? String(gewaehlt) : null, disabled: aus, onclick },
-    h('strong', {}, karte.titel), klein ? null : h('span', {}, karte.text));
+/** Sammelkarte: Bild, Name, Stärke, Kartenart, Text und „Stark gegen“. klein: ohne Text, für die Hand. */
+export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = false, mini = false, aus = false, extra = '' } = {}) {
+  const gegen = Object.entries(karte.gegen || {});
+  const typ = karte.typ || karte.art;
+  // mini: nur Name und Stärke, für Listen mit vielen Karten (Flugschrift)
+  if (mini) return h('button', { type: 'button', class: `karte sammel mini typ-${typ}${gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': String(gewaehlt), onclick },
+    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null));
+  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte sammel typ-${typ}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''} ${extra}`.trim(),
+    'aria-pressed': onclick ? String(gewaehlt) : null, 'aria-label': `${karte.titel}. ${karte.text}${karte.staerke ? '. ' + fuelle(t.kartenStaerke, { n: karte.staerke }) : ''}`, disabled: aus, onclick },
+    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null),
+    h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(karte.bild) }, karte.nr ? h('span', { class: 'k-nr' }, String(karte.nr)) : null),
+    h('span', { class: 'k-typ' }, t.typen[typ] || typ),
+    klein ? null : h('span', { class: 'k-text' }, karte.text),
+    gegen.length ? h('span', { class: 'k-gegen' }, klein ? null : `${t.kartenGegen} `, gegen.map(([art, plus]) => h('em', {}, `${t.einwandArten[art]} +${plus}`))) : null);
 }
 
 /** Ersetzt den Inhalt eines Elements. Leere Einträge (null, false) werden übersprungen. */
