@@ -121,13 +121,13 @@ export const bonus = {
           { id: 'i-lieder', text: 'Die Gemeinde singt Lieder auf Deutsch.', ziel: 'neu' },
           { id: 'i-kelch', text: 'Beim Abendmahl bekommen alle Brot und Wein.', ziel: 'neu' },
           { id: 'i-brot', text: 'Die Gemeinde bekommt beim Abendmahl nur das Brot.', ziel: 'alt' },
-          { id: 'i-predigt', text: 'Die Predigt erklärt die Bibel auf Deutsch.', ziel: 'neu' },
+          { id: 'i-predigt', text: 'Die Predigt steht im Mittelpunkt und erklärt die Bibel.', ziel: 'neu' },
           { id: 'i-chor', text: 'Es singen vor allem Priester und Chor.', ziel: 'alt' }
         ],
         hilfen: [
           'Luther wollte, dass alle verstehen, was im Gottesdienst geschieht.',
           'Deutsch statt Latein, und die Gemeinde macht selbst mit: Das ist neu.',
-          'Um 1500: Latein, nur Brot, Priester und Chor singen. Evangelisch: deutsche Lieder, Brot und Wein, Predigt auf Deutsch.'
+          'Um 1500: Latein, nur Brot, Priester und Chor singen. Evangelisch: deutsche Lieder, Brot und Wein, Predigt im Mittelpunkt.'
         ] },
       { art: 'wahl', frage: 'Was war Luther am Gottesdienst am wichtigsten?',
         optionen: [

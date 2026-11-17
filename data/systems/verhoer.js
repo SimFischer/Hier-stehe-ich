@@ -19,7 +19,7 @@ export const verhoer = {
       halb: { t43: 'Den Armen helfen statt Ablass kaufen: Das klingt nicht nach einem Unruhestifter. Die Sorge um die Ordnung bleibt aber.' },
       sonst: 'Das nimmt dem Vorwurf der Spaltung nichts. Einige Bischöfe schütteln den Kopf.' },
     { id: 'allein', text: 'Du stehst allein gegen alle. Seit über tausend Jahren glauben Christen anders. Kann ein Einzelner recht haben?',
-      gut: { k8: 'Allein? In wenigen Wochen kannte das ganze Reich die Thesen. Viele im Saal wissen das genau.' },
+      gut: { k8: 'Allein? Im ganzen Reich haben Menschen die Thesen gelesen. Viele im Saal wissen das genau.' },
       halb: { k5: 'Nicht die Mehrheit entscheidet, sondern die Schrift. Ein guter Gedanke. Aber ist Luther wirklich allein?',
               k3: 'Gnade als Geschenk hat viele überzeugt. Den Vorwurf beantwortet das nur halb.' },
       sonst: 'Das zeigt nicht, dass Luther mit seiner Sicht nicht allein ist.' }

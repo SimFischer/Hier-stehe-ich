@@ -2,7 +2,7 @@
 
 Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an sieben Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
 
-**Stand:** Phase 3 von 4, mit den fertigen Bildern. Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen und Vorlesen sind fertig. Es fehlt die Abschlussprüfung (Phase 4).
+**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen, Vorlesen, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Eine Erprobung am iPad und mit einer Klasse steht noch aus.
 
 ## Spielen
 
@@ -39,7 +39,7 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 | `css/` | `tokens` (Farben, Größen), `layout`, `components`, `scenes`, `print` |
 | `assets/` | 117 Bilder, für das Spiel verkleinert (zusammen rund 29 MB); Register in `data/assets.js` |
 | `tests/` | Datenprüfung, Durchspieltest, Simulation der Spielsysteme, Fortsetzungscode |
-| `docs/` | Plan, Asset-Liste |
+| `docs/` | Plan, Prüfbericht, Asset-Liste, Bildquellen |
 
 Texte ändert man nur in `data/`. Ein Test stellt sicher, dass in `js/` kein Lesetext steht.
 
@@ -55,7 +55,13 @@ npm test
 - **Zeit:** Schätzung je Station aus Textmenge und Bedienschritten.
 - **Phase 3:** Regeln der Bonusspiele, Lehrkraftmodus (Hinspringen, Lösen) und die aus den Daten erzeugten Lösungen des Kompendiums.
 
-Im Browser geprüft wurden alle Stationen in 1024 × 768 sowie Stichproben in 1180 × 820, 1366 × 1024 und 820 × 1180.
+**Layout im Browser:** `tests/layout-browser.js` prüft die Leiste, alle Szenen und alle Rätselschritte in der aktuellen Fenstergröße (seitliches Scrollen, Scrollen im Rätselblatt, Schrift ab 14 px, Tippziele ab 44 px, Lage der Hotspots). Aufruf im laufenden Spiel über die Browser-Konsole:
+
+```js
+const { pruefe } = await import('./tests/layout-browser.js'); console.table(await pruefe());
+```
+
+In 1024 × 768, 1180 × 820, 1366 × 1024 und 820 × 1180 gibt es derzeit keine Befunde. Die Prüfung überschreibt den Spielstand auf dem Gerät.
 
 ## Offene Punkte
 
@@ -63,7 +69,6 @@ Im Browser geprüft wurden alle Stationen in 1024 × 768 sowie Stichproben in 11
 - **Bilder:** Für den Kaplan in Jüterbog gibt es noch kein eigenes Bild; dort steht vorläufig der Mönch. Nicht verwendet werden bisher: Kaiser, Bote, Sprecher und Luther-Figuren außer Professor und Junker als Szenenfiguren, die Karte der Erinnerung, die Einzelteile der Waage, Kartenvorder- und -rückseite, Flugblatt- und Stadtzeichen, Münze, Geldweg Albrecht und Rom sowie Wald, Wagen und Reiter der Entführung.
 - **Druck, Teilen und Vorlesen** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser. Die Stimme hängt vom Gerät ab.
 - **Lehrkraftmodus:** Das Öffnen über Umschalt + Enter ist geprüft, das Halten des Titels am Touchscreen noch nicht.
-- **Fachprüfung** aller Texte gegen die Leitplanken des Konzepts folgt in Phase 4 (`docs/FACHPRUEFUNG.md`).
 
 ## Quellen und Rechte
 

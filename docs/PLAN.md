@@ -331,3 +331,11 @@ Beim Bauen und Testen hat sich einiges anders ergeben als geplant.
 - **Druckwelle:** Die Karte ist ein Ausschnitt von `karte-reich`, die Städte liegen nach den Geodaten. Wittenberg, Magdeburg und Leipzig sind in der Anzeige leicht auseinandergerückt, damit man sie einzeln antippen kann.
 - **Weitere Bilder:** Wandbildteile und Wege als Bildkacheln, Werke der Waage als Zeichen, Reichsstände im Saal, Ratgeber auf der Wartburg, Druckmotive der Flugschrift, Druckplatten in der Leiste, Lutherrose, Gottesdienst und Druckerpresse in den Bonusspielen.
 - **Offen:** eigenes Bild für den Kaplan; einige Bilder des Pakets haben noch keinen Platz im Spiel (Liste im README).
+
+## 13. Phase 4
+
+- **Fachprüfung:** alle Texte gegen die Leitplanken gelesen. Sieben Stellen korrigiert (Ablassverbot in Kursachsen, Preis des Ablassbriefs, Verbreitung der Thesen, Folgen eines Widerrufs, deutsche Predigt, Fegefeuer im Glossar). Bericht in `docs/FACHPRUEFUNG.md`.
+- **Sprache:** kein Satz über 15 Wörter. Fünf Begriffe neu im Glossar.
+- **Layout:** neue Browserprüfung `tests/layout-browser.js`. Vier Befunde in zwei Größen behoben; in allen vier Größen ohne Befund. Für die Prüfung kann das Rätselblatt direkt bei einem Schritt geöffnet werden (`oeffneRaetsel(id, { schritt, sammel })`).
+- **Nicht gemacht:** Bildschirmfotos mit Playwright. Playwright ist nicht installiert, und das Konzept sieht keine Abhängigkeiten vor. Die Prüfung lief stattdessen im Browser der Entwicklungsumgebung mit nachgestellten Fenstergrößen.
+- **Zeit:** weiterhin 45 Minuten geschätzt.

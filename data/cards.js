@@ -41,7 +41,7 @@ export const cards = [
       { text: 'Der Papst ist reich. Er soll seinen Dom selbst bezahlen.', richtig: true },
       { text: 'Der Petersdom soll kleiner werden.' }, { text: 'Arme sollen beim Bauen helfen.' }] } },
   { id: 'k7', art: 'argument', station: 's5', titel: 'Erneuern, nicht spalten', text: 'Luther will die Kirche erneuern, nicht spalten.' },
-  { id: 'k8', art: 'argument', station: 's5', titel: 'Viele haben es gelesen', text: 'In wenigen Wochen kannte das ganze Reich die Thesen.' },
+  { id: 'k8', art: 'argument', station: 's5', titel: 'Viele haben es gelesen', text: 'In wenigen Wochen sprach man im ganzen Reich über die Thesen.' },
   { id: 'k9', art: 'argument', station: 's6', titel: 'Konzilien irren', text: 'Auch Konzilien können irren. Sie haben einander widersprochen.' },
   { id: 'k10', art: 'argument', station: 's6', titel: 'Gewissen', text: 'Mein Gewissen ist an Gottes Wort gebunden.' },
   { id: 'k11', art: 'argument', station: 's7', titel: 'Bibel für alle', text: 'Jeder soll die Bibel selbst lesen können.' }

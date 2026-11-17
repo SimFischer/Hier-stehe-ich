@@ -208,7 +208,7 @@ export const puzzles = {
         ] },
       { art: 'wahl', wer: 'sprecher', frage: 'Zum letzten Mal, Martin Luther: Widerrufst du deine Bücher?',
         optionen: [
-          { text: 'Widerrufen', rueck: 'Dann wäre es still geworden um Luther. Keine deutsche Bibel von der Wartburg. Keine evangelische Kirche. Auch deine Flugschrift gäbe es nicht. So ist es nicht gewesen. Wähle noch einmal.' },
+          { text: 'Widerrufen', rueck: 'Dann wäre es wohl still geworden um Luther. Vielleicht gäbe es keine deutsche Bibel von der Wartburg. Auch deine Flugschrift gäbe es nicht. So ist es aber nicht gewesen. Wähle noch einmal.' },
           { text: 'Nicht widerrufen', richtig: true, rueck: 'So war es. Luther nimmt nichts zurück.' }
         ] },
       { art: 'text', titel: 'Luthers Antwort', system: 'verhoer',

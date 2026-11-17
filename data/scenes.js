@@ -93,7 +93,7 @@ export const scenes = [
   },
   {
     id: 'jueterbog', name: 'Der Markt von Jüterbog', zeit: '1517', bild: { typ: 'markt', datei: 'bg-jueterbog' },
-    einstieg: [{ text: 'Jüterbog, 1517. In Wittenberg ist der Ablasshandel verboten. Also laufen viele über die Grenze hierher. Auf dem Markt predigt der Mönch Johann Tetzel.' }],
+    einstieg: [{ text: 'Jüterbog, 1517. In Kursachsen darf Tetzel seinen Ablass nicht verkaufen. Also laufen viele über die Grenze hierher. Auf dem Markt predigt der Mönch Johann Tetzel.' }],
     ziel: [
       { wenn: { done: 's4' }, text: 'Hier ist alles erledigt. Öffne die Karte.' },
       { wenn: { flag: ['h:jueterbog.brief', 'h:jueterbog.kasten', 'g:kaplan'] }, text: 'Du weißt genug. Läute die Glocke und sprich mit den Leuten.' },
@@ -101,7 +101,7 @@ export const scenes = [
     ],
     hotspots: [
       { id: 'tetzel', label: 'Tetzel', figur: 'tetzel', x: 17, y: 72, art: 'ansehen', merken: true, optional: true,
-        text: 'Tetzel predigt mit lauter Stimme. Man sagt, er habe gereimt: „Wenn das Geld im Kasten klingt, die Seele aus dem Feuer springt.“ Ob er es genau so sagte, ist nicht belegt.' },
+        text: 'Man sagt, Tetzel habe gereimt: „Wenn das Geld im Kasten klingt, die Seele aus dem Feuer springt.“ Ob er es genau so sagte, ist nicht belegt.' },
       { id: 'brief', label: 'Ablassbrief', x: 86, y: 66, zeigt: 'ablassbrief', art: 'ansehen', gibt: 'w2', merken: true,
         text: 'Ein gedruckter Brief mit einem freien Feld für den Namen. Er verspricht: Die Strafen für deine Sünden werden erlassen. Eigentlich gehört Reue dazu. Doch davon ist auf dem Markt kaum die Rede.' },
       { id: 'kasten', label: 'Ablasskasten', x: 38, y: 80, objekt: { bild: 'ablasskasten', breite: 12 }, zeigt: 'geldweg-fugger', art: 'ansehen', gibt: 'w1', merken: true,
@@ -159,7 +159,7 @@ export const scenes = [
     hotspots: [
       { id: 'junker', label: 'Junker Jörg', figur: 'junker', x: 85, y: 94, art: 'ansehen', optional: true,
         text: 'Junker Jörg schreibt, streicht durch und schreibt neu. Er sucht Wörter, die jeder versteht.' },
-      { id: 'alt', label: 'Alte Bibel', x: 72, y: 47, art: 'ansehen', merken: true,
+      { id: 'alt', label: 'Alte Bibel', x: 71, y: 40, art: 'ansehen', merken: true,
         text: 'Eine deutsche Bibel von 1483. Es gab also schon Übersetzungen. Aber sie klingen steif, Wort für Wort aus dem Latein. Und jede Gegend spricht anders.' },
       { id: 'notiz', label: 'Notiz', x: 61, y: 56, art: 'ansehen', merken: true, optional: true,
         text: 'Später, im Jahr 1530, erklärt Luther seine Art zu übersetzen. Man müsse den Leuten „auf das Maul sehen“. Also zuhören, wie sie wirklich reden.' },

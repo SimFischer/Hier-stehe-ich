@@ -253,3 +253,13 @@ textarea { font: inherit; padding: var(--ab-2) var(--ab-3); border: var(--rand);
 @media (orientation: portrait), (max-width: 760px) { .reich-rahmen { grid-template-columns: minmax(0, 1fr); } }
 .saal .kopf.nickt .figurbild { filter: drop-shadow(0 0 5px #b8f5b0) drop-shadow(0 0 2px #fff); }
 .saal .kopf:not(.nickt) .figurbild { filter: saturate(0.55) brightness(0.9); }
+
+/* Layoutprüfung Phase 4 */
+.flugblatt .fb-kopf, .flugblatt .fb-fuss, .flugblatt ul { font-size: 0.875rem; }
+.flugblatt h3 { font-size: 1.15rem; }
+.flugblatt { gap: 2px; padding: 4%; }
+.art-auswahl { gap: var(--ab-2); }
+.art-auswahl .hand.viele .karte span { line-height: 1.2; }
+.art-auswahl .erinnerung { padding: 2px var(--ab-2); }
+.saal { flex-wrap: wrap; }
+@media (orientation: portrait), (max-width: 760px) { .saal .kopf:has(.figurbild) { height: clamp(60px, 8vh, 90px); } }

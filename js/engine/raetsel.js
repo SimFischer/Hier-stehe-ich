@@ -31,10 +31,12 @@ export const systeme = { marktplatz, druckwelle, verhoer };
 // Fortschritt innerhalb eines Rätsels: bleibt, solange die Seite offen ist.
 const fortschritt = {};
 
-export function oeffneRaetsel(id, { beiEnde, bild }) {
+/** Öffnet ein Rätsel. schritt und sammel sind nur für die Layoutprüfung: Sie springen direkt zu einem Schritt. */
+export function oeffneRaetsel(id, { beiEnde, bild, schritt = null, sammel = null }) {
   const r = puzzles[id] || bonus[id];
   const blatt = document.getElementById('blatt');
   const f = (fortschritt[id] ||= { i: 0, sammel: {}, hilfe: {} });
+  if (schritt != null) { f.i = schritt; if (sammel) f.sammel = sammel; }
 
   const ctx = {
     t, systeme, figuren: game.figuren, alleKarten: cards, sammel: f.sammel,
