@@ -2,7 +2,7 @@
 // Die Reihenfolge der IDs entspricht der Liste im Fortsetzungscode (js/engine/code.js).
 export const bonus = {
   silben: {
-    id: 'silben', titel: 'Silbenrätsel', nach: 's2', minuten: 3,
+    id: 'silben', titel: 'Silbenrätsel', nach: 's2', bild: 'kunst-k1', minuten: 3,
     kurz: 'Setze sechs Wörter aus Silben zusammen.',
     schritte: [
       { art: 'silben', titel: 'Silbenrätsel',
@@ -25,7 +25,7 @@ export const bonus = {
     ]
   },
   presse: {
-    id: 'presse', titel: 'Die Druckerpresse', nach: 's5', minuten: 3,
+    id: 'presse', titel: 'Die Druckerpresse', nach: 's5', bild: 'kunst-k13', minuten: 3,
     kurz: 'Drucke in 45 Sekunden so viele Flugblätter wie möglich.',
     schritte: [
       { art: 'presse', titel: 'Die Druckerpresse', sekunden: 45,
@@ -45,7 +45,7 @@ export const bonus = {
     ]
   },
   entfuehrung: {
-    id: 'entfuehrung', titel: 'Die Entführung', nach: 's6', minuten: 4,
+    id: 'entfuehrung', titel: 'Die Entführung', nach: 's6', bild: 'kunst-r4', minuten: 4,
     kurz: 'Bringe Luther ungesehen auf die Wartburg.',
     schritte: [
       { art: 'text', titel: 'Auf dem Heimweg',
@@ -85,7 +85,7 @@ export const bonus = {
     ]
   },
   lutherrose: {
-    id: 'lutherrose', titel: 'Die Lutherrose', nach: 's7', minuten: 3,
+    id: 'lutherrose', titel: 'Die Lutherrose', nach: 's7', bild: 'ruecken-luther', minuten: 3,
     kurz: 'Deute Luthers Wappen.',
     schritte: [
       { art: 'rose', titel: 'Die Rose zusammensetzen',
@@ -131,7 +131,7 @@ export const bonus = {
     ]
   },
   gottesdienst: {
-    id: 'gottesdienst', titel: 'Gottesdienst damals und danach', nach: 'f', minuten: 3,
+    id: 'gottesdienst', bild: 'kunst-r8', titel: 'Gottesdienst damals und danach', nach: 'f', minuten: 3,
     kurz: 'Was änderte sich im Gottesdienst durch die Reformation?',
     schritte: [
       { art: 'zuordnen', titel: 'Gottesdienst damals und danach', layout: 'zwei',
@@ -160,19 +160,6 @@ export const bonus = {
           { text: 'Dass alle das Wort Gottes hören und verstehen.', richtig: true, rueck: 'Ja. Darum Deutsch, darum die Predigt, darum Lieder für alle.' },
           { text: 'Dass die Kirche prächtig geschmückt ist.', rueck: 'Schmuck war Luther nicht wichtig. Es kam ihm auf das Wort an.' }
         ] }
-    ]
-  },
-  reflexion: {
-    id: 'reflexion', titel: 'Nachdenken', nach: 'f', minuten: 10, ohneMerker: true,
-    kurz: 'Zwei Fragen zum Schluss, im Spiel oder auf Papier.',
-    schritte: [
-      { art: 'reflexion', titel: 'Nachdenken',
-        anweisung: 'Zwei Fragen zum Schluss. Schreib hier oder auf Papier. Was du hier schreibst, wird nicht gespeichert.',
-        fragen: [
-          'Warum gibt es die evangelische Kirche? Erkläre es in drei Sätzen.',
-          'Luther blieb bei dem, was er für richtig hielt. Wo würdest du heute sagen: „Hier stehe ich“?'
-        ],
-        platzhalter: 'Deine Gedanken …' }
     ]
   }
 };

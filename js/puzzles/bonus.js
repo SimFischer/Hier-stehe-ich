@@ -198,16 +198,31 @@ export function fahrt(el, schritt, ctx, fertig) {
     const hgt = (b * img.naturalHeight) / img.naturalWidth;
     g.save(); g.translate(x, y); g.rotate(winkel); g.drawImage(img, -b / 2, -hgt / 2, b, hgt); g.restore(); return true;
   }
+  // Ring als Markierung: Was wichtig ist, leuchtet vor dem gedämpften Wald.
+  function ring(x, y, r, farbe, breite = 6) { g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.lineWidth = breite; g.strokeStyle = farbe; g.stroke(); }
   function male() {
-    if (bilder.wald?.complete && bilder.wald.naturalWidth) g.drawImage(bilder.wald, 0, 0, W.w, W.h); else { g.fillStyle = '#3e5b45'; g.fillRect(0, 0, W.w, W.h); }
-    schritt.rast.forEach((r, i) => { g.beginPath(); g.arc(r.x, r.y, 46, 0, 2 * Math.PI); g.fillStyle = i <= rast ? 'rgba(240,217,166,0.55)' : 'rgba(240,217,166,0.25)'; g.fill(); g.lineWidth = 5; g.strokeStyle = '#c8963e'; g.stroke(); });
+    // Wald blasser zeichnen (Graufilter, wo das Gerät ihn kann), dann abdunkeln
+    if (bilder.wald?.complete && bilder.wald.naturalWidth) { g.save(); g.filter = 'saturate(0.3) brightness(0.9)'; g.drawImage(bilder.wald, 0, 0, W.w, W.h); g.restore(); } else { g.fillStyle = '#3e5b45'; g.fillRect(0, 0, W.w, W.h); }
+    // Der Wald tritt zurück: dunkler und blasser, damit Wagen und Spitzel klar zu sehen sind.
+    g.fillStyle = 'rgba(24, 30, 22, 0.45)'; g.fillRect(0, 0, W.w, W.h);
+    schritt.rast.forEach((r, i) => {
+      g.beginPath(); g.arc(r.x, r.y, 48, 0, 2 * Math.PI); g.fillStyle = i <= rast ? 'rgba(243, 210, 122, 0.75)' : 'rgba(240, 217, 166, 0.45)'; g.fill();
+      ring(r.x, r.y, 48, '#fff3c4', 5);
+    });
+    ring(schritt.ziel.x, schritt.ziel.y, 96, 'rgba(255, 243, 196, 0.9)', 8);
     if (!bildMittig(bilder.burg, schritt.ziel.x, schritt.ziel.y, 170)) { g.fillStyle = '#3f5870'; g.fillRect(schritt.ziel.x - 50, schritt.ziel.y - 50, 100, 100); }
     for (const w of schritt.wachen) {
       const wp = fahrtRules.wachePos(w, zeit);
       g.beginPath(); g.moveTo(wp.x, wp.y); g.arc(wp.x, wp.y, schritt.sicht.weite, wp.a - schritt.sicht.winkel * RAD, wp.a + schritt.sicht.winkel * RAD); g.closePath();
-      g.fillStyle = 'rgba(166,67,46,0.33)'; g.fill(); g.lineWidth = 3; g.strokeStyle = 'rgba(127,47,31,0.7)'; g.stroke();
+      g.fillStyle = 'rgba(230, 70, 50, 0.38)'; g.fill(); g.lineWidth = 4; g.strokeStyle = 'rgba(255, 120, 100, 0.95)'; g.stroke();
+      g.beginPath(); g.arc(wp.x, wp.y, 50, 0, 2 * Math.PI); g.fillStyle = 'rgba(255, 220, 210, 0.85)'; g.fill();
+      ring(wp.x, wp.y, 50, '#c0392b', 7);
       if (!bildMittig(bilder.spitzel, wp.x, wp.y, 95, wp.a + Math.PI / 2)) { g.beginPath(); g.arc(wp.x, wp.y, 26, 0, 2 * Math.PI); g.fillStyle = '#7f2f1f'; g.fill(); }
     }
+    // Der eigene Wagen: heller Kreis mit goldenem, pulsierendem Ring
+    const puls = 6 + 4 * Math.sin(zeit * 6);
+    g.beginPath(); g.arc(p.x, p.y, 64, 0, 2 * Math.PI); g.fillStyle = 'rgba(255, 250, 230, 0.9)'; g.fill();
+    ring(p.x, p.y, 64 + puls, 'rgba(243, 200, 74, 0.95)', 8);
     if (!bildMittig(bilder.wagen, p.x, p.y, 110, p.a + Math.PI / 2)) { g.fillStyle = '#c8963e'; g.fillRect(p.x - 30, p.y - 45, 60, 90); }
     if (blitz > 0) { g.fillStyle = `rgba(166,67,46,${Math.min(0.5, blitz)})`; g.fillRect(0, 0, W.w, W.h); }
   }

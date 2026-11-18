@@ -21,7 +21,7 @@ export const teacher = {
     varianten: [
       { name: 'Einzelstunde (45 Minuten)', schritte: ['2 min Einstieg: Rolle und Auftrag nennen', 'rund 40 min Kernpfad', '3 min Abschluss: zwei Flugschriften zeigen'],
         hinweis: 'Der Kernpfad ist knapp bemessen. Plane ein, dass langsame Gruppen in der nächsten Stunde mit dem Code weitermachen. Oder springe im Lehrkraftmodus über Station 1 und 2.' },
-      { name: 'Doppelstunde (90 Minuten)', schritte: ['5 min Einstieg', 'rund 45 min Kernpfad', '20 min Bonusspiele nach Tempo', '10 min Nachdenken (im Spiel oder auf Papier)', '10 min Flugschriften teilen und kommentieren: zwei Dinge, die gelungen sind, ein Tipp'] }
+      { name: 'Doppelstunde (90 Minuten)', schritte: ['5 min Einstieg', 'rund 45 min Kernpfad', '20 min Bonusspiele nach Tempo', '10 min Nachdenken auf Papier: Warum gibt es die evangelische Kirche? Wo würdest du heute sagen: „Hier stehe ich“?', '10 min Flugschriften teilen und kommentieren: zwei Dinge, die gelungen sind, ein Tipp'] }
     ]
   },
   lernziele: [
@@ -60,7 +60,7 @@ export const teacher = {
     ]
   },
   bonusTitel: 'Bonusspiele',
-  bonusText: 'Alle Bonusspiele sind freiwillig. Sie stehen unten auf der Karte und öffnen sich nach der genannten Station.',
+  bonusText: 'Alle Bonusspiele sind freiwillig. Sie stehen oben in der Leiste unter „Bonus“ und öffnen sich nach der genannten Station. Disputationen und das Spiel im Spiel stehen unter „Disputation“.',
   loesungenTitel: 'Lösungen',
   loesungenText: 'Die Lösungen werden aus den Spieldaten erzeugt. Öffne sie bewusst: Wer mitliest, sieht sie auch.',
   loesungenOeffnen: 'Lösungen zeigen', loesungenDruck: 'Geöffnete Lösungen werden mitgedruckt. Geschlossene nicht.',

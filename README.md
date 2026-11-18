@@ -2,7 +2,7 @@
 
 Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an acht Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
 
-**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Dazu Überarbeitung 1 nach dem ersten Durchspielen (`docs/UEBERARBEITUNG-1.md`): neue Startseite, Sammelkarten mit Kartenduell, neue Minispiele. Überarbeitung 2 (`docs/UEBERARBEITUNG-2.md`): das Kartenspiel „Disputation“ nach dem Vorbild von Gwent mit Tutorial, Leipzig als Station und einer Kampagne als Spiel im Spiel. Eine Erprobung am iPad und mit einer Klasse steht noch aus.
+**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Dazu Überarbeitung 1 nach dem ersten Durchspielen (`docs/UEBERARBEITUNG-1.md`): neue Startseite, Sammelkarten mit Kartenduell, neue Minispiele. Überarbeitung 2 (`docs/UEBERARBEITUNG-2.md`): das Kartenspiel „Disputation“ nach dem Vorbild von Gwent mit Tutorial, Leipzig als Station und einer Kampagne als Spiel im Spiel. Eine Erprobung am iPad und mit einer Klasse steht noch aus.
 
 ## Spielen
 
@@ -24,7 +24,7 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 - **Speichern:** Der Stand bleibt auf dem Gerät. Über den Titel oben öffnet sich das Menü mit dem Fortsetzungscode (acht Zeichen). Er merkt sich fertige Stationen und funktioniert auf jedem Gerät.
 - **Hilfen:** Jedes Rätsel hat drei gestufte Hilfen. Das Menü zeigt, wie viele genutzt wurden.
 - **Lehrkraftmodus:** Titel fünf Sekunden halten oder Umschalt + Enter. Dort lassen sich Stationen anspringen oder als gelöst markieren, und von dort geht es zum Kompendium (`lehrkraefte.html`) mit Schnellstart, Leitfaden, Lösungen, Fragen und Fachhinweisen.
-- **Bonusspiele:** Silbenrätsel, Druckerpresse (Taktspiel), Entführung (Steuerspiel mit Spitzeln), Lutherrose (zusammensetzen), Gottesdienst und zwei Fragen zum Nachdenken. Sie stehen unten auf der Karte und öffnen sich nach der passenden Station.
+- **Bonusspiele:** Silbenrätsel, Druckerpresse (Taktspiel), Entführung (Steuerspiel mit Spitzeln), Lutherrose (zusammensetzen) und Gottesdienst. Sie stehen oben in der Leiste unter „Bonus“. Disputationen und das Spiel im Spiel stehen daneben unter „Disputation“.
 - **Kartenspiel „Disputation“:** Erkenntnisse werden Sammelkarten. In Disputationen gegen Tetzel, Eck und den Sprecher des Kaisers entkräften sie die starken Karten der Kirche. Bruder Johannes erklärt das Spiel in einer Übung (Station 2).
 - **Das Spiel im Spiel:** Nach dem Finale eine Kampagne mit zwölf Gegnern, Sternen, neuen Karten und Anführern. Der Fortschritt bleibt auf dem Gerät.
 - **Datenschutz:** keine Namen, keine Konten, kein Server, keine externen Abrufe.

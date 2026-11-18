@@ -102,9 +102,9 @@ export function view(el, schritt, ctx, fertig) {
         h('ul', { class: 'klein' }, h('li', {}, t.kampStern1), h('li', {}, t.kampStern2), h('li', {}, fuelle(t.kampStern3, { n: kampagne.sterne.kleinDeck })))) : h('p', {}, t.kampNiederlageTipp),
       r.neueAnfuehrer.length ? h('p', { class: 'kamp-neu' }, fuelle(t.kampNeuerAnfuehrer, { name: r.neueAnfuehrer.map((a) => K(a).titel).join(t.und) })) : null,
       wahl.length ? h('div', { class: 'd-belohnung' }, h('p', { class: 'kicker' }, gewaehlt ? t.kampGewaehltKarte : t.kampWaehleKarte),
-        h('div', { class: 'kamp-wahl' }, wahl.map((kid) => h('span', { class: 'karte-huelle' },
-          kartenChip(K(kid), { gewaehlt: gewaehlt === kid, aus: Boolean(gewaehlt) && gewaehlt !== kid, onclick: gewaehlt ? null : () => { neu(rules.waehle(stand, kid)); zeichne(kid); } }),
-          h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(kid).titel }), onclick: () => zeigeKartenDetail(K(kid)) }, 'i'))))) : null,
+        // Antippen zeigt die Karte groß. Erst „Übernehmen“ nimmt sie in die Sammlung.
+        h('div', { class: 'kamp-wahl' }, wahl.map((kid) => kartenChip(K(kid), { gewaehlt: gewaehlt === kid, aus: Boolean(gewaehlt) && gewaehlt !== kid,
+          onclick: () => zeigeKartenDetail(K(kid), { knoepfe: gewaehlt ? [] : [knopf(t.kampUebernehmen, () => { neu(rules.waehle(stand, kid)); zeichne(kid); }, 'haupt')] }) })))) : null,
       h('div', { class: 'reihe fuss' }, knopf(t.duellNochmal, () => spiel(id), 'still'),
         knopf(t.kampZurUebersicht, uebersicht, 'haupt', { disabled: wahl.length > 0 && !gewaehlt }))));
     zeichne();

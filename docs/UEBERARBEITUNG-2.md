@@ -46,3 +46,11 @@ Wahllos gespielt gewinnt man fast nie. Kinder werden unter den Werten des klugen
 - **Fehler behoben:** Hatten beide Seiten keine Karten mehr, endeten zwei Runden auf einmal. Der Spieltisch zeigte aber nur das erste Rundenergebnis und blieb danach stehen. Jetzt folgen alle Rundenergebnisse nacheinander, dann das Ergebnis der Disputation.
 - **Anführer:** Wer keine Handkarten mehr hat, aber noch einen Anführer, passt nicht mehr von selbst. Er darf ihn noch spielen oder passen.
 - **Worms:** Luther steht dort selbst als Anführer auf deiner Seite.
+
+## Nachtrag 18.11.2026: Leiste, Bonusspiele, Entführung
+
+- **Eigene Reiter oben:** „Bonus“ (alle Bonusspiele mit Bild) und „Disputation“ (das Spiel im Spiel groß, darunter Übung und Revanchen). Die Karte zeigt nur noch die Stationen.
+- **Keine Minutenangaben** mehr bei Bonusspielen und Disputationen im Spiel. Das Kompendium nennt sie weiter für die Planung.
+- **„Nachdenken“** ist kein Bonusspiel mehr. Die beiden Fragen stehen im Kompendium als Impuls für die Doppelstunde.
+- **Entführung:** Der Wald ist blasser und dunkler. Wagen, Wartburg, Rastplätze und Spitzel sind hell umrandet und gut zu erkennen.
+- **Neue Karte wählen (Spiel im Spiel):** Antippen zeigt die Karte groß, erst „Übernehmen“ nimmt sie in die Sammlung.

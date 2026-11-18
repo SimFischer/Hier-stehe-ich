@@ -148,19 +148,19 @@ export const disputation = {
   // merker: Das Spiel zählt als Bonusspiel (Fortsetzungscode). Sonst bleibt nichts gespeichert außer dem Sieg.
   liste: ['uebung', 'duell-tetzel', 'duell-eck', 'duell-worms', 'kampagne'],
   raetsel: {
-    uebung: { id: 'uebung', titel: 'Übung: So geht die Disputation', nach: 's2', minuten: 3,
+    uebung: { id: 'uebung', titel: 'Übung: So geht die Disputation', nach: 's2', minuten: 3, bild: 'kunst-a-novize',
       kurz: 'Bruder Johannes erklärt dir das Kartenspiel Schritt für Schritt.',
       schritte: [{ art: 'duell', gegner: 'uebung', titel: 'Übung mit Bruder Johannes', szene: 'kloster' }] },
-    'duell-tetzel': { id: 'duell-tetzel', titel: 'Revanche gegen Tetzel', nach: 's4', minuten: 5,
+    'duell-tetzel': { id: 'duell-tetzel', titel: 'Revanche gegen Tetzel', nach: 's4', minuten: 5, bild: 'kunst-a-tetzel',
       kurz: 'Fordere Tetzel mit deinen neuen Karten heraus.',
       schritte: [{ art: 'duell', gegner: 'tetzel2', titel: 'Revanche gegen Tetzel', szene: 'jueterbog' }] },
-    'duell-eck': { id: 'duell-eck', titel: 'Revanche gegen Eck', nach: 'sl', minuten: 6,
+    'duell-eck': { id: 'duell-eck', titel: 'Revanche gegen Eck', nach: 'sl', minuten: 6, bild: 'kunst-a-eck',
       kurz: 'Spiel die Leipziger Disputation noch einmal.',
       schritte: [{ art: 'duell', gegner: 'eck', titel: 'Revanche gegen Eck', szene: 'leipzig' }] },
-    'duell-worms': { id: 'duell-worms', titel: 'Noch einmal in Worms', nach: 's6', minuten: 6,
+    'duell-worms': { id: 'duell-worms', titel: 'Noch einmal in Worms', nach: 's6', minuten: 6, bild: 'kunst-a-karl',
       kurz: 'Spiel die Disputation vor dem Reichstag noch einmal.',
       schritte: [{ art: 'duell', gegner: 'worms', titel: 'Vor Kaiser und Reich', szene: 'saal' }] },
-    kampagne: { id: 'kampagne', titel: 'Das Spiel im Spiel', nach: 'f', merker: true, minuten: 30,
+    kampagne: { id: 'kampagne', titel: 'Das Spiel im Spiel', nach: 'f', merker: true, minuten: 30, bild: 'kunst-a-leo',
       kurz: 'Zwölf Gegner, neue Karten und Anführer: das Kartenspiel als eigenes Abenteuer.',
       schritte: [{ art: 'kampagne', titel: 'Das Spiel im Spiel', szene: 'saal' }] }
   }

@@ -3,7 +3,7 @@ export const t = {
   // Allgemein
   weiter: 'Weiter', schliessen: 'Schließen', nochmal: 'Noch einmal spielen', richtig: 'Richtig.', nochEinmal: 'Das passt nicht. Versuch es noch einmal.',
   navigation: 'Spielleiste', menue: 'Menü öffnen', gesperrt: 'Das geht noch nicht. Sieh dich erst weiter um.',
-  karte: 'Karte', beutel: 'Beutel', notizbuch: 'Notizbuch', platten: 'Druckplatten',
+  karte: 'Karte', beutel: 'Beutel', notizbuch: 'Notizbuch', platten: 'Druckplatten', bonusReiter: 'Bonus', disputationReiter: 'Disputation',
   neueKarte: 'Neue Karte im Beutel: {titel}', tippBegriff: 'Tipp: Unterstrichene Wörter kannst du antippen. Dann erscheint eine Erklärung.', neueKarten: 'Neu in deinem Beutel',
   nacherzaehlt: 'Nacherzählt, kein wörtliches Zitat.', nacherzaehltKurz: '(nacherzählt)',
   nacherzaehltHinweis: 'Was Tetzel und der Sprecher des Kaisers im Spiel sagen, ist nacherzählt. Es sind keine wörtlichen Zitate.',
@@ -24,6 +24,7 @@ export const t = {
   einstellungen: 'Einstellungen', zuZweit: 'Wir spielen zu zweit', hilfenGezaehlt: 'Genutzte Hilfen: {n}',
   neu: 'Spiel neu beginnen', neuSicher: 'Wirklich alles löschen?',
   // Karte und Abschluss
+  karteHinweis: 'Bonusspiele und Disputationen findest du oben in der Leiste.',
   karteNochNicht: 'Die Karte bekommst du vom Meister. Sprich mit ihm und sieh dir den Setzkasten an.',
   ortFertig: 'erledigt', ortOffen: 'jetzt offen', ortZu: 'noch verschlossen',
   platteTitel: 'Druckplatte {n} von {von}', zurKarte: 'Zur Karte', zurDruckerei: 'Zur Druckerei',
@@ -42,7 +43,11 @@ export const t = {
   notizen: 'Was du gesehen hast', notizenLeer: 'Noch keine Einträge.', glossar: 'Wörter, die man kennen sollte',
   // Bonus, Lehrkraftmodus
   bonusTitel: 'Bonusspiele', bonusText: 'Freiwillig und kurz. Für alle, die schon fertig sind oder mehr wissen wollen.',
-  bonusOffen: 'offen, etwa {n} Minuten', bonusZu: 'öffnet sich nach „{ort}“', bonusFertig: 'Bonusspiel geschafft: {titel}',
+  bonusOffen: 'jetzt spielen', bonusZu: 'öffnet sich nach „{ort}“',
+  bonusFensterText: 'Freiwillige Spiele zwischendurch. Neue öffnen sich nach den Stationen.',
+  dispFensterText: 'Das Kartenspiel als eigenes Abenteuer. Sammle Karten, schlag die Gegner der Kirche und schalte Anführer frei.',
+  dispSpielImSpiel: 'Das Spiel im Spiel', dispSpielen: 'Spielen', dispWeitere: 'Weitere Disputationen',
+  dispFortschritt: '★ {n} von {von} · {k} neue Karten', bonusFertig: 'Bonusspiel geschafft: {titel}',
   lkTitel: 'Lehrkraftmodus', lkText: 'Dieser Bereich ist für Lehrkräfte. Er ist nicht geschützt: Wer ihn kennt, kann ihn öffnen.',
   lkKompendium: 'Lehrkräftekompendium öffnen ↗', lkStand: 'Stationen: {n} von {von} · Hilfen: {hilfen} · Bonusspiele: {bonus}',
   lkStufe: 'erledigt, Stufe {n} von 3', lkSpringen: 'Hinspringen', lkLoesen: 'Als gelöst markieren',
@@ -107,7 +112,7 @@ export const t = {
   kampStern1: '★ für den Sieg', kampStern2: '★ wenn du keine Runde verlierst', kampStern3: '★ mit höchstens {n} Karten im Deck',
   kampNiederlageTipp: 'Sieh dir die Karten des Gegners genau an und bau dein Deck neu. Neue Karten gewinnst du bei anderen Gegnern.',
   kampNeuerAnfuehrer: 'Neuer Anführer freigeschaltet: {name}',
-  kampWaehleKarte: 'Wähle eine neue Karte für deine Sammlung', kampGewaehltKarte: 'Neue Karte in deiner Sammlung',
+  kampWaehleKarte: 'Wähle eine neue Karte für deine Sammlung. Tippe sie an, um sie genau anzusehen.', kampUebernehmen: 'Übernehmen', kampGewaehltKarte: 'Neue Karte in deiner Sammlung',
   albumKampagne: 'Karten aus dem Spiel im Spiel', albumKampagneText: '{n} von {von} gewonnen.', albumKampagneFehlt: 'Noch nicht gewonnen',
   duellSiegKurz: 'gewonnen', duellNeueKarte: 'Neue Karte: {titel}',
   // Flugschrift

@@ -3,7 +3,7 @@ import { h, setzeInhalt } from './engine/ui.js';
 import { store, start, beiAenderung, aendere } from './engine/save.js';
 import { platten } from './engine/state.js';
 import { setzeStationHoerer } from './engine/szenen.js';
-import { zeigeKarte, zeigeBeutel, zeigeNotizbuch, zeigeMenue, zeigeAbschluss, zeigeStart, zeigeLehrkraft } from './engine/fenster.js';
+import { zeigeKarte, zeigeBeutel, zeigeNotizbuch, zeigeBonus, zeigeDisputation, zeigeMenue, zeigeAbschluss, zeigeStart, zeigeLehrkraft } from './engine/fenster.js';
 import { bildHtml, hatBild } from './engine/bilder.js';
 import { game } from '../data/game.js';
 import { t } from '../data/ui.js';
@@ -40,7 +40,9 @@ function aufbau() {
         leistenKnopf('karte', t.karte, 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14', zeigeKarte),
         h('button', { type: 'button', id: 'beutel', class: 'leisten-knopf', onclick: zeigeBeutel },
           h('span', { html: ico('M5 10h14l-1.2 10H6.2zM9 10V8a3 3 0 0 1 6 0v2') }), h('span', {}, t.beutel), h('span', { class: 'zahl' }, '0')),
-        leistenKnopf('notizbuch', t.notizbuch, 'M4 5c3-1 5.5-.8 8 1 2.5-1.8 5-2 8-1v14c-3-1-5.5-.8-8 1-2.5-1.8-5-2-8-1zM12 6v14', zeigeNotizbuch)),
+        leistenKnopf('notizbuch', t.notizbuch, 'M4 5c3-1 5.5-.8 8 1 2.5-1.8 5-2 8-1v14c-3-1-5.5-.8-8 1-2.5-1.8-5-2-8-1zM12 6v14', zeigeNotizbuch),
+        leistenKnopf('bonus', t.bonusReiter, 'M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5l-5.3 2.9 1.2-6-4.5-4.1 6-.7z', zeigeBonus),
+        leistenKnopf('disputation', t.disputationReiter, 'M3 8l6-3 4 10-6 3zM13 5h7v14h-7zM15.5 9h2M15.5 12h2', zeigeDisputation)),
       titelKnopf(),
       h('div', { id: 'platten', role: 'img' })),
     h('p', { id: 'ziel', role: 'status', 'aria-live': 'polite' }),

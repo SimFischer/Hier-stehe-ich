@@ -21,26 +21,6 @@ import { t } from '../../data/ui.js';
 export function zeigeKarte() {
   const s = store.state;
   if (!s.done.includes('p')) { melde(t.karteNochNicht); return; }
-  const bonusListe = Object.values(bonus).map((b) => {
-    const offen = s.done.includes(b.nach);
-    const fertig = s.bonus.includes(b.id);
-    return h('button', { type: 'button', class: `ort bonus${fertig ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen,
-      onclick: () => { dlg.close(); oeffneRaetsel(b.id, { bild: szene(s.szene), beiEnde: () => melde(fuelle(t.bonusFertig, { titel: b.titel })) }); } },
-      h('span', { class: 'nr' }, fertig ? '✓' : '+'), h('strong', {}, b.titel), h('span', {}, b.kurz),
-      h('em', {}, fertig ? t.ortFertig : offen ? fuelle(t.bonusOffen, { n: b.minuten }) : fuelle(t.bonusZu, { ort: station(b.nach).name })));
-  });
-  const duellListe = disputation.liste.map((id) => disputation.raetsel[id]).map((d) => {
-    const offen = s.done.includes(d.nach);
-    const gegner = d.schritte[0].gegner;
-    const sieger = disputation.gegner[gegner]?.siegAls || gegner;
-    // Erledigt: Sieg gegen den Gegner, Stufe 3 in Worms, die Übung im Kloster oder alle zwölf Gegner der Kampagne
-    const gewonnen = s.siege.includes(sieger) || (gegner === 'worms' && s.stufen.verhoer === 3) || (gegner === 'uebung' && s.done.includes('s2'))
-      || (d.id === 'kampagne' && Object.keys(ladeStand().sterne).length === kampagne.kapitel.flatMap((k) => k.gegner).length);
-    return h('button', { type: 'button', class: `ort bonus disputation${gewonnen ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen,
-      onclick: () => { dlg.close(); if (d.szene) zeigeSzene(d.szene); else oeffneRaetsel(d.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); } },
-      h('span', { class: 'nr' }, gewonnen ? '★' : '⚔'), h('strong', {}, d.titel), h('span', {}, d.kurz),
-      h('em', {}, gewonnen ? t.duellSiegKurz : offen ? fuelle(t.bonusOffen, { n: d.minuten }) : fuelle(t.bonusZu, { ort: station(d.nach).name })));
-  });
   const dlg = fenster(t.karte, h('div', {}, h('div', { class: 'weg' }, game.stationen.map((st) => {
     const fertig = s.done.includes(st.id);
     const offen = stationOffen(s, st);
@@ -49,8 +29,56 @@ export function zeigeKarte() {
       h('span', { class: 'nr' }, st.nr === 0 ? '★' : st.id === 'f' ? '✎' : String(st.nr)),
       h('strong', {}, st.name), h('span', {}, `${st.ort}, ${st.zeit}`),
       h('em', {}, fertig ? t.ortFertig : offen ? t.ortOffen : t.ortZu));
-  })), h('h3', { class: 'zwischen' }, t.duellTitel), h('p', { class: 'klein' }, t.duellListeText), h('div', { class: 'weg' }, duellListe),
-    h('h3', { class: 'zwischen' }, t.bonusTitel), h('p', { class: 'klein' }, t.bonusText), h('div', { class: 'weg' }, bonusListe)), { breit: true });
+  })), h('p', { class: 'klein karte-hinweis' }, t.karteHinweis)), { breit: true });
+}
+
+/** Kachel mit Bild für Bonusspiele und Disputationen. */
+function kachel({ bild, titel, kurz, status, offen, fertig, gross = false, onclick }) {
+  return h('button', { type: 'button', class: `kachel${gross ? ' gross' : ''}${fertig ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen, onclick },
+    h('span', { class: 'kachel-bild', 'aria-hidden': 'true', html: bildHtml(bild) }),
+    fertig ? h('span', { class: 'kachel-haken', 'aria-hidden': 'true' }, '✓') : null,
+    h('span', { class: 'kachel-text' }, h('strong', {}, titel), h('span', {}, kurz), h('em', {}, status)));
+}
+
+/** Reiter „Bonus“: alle Bonusspiele mit Bild. */
+export function zeigeBonus() {
+  const s = store.state;
+  const dlg = fenster(t.bonusTitel, h('div', { class: 'kacheln-fenster' },
+    h('p', {}, t.bonusFensterText),
+    h('div', { class: 'kacheln' }, Object.values(bonus).map((b) => {
+      const offen = s.done.includes(b.nach);
+      const fertig = s.bonus.includes(b.id);
+      return kachel({ bild: b.bild, titel: b.titel, kurz: b.kurz, offen, fertig,
+        status: fertig ? t.ortFertig : offen ? t.bonusOffen : fuelle(t.bonusZu, { ort: station(b.nach).name }),
+        onclick: () => { dlg.close(); oeffneRaetsel(b.id, { bild: szene(s.szene), beiEnde: () => melde(fuelle(t.bonusFertig, { titel: b.titel })) }); } });
+    }))), { breit: true });
+}
+
+/** Reiter „Disputation“: das Spiel im Spiel groß, darunter Übung und Revanchen. */
+export function zeigeDisputation() {
+  const s = store.state;
+  const oeffne = (d) => { dlg.close(); if (d.szene) zeigeSzene(d.szene); else oeffneRaetsel(d.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); };
+  const kamp = disputation.raetsel.kampagne;
+  const kampStand = ladeStand();
+  const alleGegner = kampagne.kapitel.flatMap((k) => k.gegner);
+  const sterne = Object.values(kampStand.sterne).reduce((n, x) => n + x, 0);
+  const kampOffen = s.done.includes(kamp.nach);
+  const weitere = disputation.liste.filter((id) => id !== 'kampagne').map((id) => disputation.raetsel[id]).map((d) => {
+    const offen = s.done.includes(d.nach);
+    const gegner = d.schritte[0].gegner;
+    const sieger = disputation.gegner[gegner]?.siegAls || gegner;
+    const gewonnen = s.siege.includes(sieger) || (gegner === 'worms' && s.stufen.verhoer === 3) || (gegner === 'uebung' && s.done.includes('s2'));
+    return kachel({ bild: d.bild, titel: d.titel, kurz: d.kurz, offen, fertig: gewonnen,
+      status: gewonnen ? t.duellSiegKurz : offen ? t.bonusOffen : fuelle(t.bonusZu, { ort: station(d.nach).name }), onclick: () => oeffne(d) });
+  });
+  const dlg = fenster(t.disputationReiter, h('div', { class: 'kacheln-fenster' },
+    h('p', {}, t.dispFensterText),
+    kachel({ bild: kamp.bild, titel: t.dispSpielImSpiel, kurz: kamp.kurz, offen: kampOffen, gross: true,
+      fertig: Object.keys(kampStand.sterne).length === alleGegner.length,
+      status: kampOffen ? fuelle(t.dispFortschritt, { n: sterne, von: alleGegner.length * 3, k: kampStand.karten.length }) : fuelle(t.bonusZu, { ort: station(kamp.nach).name }),
+      onclick: () => oeffne(kamp) }),
+    h('h3', { class: 'zwischen' }, t.dispWeitere),
+    h('div', { class: 'kacheln' }, weitere)), { breit: true });
 }
 
 export function zeigeBeutel() {
