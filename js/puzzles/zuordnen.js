@@ -1,6 +1,6 @@
 // Zuordnen: erst ein Teil antippen, dann das Ziel. Wird für Wandbild, Thesen, Strafen und die vier „allein“ benutzt.
 import { h, setzeInhalt, knopf, rich, fuelle } from '../engine/ui.js';
-import { bildHtml } from '../engine/bilder.js';
+import { bildHtml, kartenBild } from '../engine/bilder.js';
 
 const mitBild = (x) => (x.bild ? h('span', { class: 'zu-bild', 'aria-hidden': 'true', html: bildHtml(x.bild) }) : null);
 
@@ -27,8 +27,60 @@ export const rules = {
   fertig: (z, a) => a.items.every((i) => z.platz[i.id])
 };
 
+/** Die Druckvorlage (Station 5): Thesenblatt an der Tür, daneben fünf Druckformen mit den kurzen Fassungen. */
+function thesenView(el, schritt, ctx, fertig, a) {
+  const t = ctx.t;
+  let z = rules.start(a);
+  let hinweis = '';
+  let zuletzt = null; // gerade gedruckte These, für die Animation
+  const these = (itemId) => ctx.karte(itemId);
+  const zeichne = () => {
+    const offen = a.items.filter((i) => !z.platz[i.id]);
+    const jetzt = offen[0] || null;
+    const k = jetzt ? these(jetzt.id) : null;
+    const gedruckt = a.items.length - offen.length;
+    const blatt = k ? h('div', { class: `th-blatt${z.letzte && !z.letzte.richtig ? ' wackelt' : ''}` },
+      h('span', { class: 'th-nagel', 'aria-hidden': 'true' }),
+      h('span', { class: 'th-bild', 'aria-hidden': 'true', html: bildHtml(kartenBild(k).name) }),
+      h('div', { class: 'th-text' },
+        h('p', { class: 'th-nr' }, h('span', { class: 'th-initiale' }, String(k.nr)), fuelle(t.thesenNr, { nr: k.nr })),
+        h('p', { class: 'kicker' }, t.thesenAlt),
+        h('blockquote', { class: 'th-alt' }, k.alt),
+        h('p', { class: 'th-frage' }, t.thesenFrage)))
+      : h('div', { class: 'th-blatt fertig' }, h('span', { class: 'th-nagel', 'aria-hidden': 'true' }),
+        h('div', { class: 'th-text' }, h('p', { class: 'th-nr' }, t.thesenFertigTitel), h('p', {}, t.thesenFertigText)));
+    const fortschritt = h('div', { class: 'th-fortschritt', 'aria-label': fuelle(t.thesenFortschritt, { n: gedruckt, von: a.items.length }) },
+      a.items.map((i) => h('span', { class: `th-siegel${z.platz[i.id] ? ' an' : ''}${jetzt?.id === i.id ? ' jetzt' : ''}`, 'aria-hidden': 'true' }, String(these(i.id).nr))),
+      h('span', { class: 'klein' }, fuelle(t.thesenFortschritt, { n: gedruckt, von: a.items.length })));
+    const formen = h('div', { class: 'th-formen', role: 'group', 'aria-label': t.zuZiele }, a.ziele.map((zi) => {
+      const drin = a.items.find((i) => z.platz[i.id] === zi.id);
+      const kk = drin ? these(drin.id) : null;
+      const falsch = z.letzte && !z.letzte.richtig && z.letzte.ziel === zi.id;
+      return h('button', { type: 'button', class: `th-form${drin ? ' gedruckt' : ''}${drin && drin.id === zuletzt ? ' neu' : ''}${falsch ? ' falsch' : ''}`, disabled: Boolean(drin) || !jetzt,
+        onclick: () => {
+          const vorher = jetzt.id;
+          z = rules.zug(z, a, { item: vorher, ziel: zi.id });
+          hinweis = z.letzte.richtig ? '' : schritt.falsch;
+          zuletzt = z.letzte.richtig ? vorher : null;
+          zeichne();
+        } },
+        kk ? h('span', { class: 'th-stempel', 'aria-hidden': 'true' }, String(kk.nr)) : h('span', { class: 'th-lettern', 'aria-hidden': 'true' }),
+        h('strong', {}, zi.label),
+        kk ? h('em', {}, fuelle(t.thesenGedruckt, { nr: kk.nr })) : null);
+    }));
+    setzeInhalt(el,
+      h('p', { class: 'anweisung' }, rich(schritt.anweisung)),
+      h('div', { class: 'th-werkstatt' }, h('div', { class: 'th-links' }, blatt, fortschritt), formen),
+      h('div', { class: 'reihe fuss' },
+        h('p', { class: `rueck${hinweis ? ' offen' : ''}`, role: 'status' }, hinweis || (rules.fertig(z, a) ? t.zuFertig : t.thesenTipp)),
+        rules.fertig(z, a) ? knopf(t.weiter, () => fertig({}), 'haupt') : null));
+  };
+  zeichne();
+}
+
 export function view(el, schritt, ctx, fertig) {
   const a = aufbau(schritt, ctx.alleKarten);
+  if (schritt.layout === 'thesen') { thesenView(el, schritt, ctx, fertig, a); return; }
   const t = ctx.t;
   let z = rules.start(a);
   let wahl = null;

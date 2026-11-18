@@ -49,6 +49,9 @@ export const t = {
   lkHinweis: '„Hinspringen“ markiert alle Stationen davor als gelöst. Karten und Druckplatten werden dabei vergeben.',
   // Rätselblatt
   schritt: 'Schritt {n} von {von}', hilfe: 'Hilfe', hilfeStufe: 'Hilfe {n} von {von}:', raetselVerlassen: 'Rätsel verlassen',
+  thesenNr: 'These {nr}', thesenAlt: 'Luther schrieb auf Latein, hier übertragen:', thesenFrage: 'Welche Druckform sagt dasselbe in einfachen Worten?',
+  thesenFortschritt: '{n} von {von} gedruckt', thesenGedruckt: 'These {nr} gedruckt', thesenTipp: 'Tippe auf die passende Druckform.',
+  thesenFertigTitel: 'Die Druckvorlage ist fertig!', thesenFertigText: 'Alle fünf Thesen sind auf Deutsch gesetzt. Jetzt kann jeder sie lesen.',
   zuTeile: 'Teile', zuZiele: 'Plätze', zuTeilWaehlen: 'Tippe ein Teil an.', zuStapel: 'Teil {n} von {von}', zuZielWaehlen: 'Tippe jetzt den passenden Platz an.', zuFertig: 'Alles liegt richtig.',
   waageBild: 'Eine Waage. Links die Last der Sünden, rechts die guten Werke.', waageLast: 'Last der Sünden', waageLeer: 'noch leer', waageWerke: 'Gute Werke', waageNeueLast: 'Neue Last:', waageStart: 'Tippe auf ein Werk, um es in die rechte Schale zu legen.',
   standStrophe: 'Strophe {n}:', standPruefen: 'So stelle ich es', standNaechste: 'Nächste Strophe',

@@ -221,3 +221,63 @@ button.karte.sammel.gwent:hover:not(:disabled), button.karte.sammel.gwent:focus-
 .kamp-neu { font-weight: bold; color: var(--gruen); }
 .kamp-wahl { display: grid; grid-template-columns: repeat(3, minmax(0, 190px)); gap: var(--ab-4); }
 @media (max-width: 700px) { .kamp-gegner, .kamp-wahl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Die Druckvorlage: Thesenblatt an der Tür, Druckformen aus Holz ---------- */
+.art-zuordnen:has(.th-werkstatt) { gap: var(--ab-2); }
+.th-werkstatt { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: var(--ab-4); align-items: stretch; }
+.th-links { display: flex; flex-direction: column; gap: var(--ab-2); min-height: 0; padding: var(--ab-3);
+  background: repeating-linear-gradient(90deg, #5c3f26 0 46px, #4f3520 46px 48px, #66472c 48px 94px, #4f3520 94px 96px);
+  border: 4px solid #2a1c14; border-radius: 10px; box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.55); }
+.th-blatt { position: relative; flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(110px, 34%) 1fr; gap: var(--ab-3); align-items: start;
+  padding: var(--ab-4) var(--ab-4) var(--ab-3); transform: rotate(-0.8deg);
+  background: radial-gradient(ellipse at 30% 20%, #fdf7e6, #f1e2bd 70%, #e3cd98); color: var(--tinte);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), inset 0 0 22px rgba(120, 80, 30, 0.25); clip-path: polygon(0 1%, 3% 0, 97% 1%, 100% 0, 99% 98%, 96% 100%, 3% 99%, 0 100%);
+  animation: anschlagen 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.2); }
+.th-blatt.fertig { grid-template-columns: 1fr; text-align: center; place-content: center; }
+.th-nagel { position: absolute; top: 8px; left: 50%; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d8d2c8, #6a645c 60%, #2b2826); box-shadow: 0 2px 3px rgba(0, 0, 0, 0.6); }
+.th-bild { display: block; aspect-ratio: 3 / 4; overflow: hidden; border: 3px solid #2a1c14; border-radius: 6px; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35); margin-top: 10px; }
+.th-bild img { width: 100%; height: 100%; object-fit: cover; }
+.th-text { min-width: 0; }
+.th-nr { margin: 8px 0 var(--ab-2); font-size: 1.7rem; font-weight: bold; font-variant: small-caps; color: var(--tinte); line-height: 1.1; }
+.th-initiale { float: left; display: grid; place-items: center; min-width: 54px; height: 54px; margin: 0 10px 4px 0; padding: 0 6px; border-radius: 6px;
+  background: var(--rot); color: #fff3c4; font-size: 1.7rem; font-variant: normal; box-shadow: inset 0 0 0 2px #e7c56f, 0 2px 4px rgba(0, 0, 0, 0.4); }
+.th-alt { clear: both; margin: 0 0 var(--ab-3); padding: 0 0 0 var(--ab-3); border-left: 4px solid var(--rot); font-size: 1.2rem; line-height: 1.4; font-style: italic; }
+.th-frage { margin: 0; font-weight: bold; color: var(--gruen); }
+.th-blatt.wackelt { animation: bricht 0.5s ease-in-out; }
+@keyframes anschlagen { from { transform: translateY(-40px) rotate(-6deg) scale(0.9); opacity: 0; } to { transform: rotate(-0.8deg); opacity: 1; } }
+
+.th-fortschritt { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--pergament); }
+.th-fortschritt .klein { margin-left: auto; color: var(--ocker-hell); }
+.th-siegel { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; font-weight: bold; font-size: 0.9375rem;
+  background: rgba(0, 0, 0, 0.35); color: rgba(255, 255, 255, 0.5); border: 2px dashed rgba(240, 217, 166, 0.5); }
+.th-siegel.jetzt { border-style: solid; border-color: #f3d27a; color: #fff3c4; box-shadow: 0 0 10px rgba(243, 210, 122, 0.8); }
+.th-siegel.an { background: radial-gradient(circle at 35% 35%, #e0705a, #8a2a1a); color: #fff3c4; border: 2px solid #e7c56f; animation: aufleuchten 0.5s ease-out; }
+
+.th-formen { display: grid; grid-auto-rows: 1fr; gap: var(--ab-2); min-height: 0; }
+.th-form { position: relative; display: flex; align-items: center; gap: var(--ab-3); min-height: var(--tipp); padding: var(--ab-2) var(--ab-3) var(--ab-2) var(--ab-2); text-align: left; cursor: pointer; font: inherit;
+  color: #f3e6c8; background: linear-gradient(#4a4440, #2f2b28); border: 5px solid #6b4a30; border-radius: 6px;
+  box-shadow: inset 0 0 0 2px #1a130e, inset 0 6px 12px rgba(0, 0, 0, 0.5), 0 3px 6px rgba(0, 0, 0, 0.35); transition: transform 0.12s; }
+.th-form strong { font-size: 1.0625rem; line-height: 1.3; letter-spacing: 0.01em; }
+.th-form:hover:not(:disabled) { transform: translateY(-2px); box-shadow: inset 0 0 0 2px #1a130e, 0 0 0 3px #f3d27a, 0 6px 12px rgba(0, 0, 0, 0.4); }
+.th-lettern { flex: none; width: 34px; height: 34px; border-radius: 4px; background: repeating-linear-gradient(90deg, #9a948c 0 4px, #6d6760 4px 7px); box-shadow: inset 0 0 0 2px #2b2826; }
+.th-form.falsch { animation: bricht 0.5s ease-in-out; border-color: var(--rot); }
+.th-form.gedruckt { cursor: default; color: var(--tinte); background: radial-gradient(ellipse at 30% 20%, #fdf7e6, #efdfb8); border-color: #b48a5c;
+  box-shadow: inset 0 0 0 2px #e7c56f, 0 3px 6px rgba(0, 0, 0, 0.3); }
+.th-form.gedruckt em { margin-left: auto; font-size: 0.875rem; color: var(--gruen); font-weight: bold; white-space: nowrap; }
+.th-form.neu { animation: drucken 0.6s cubic-bezier(0.3, 1.4, 0.5, 1); }
+@keyframes drucken { 0% { transform: scale(1.06); filter: brightness(1.4); } 35% { transform: scale(0.94); } 100% { transform: none; filter: none; } }
+.th-stempel { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; font-weight: bold; color: #fff3c4;
+  background: radial-gradient(circle at 35% 35%, #e0705a, #8a2a1a); border: 2px solid #e7c56f; transform: rotate(-10deg); }
+.th-form:disabled:not(.gedruckt) { opacity: 0.6; }
+
+@media (orientation: portrait), (max-width: 760px) {
+  .th-werkstatt { grid-template-columns: 1fr; }
+  .th-blatt { grid-template-columns: 90px 1fr; }
+  .th-alt { font-size: 1.0625rem; }
+}
+@media (prefers-reduced-motion: reduce) { .th-blatt, .th-form.neu, .th-siegel.an { animation: none; } }
+.th-blatt { padding-top: calc(var(--ab-5) + 6px); }
+.th-nagel { top: 10px; left: 50%; }
+.th-nr { margin-top: 0; }
+.th-form.gedruckt, .th-form.gedruckt:disabled { opacity: 1; }

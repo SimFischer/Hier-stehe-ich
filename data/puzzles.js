@@ -185,8 +185,8 @@ export const puzzles = {
   druckwelle: {
     id: 'druckwelle', station: 's5', titel: 'Die Druckwelle', lernziel: [4],
     schritte: [
-      { art: 'zuordnen', titel: 'Die Druckvorlage', layout: 'liste', einzeln: true, quelle: 'thesen',
-        anweisung: 'Fünf Thesen sollen auf Deutsch gedruckt werden, so dass jeder sie versteht. Ordne jeder These ihre kurze Fassung zu.',
+      { art: 'zuordnen', titel: 'Die Druckvorlage', layout: 'thesen', einzeln: true, stapel: true, quelle: 'thesen',
+        anweisung: 'Fünf Thesen sollen auf Deutsch gedruckt werden, so dass jeder sie versteht. Lies die These und wähle die Druckform mit der passenden kurzen Fassung.',
         falsch: 'Diese Fassung sagt etwas anderes als die These. Lies beide noch einmal.',
         hilfen: [
           'Suche in jeder These das wichtigste Wort: Münze, sicher, bereut, Armen, Papst.',
