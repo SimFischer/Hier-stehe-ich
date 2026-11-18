@@ -1,0 +1,86 @@
+/* Obere Leiste im Stil des Spiels: dunkler Holzbalken mit Messingkante, Knöpfe wie Lederreiter,
+   der Titel auf einem Pergamentband, die Platten in einer eingelassenen Schatulle, darunter ein Pergamentstreifen. */
+:root { --messing: #c9a35c; --messing-dunkel: #8a6a34; --holz: #3b2a1d; --holz-dunkel: #24180f; --leder: #5a3a24; }
+
+.leiste {
+  position: relative; z-index: 2;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.09) 0 2px, transparent 2px 9px, rgba(255, 220, 170, 0.035) 9px 11px, transparent 11px 23px),
+    linear-gradient(180deg, #4a3423 0%, var(--holz) 45%, var(--holz-dunkel) 100%);
+  border-top: 2px solid var(--messing-dunkel);
+  border-bottom: 3px solid var(--messing);
+  box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.18), inset 0 -6px 10px rgba(0, 0, 0, 0.35), 0 3px 0 var(--holz-dunkel), 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* Knöpfe: Lederreiter mit Messingrand */
+.leisten-knopf {
+  color: #f3e6c8; font-weight: bold; letter-spacing: 0.01em;
+  background: linear-gradient(180deg, #6b462c, var(--leder) 55%, #432a19);
+  border: 2px solid var(--messing-dunkel); border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 225, 170, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.3), 0 2px 0 var(--holz-dunkel);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+}
+.leisten-knopf svg { color: var(--messing); filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.6)); }
+.leisten-knopf:hover { border-color: var(--messing); transform: translateY(-1px); background: linear-gradient(180deg, #7a5134, #613f27 55%, #4a2f1c); }
+.leisten-knopf:active { transform: translateY(1px); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); }
+.leisten-knopf[aria-pressed="true"] {
+  background: linear-gradient(180deg, var(--pergament-hell), var(--pergament-dunkel)); color: var(--tinte); border-color: var(--messing);
+  text-shadow: none;
+}
+.leisten-knopf[aria-pressed="true"] svg { color: var(--rot-dunkel); filter: none; }
+/* Zahl am Beutel: rotes Wachssiegel */
+.leisten-knopf .zahl {
+  display: inline-grid; place-items: center; min-width: 1.75em; height: 1.75em; padding: 0 0.25em;
+  background: radial-gradient(circle at 35% 30%, #c4583f, var(--rot-dunkel) 75%); color: #fff1c9;
+  border: 1px solid #5c1f12; border-radius: 50%; font-size: 0.8125rem; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 200, 160, 0.15);
+}
+
+/* Titel: Pergamentband mit eingeschnittenen Enden */
+#titel { gap: 2px; padding: 4px var(--ab-2); }
+#titel > strong {
+  position: relative; display: block; padding: 2px 2.2em 3px; color: var(--tinte); font-variant: small-caps; letter-spacing: 0.06em; line-height: 1.2;
+  background: linear-gradient(180deg, var(--pergament-hell), var(--pergament) 60%, var(--pergament-dunkel));
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.9em) 50%, 100% 100%, 0 100%, 0.9em 50%);
+  filter: drop-shadow(0 2px 0 var(--holz-dunkel));
+}
+#titel > strong::before, #titel > strong::after { content: "\2766"; position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.7em; color: var(--rot); }
+#titel > strong::before { left: 1.25em; transform: translateY(-50%) scaleX(-1); }
+#titel > strong::after { right: 1.25em; }
+#titel:hover > strong { background: linear-gradient(180deg, #fffaf0, var(--pergament-hell) 60%, var(--pergament)); }
+#ort { color: var(--messing); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+
+/* Platten: eingelassene Schatulle */
+#platten {
+  padding: 5px 7px; gap: 5px; border-radius: 8px;
+  background: linear-gradient(180deg, var(--holz-dunkel), #1a110a);
+  border: 1px solid var(--messing-dunkel);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 225, 170, 0.15);
+}
+.platte:not(.mit-bild) { border-color: rgba(201, 163, 92, 0.45); }
+
+/* Darunter: Pergamentstreifen statt gelber Fläche */
+#ziel {
+  position: relative; z-index: 1; color: var(--tinte); font-weight: bold;
+  background:
+    radial-gradient(ellipse at 20% 40%, rgba(160, 120, 60, 0.12), transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(160, 120, 60, 0.1), transparent 55%),
+    linear-gradient(180deg, var(--pergament-hell), var(--pergament) 70%, var(--pergament-dunkel));
+  border-bottom: 1px solid #b89c6a;
+  box-shadow: 0 3px 6px rgba(31, 26, 23, 0.18);
+}
+#ziel:not(:empty)::before, #ziel:not(:empty)::after { content: "\2767"; color: var(--rot); font-weight: normal; margin: 0 0.6em; }
+#ziel:not(:empty)::before { display: inline-block; transform: scaleX(-1); }
+
+/* Das Band bleibt einzeilig; wird es eng, rücken Knöpfe und Platten zusammen. */
+#titel > strong, #ort { white-space: nowrap; }
+@media (max-width: 1280px) {
+  .leiste { gap: var(--ab-2); }
+  .leisten-knopf { font-weight: normal; padding: 0 9px; gap: 6px; }
+  #titel > strong { padding: 2px 1.5em 3px; font-size: 1.1rem; }
+  #titel > strong::before, #titel > strong::after { display: none; }
+  #platten { gap: 3px; padding: 4px 5px; }
+  .platte.mit-bild { width: 26px; height: 28px; }
+}
+@media (max-width: 900px) { #titel > strong { padding: 2px 1.2em 3px; font-size: 1rem; } }

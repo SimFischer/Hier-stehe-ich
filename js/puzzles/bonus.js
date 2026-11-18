@@ -218,19 +218,29 @@ export const fahrtRules = {
   amZiel: (p, ziel) => Math.hypot(p.x - ziel.x, p.y - ziel.y) <= ziel.r
 };
 
-export function fahrt(el, schritt, ctx, fertig) {
-  const t = ctx.t, W = schritt.welt;
+export function fahrt(el, basis, ctx, fertig) {
+  const t = ctx.t, W = basis.welt;
+  // Stufe: Leicht nimmt den Schritt, wie er ist; Schwer legt die Werte aus basis.schwer darüber.
+  let schritt = basis, stufe = 'leicht';
+  const bestId = () => (stufe === 'leicht' ? 'fahrt' : `fahrt-${stufe}`);
   const bilder = { wald: ladeBild(W.bild), wagen: ladeBild(schritt.wagen), spitzel: ladeBild(schritt.spitzel), burg: ladeBild(schritt.burg) };
   const leinwand = h('canvas', { width: W.w, height: W.h, class: 'fahrt-leinwand', 'aria-label': schritt.anweisung });
   const g = leinwand.getContext('2d');
   const info = h('div', { class: 'zaehler' });
   const meldung = h('p', { class: 'rueck', role: 'status' });
   const unten = h('div', { class: 'reihe fuss' }, meldung);
-  const startKnopf = knopf(schritt.startKnopf, () => los(), 'haupt gross fahrt-start');
+  // Vor dem Start: Wahl der Stufe (ohne Stufen nur ein Los-Knopf)
+  const startKnopf = basis.stufen
+    ? h('div', { class: 'fahrt-start fahrt-stufen' }, h('p', {}, basis.stufeFrage),
+      h('div', { class: 'reihe mitte' }, ...basis.stufen.map((s) => h('button', { type: 'button', class: `knopf ${s.id === 'leicht' ? 'still' : 'haupt'} fahrt-stufe`, onclick: () => los(s.id) },
+        h('strong', {}, s.knopf), h('span', {}, s.kurz),
+        bestwert(s.id === 'leicht' ? 'fahrt' : `fahrt-${s.id}`) != null ? h('small', {}, fuelle(basis.bestwert, { n: bestwert(s.id === 'leicht' ? 'fahrt' : `fahrt-${s.id}`) })) : null))))
+    : knopf(schritt.startKnopf, () => los(), 'haupt gross fahrt-start');
   let p = { ...schritt.start, a: 0 }, rast = 0, zeit = 0, erwischt = 0, laeuft = false, fertigGefahren = false, letzt = 0, raf = 0, blitz = 0;
   const tasten = new Set(); let ziel = null;
-  const zeigeInfo = () => setzeInhalt(info, h('span', {}, fuelle(schritt.zeit, { n: Math.floor(zeit) })), h('span', {}, fuelle(schritt.erwischt, { n: erwischt })),
-    bestwert('fahrt') != null ? h('strong', {}, fuelle(schritt.bestwert, { n: bestwert('fahrt') })) : null);
+  const zeigeInfo = () => setzeInhalt(info, laeuft && basis.stufeName ? h('span', {}, basis.stufeName[stufe]) : null,
+    h('span', {}, fuelle(schritt.zeit, { n: Math.floor(zeit) })), h('span', {}, fuelle(schritt.erwischt, { n: erwischt })),
+    laeuft && bestwert(bestId()) != null ? h('strong', {}, fuelle(schritt.bestwert, { n: bestwert(bestId()) })) : null);
   const weltPunkt = (e) => { const r = leinwand.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * W.w, y: ((e.clientY - r.top) / r.height) * W.h }; };
   leinwand.addEventListener('pointerdown', (e) => { if (!laeuft) return; leinwand.setPointerCapture(e.pointerId); ziel = weltPunkt(e); });
   leinwand.addEventListener('pointermove', (e) => { if (ziel) ziel = weltPunkt(e); });
@@ -305,12 +315,15 @@ export function fahrt(el, schritt, ctx, fertig) {
     raf = requestAnimationFrame(schleife);
   }
   function stop() { laeuft = false; cancelAnimationFrame(raf); document.removeEventListener('keydown', runter); document.removeEventListener('keyup', hoch); }
-  function los() { startKnopf.remove(); laeuft = true; letzt = 0; leinwand.focus(); }
+  function los(id = 'leicht') {
+    stufe = id; schritt = id !== 'leicht' && basis[id] ? { ...basis, ...basis[id] } : basis;
+    startKnopf.remove(); laeuft = true; letzt = 0; zeigeInfo(); leinwand.focus();
+  }
   function ende() {
     stop(); fertigGefahren = true;
-    const best = bestwert('fahrt', Math.floor(zeit), true);
+    const best = bestwert(bestId(), Math.floor(zeit), true);
     meldung.className = 'rueck'; setzeInhalt(meldung, schritt.ende, ' ', h('strong', {}, fuelle(schritt.bestwert, { n: best })));
-    unten.append(knopf(t.nochmal, () => fahrt(el, schritt, ctx, fertig), 'still'), knopf(t.weiter, () => fertig({}), 'haupt'));
+    unten.append(knopf(t.nochmal, () => fahrt(el, basis, ctx, fertig), 'still'), knopf(t.weiter, () => fertig({}), 'haupt'));
   }
   document.addEventListener('keydown', runter); document.addEventListener('keyup', hoch);
   zeigeInfo();

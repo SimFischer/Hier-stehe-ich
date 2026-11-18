@@ -75,6 +75,27 @@ export const bonus = {
           { weg: [[1200, 250], [1200, 950]], tempo: 150 },
           { weg: [[400, 250], [1200, 250]], tempo: 110 }
         ],
+        // Schwer: schnellere Spitzel mit weiterem Blick, ein Reiter im Süden, zwei Posten an den Kreuzungen im Osten
+        // und nur zwei Rastplätze. Durch kommt, wer den Weg plant: über den Süden und dann durch die Mitte.
+        schwer: {
+          rast: [{ x: 110, y: 600 }, { x: 400, y: 800 }, { x: 1350, y: 580 }],
+          sicht: { weite: 250, winkel: 34 },
+          wachen: [
+            { weg: [[400, 600], [1050, 600]], tempo: 175 },
+            { weg: [[800, 250], [800, 950]], tempo: 150 },
+            { weg: [[1200, 250], [1200, 950]], tempo: 188 },
+            { weg: [[400, 250], [1200, 250]], tempo: 138 },
+            { weg: [[450, 950], [1150, 950]], tempo: 110 },
+            { posten: [1200, 950], von: 180, bis: 270, schwenk: 0.7 },
+            { posten: [1200, 250], von: 90, bis: 180, schwenk: 0.6 }
+          ]
+        },
+        stufeFrage: 'Wie schwer soll die Fahrt sein?',
+        stufen: [
+          { id: 'leicht', knopf: 'Leicht', kurz: 'Vier Spitzel, drei Rastplätze' },
+          { id: 'schwer', knopf: 'Schwer', kurz: 'Sieben Spitzel und Posten, nur ein Rastplatz unterwegs' }
+        ],
+        stufeName: { leicht: 'Leicht', schwer: 'Schwer' },
         zeit: 'Zeit: {n} s', erwischt: 'Gesehen: {n}', bestwert: 'Bestzeit: {n} s', startKnopf: 'Los!',
         gesehen: 'Ein Spitzel hat euch gesehen! Zurück zum letzten Rastplatz.',
         rastErreicht: 'Rastplatz erreicht. Wer jetzt gesehen wird, beginnt hier.',

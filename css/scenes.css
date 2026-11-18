@@ -346,6 +346,11 @@ details.info .lesetext { max-width: none; }
 .fahrt-rahmen { position: relative; flex: 1; min-height: 0; display: grid; place-items: center; }
 .fahrt-leinwand { display: block; max-width: 100%; max-height: 100%; width: auto; height: 100%; aspect-ratio: 4 / 3; border: 3px double var(--tinte); border-radius: 8px; touch-action: none; background: #3e5b45; }
 .fahrt-start { position: absolute; font-size: 1.6rem; padding: var(--ab-3) var(--ab-6); }
+.fahrt-stufen { font-size: 1rem; text-align: center; background: rgba(42, 28, 20, 0.88); color: #f3e6c8; border: 2px solid #b48a5c; border-radius: 10px; padding: var(--ab-4) var(--ab-5); }
+.fahrt-stufen > p { margin: 0 0 var(--ab-3); font-weight: bold; font-size: 1.2rem; }
+.fahrt-stufe { display: grid; gap: 2px; min-width: 12rem; padding: var(--ab-3) var(--ab-4); }
+.fahrt-stufe strong { font-size: 1.4rem; }
+.fahrt-stufe span, .fahrt-stufe small { font-size: 0.875rem; font-weight: normal; }
 .rose-feld { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--ab-4); align-items: center; flex: 1; min-height: 0; }
 .rose-bild { position: relative; width: min(100%, 60cqh); aspect-ratio: 1; margin: 0 auto; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 18px, rgba(31, 26, 23, 0.06) 18px 20px); border: 3px dashed #b9ad97; }
 .rose-schicht { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); animation: einsetzen 0.35s ease-out; }

@@ -95,6 +95,31 @@ test('Entführung: Blickkegel, Rastplätze sicher, ein vorsichtiger Fahrer kommt
   assert.ok(Math.abs(neben.y - 600) <= s.wegBreite / 2, 'Vom Weg kommt man nicht ab');
 });
 
+test('Entführung schwer: Rastplätze sicher, mit geplantem Weg lösbar', () => {
+  const basis = bonus.entfuehrung.schritte.find((x) => x.art === 'fahrt');
+  const s = { ...basis, ...basis.schwer };
+  assert.ok(s.wachen.length > basis.wachen.length, 'mehr Spitzel als leicht');
+  assert.deepEqual(basis.stufen.map((x) => x.id), ['leicht', 'schwer']);
+  const gesehen = (p, t) => s.wachen.some((w) => fahrtRules.gesehen(p, fahrtRules.wachePos(w, t), s.sicht));
+  for (let t = 0; t < 90; t += 0.1) for (const r of s.rast) assert.ok(!gesehen(r, t), `Rastplatz ${r.x},${r.y} wird zur Zeit ${t.toFixed(1)} gesehen`);
+  for (const w of s.wachen.filter((x) => x.weg)) for (const [x, y] of w.weg) assert.ok(fahrtRules.naechster({ x, y }, s.wege).d < 1, 'Spitzel reiten auf Wegen');
+  for (const w of s.wachen.filter((x) => x.posten)) assert.ok(fahrtRules.naechster({ x: w.posten[0], y: w.posten[1] }, s.wege).d < 1, 'Posten stehen am Weg');
+  // Geplanter Weg: über den Süden, dann durch die Mitte zur Burg. Wer gesehen wird, beginnt am letzten Rastplatz.
+  const ziele = [[400, 800], [400, 950], [800, 950], [800, 600], [1200, 600], [1350, 580]].map(([x, y]) => ({ x, y })).concat(s.ziel);
+  let p = { ...s.start }, t = 0, n = 0, r = 0, nr = 0;
+  const dt = 0.05;
+  while (!fahrtRules.amZiel(p, s.ziel) && t < 300) {
+    const z = ziele[n];
+    const weiter = fahrtRules.fahreZu(p, z, s.tempo * dt, s);
+    if (!gesehen(weiter, t + dt)) p = weiter;
+    t += dt;
+    if (gesehen(p, t)) { p = { ...s.rast[r] }; n = nr; }
+    if (n < ziele.length - 1 && Math.hypot(p.x - z.x, p.y - z.y) < 20) n += 1;
+    s.rast.forEach((q, i) => { if (i > r && Math.hypot(p.x - q.x, p.y - q.y) < 30) { r = i; nr = n; } });
+  }
+  assert.ok(fahrtRules.amZiel(p, s.ziel), `Ziel nach ${t.toFixed(0)} s nicht erreicht`);
+});
+
 test('Lutherrose: Schichten nur von außen nach innen', () => {
   const s = bonus.lutherrose.schritte.find((x) => x.art === 'rose');
   let z = roseRules.start();
