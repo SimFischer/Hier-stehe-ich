@@ -6,9 +6,7 @@ Jeder Prompt unten ist vollständig: Stilrahmen, Zusatz für die Bildart und das
 
 ## Stand am 18.11.2026
 
-Eingebaut: Leipzig, Eck, Student, Kaplan, Spieltisch, beide Kartenrücken, alle zehn Symbole, alle 16 Kirchenkarten und 12 von 24 Karten Luthers.
-
-Noch offen: Kartenbilder für `kunst-t32`, `kunst-t36`, `kunst-t43`, `kunst-t86`, `kunst-k7`, `kunst-k8`, `kunst-k13`, `kunst-n2`, `kunst-k9`, `kunst-k10`, `kunst-k11`, `kunst-k14`. Bis dahin zeigen diese Karten ihr bisheriges Bild.
+Eingebaut: Leipzig, Eck, Student, Kaplan, Spieltisch, beide Kartenrücken, alle zehn Symbole und alle 40 Kartenbilder. Aus dieser Liste fehlt nichts mehr.
 
 ## So kommen die Bilder ins Spiel
 

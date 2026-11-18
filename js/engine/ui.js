@@ -90,25 +90,56 @@ export function faehigkeiten(k) {
   return aus;
 }
 
-/** Sammelkarte: Bild, Name, Stärke, Kartenart, Seltenheit, Fähigkeiten und Text.
- *  klein: ohne Text, für Hand und Auswahl. mini: nur Name und Stärke, für lange Listen. */
-export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = false, mini = false, aus = false, extra = '' } = {}) {
+/** Sammelkarte im Stil von Gwent: Das Bild füllt die Karte. Links ein Band mit Stärke und Kartenart, unten das Namensschild.
+ *  Fähigkeiten und Kartentext stehen nicht auf der Karte, sondern in der Detailansicht (zeigeKartenDetail).
+ *  klein: für Hand und Deckbau. text: kurzer Kartentext im Namensschild (Thesen-Auswahl). mini: nur Name und Stärke, für lange Listen. */
+export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = false, mini = false, aus = false, extra = '', text = false } = {}) {
   const typ = karte.typ || karte.art;
   const rar = karte.seltenheit ? ` rar-${karte.seltenheit}` : '';
-  // Seltenheit zeigt der Rahmen und ein farbiger Stein; das Wort steht im Titel-Tipp und in der Bildschirmleser-Beschreibung.
   const staerke = karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null;
   if (mini) return h(onclick ? 'button' : 'span', { type: onclick ? 'button' : null, class: `karte sammel mini typ-${typ}${rar}${gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': onclick ? String(gewaehlt) : null, onclick },
     h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke));
-  const faehig = faehigkeiten(karte);
   const bild = kartenBild(karte);
-  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte sammel typ-${typ}${rar}${bild.kunst ? ' mit-kunst' : ''}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''} ${extra}`.trim(),
+  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null,
+    class: `karte sammel gwent typ-${typ}${rar}${bild.kunst ? ' mit-kunst' : ''}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''}${text ? ' mit-text' : ''} ${extra}`.trim(),
     'aria-pressed': onclick ? String(gewaehlt) : null, disabled: aus, onclick,
-    'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', karte.seltenheit ? t.seltenheit[karte.seltenheit] : '', ...faehig, klein ? '' : karte.text].filter(Boolean).join('. ') },
-    h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke),
-    h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }, karte.nr ? h('span', { class: 'k-nr' }, String(karte.nr)) : null),
-    h('span', { class: 'k-typ' }, h('span', { 'aria-hidden': 'true', html: symbolHtml(typ) }), t.typen[typ] || typ, karte.seltenheit ? h('em', { class: 'k-rar', title: t.seltenheit[karte.seltenheit] }) : null),
-    faehig.length ? h('span', { class: 'k-faehig' }, faehig.map((f) => h('span', {}, f))) : null,
-    klein ? null : h('span', { class: 'k-text' }, karte.text));
+    'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', karte.seltenheit ? t.seltenheit[karte.seltenheit] : '', ...faehigkeiten(karte), karte.text].filter(Boolean).join('. ') },
+    h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }),
+    h('span', { class: 'k-band', 'aria-hidden': 'true' }, staerke, h('span', { class: 'k-zeichen', html: symbolHtml(typ) })),
+    karte.nr ? h('span', { class: 'k-nr', 'aria-hidden': 'true' }, String(karte.nr)) : null,
+    h('span', { class: 'k-schild', 'aria-hidden': 'true' }, h('strong', {}, karte.titel), text ? h('span', { class: 'k-kurz' }, karte.text) : null));
+}
+
+/** Große Karte mit allem, was auf ihr steht: Bild, Name, Art, Seltenheit, Fähigkeiten, Kartentext.
+ *  zusatz: weitere Zeilen (zum Beispiel die aktuelle Stärke im Spiel). knoepfe: Knöpfe unter dem Text. */
+export function kartenDetail(karte, { zusatz = [], knoepfe = [] } = {}) {
+  const typ = karte.typ || karte.art;
+  const faehig = faehigkeiten(karte);
+  return h('div', { class: `karten-detail typ-${typ}` },
+    kartenChip(karte, { extra: 'gross' }),
+    h('div', { class: 'kd-text' },
+      h('h3', {}, karte.titel),
+      h('p', { class: 'kd-art' }, h('span', { 'aria-hidden': 'true', html: symbolHtml(typ) }), t.typen[typ] || typ,
+        karte.seltenheit ? h('span', { class: `kd-rar rar-${karte.seltenheit}` }, t.seltenheit[karte.seltenheit]) : null,
+        karte.staerke ? h('span', { class: 'kd-staerke' }, fuelle(t.kartenStaerke, { n: karte.staerke })) : null),
+      faehig.length ? h('ul', { class: 'kd-faehig' }, faehig.map((f) => h('li', {}, f))) : null,
+      h('p', { class: 'kd-zitat' }, karte.text),
+      zusatz.filter(Boolean).map((z) => h('p', { class: 'kd-zusatz' }, z)),
+      knoepfe.length ? h('div', { class: 'reihe' }, knoepfe) : null));
+}
+
+/** Detailansicht über allem, als eigenes Dialogfenster (liegt auch über anderen Fenstern wie dem Album).
+ *  Antippen daneben, Escape oder „Zurück“ schließt sie. */
+export function zeigeKartenDetail(karte, { zusatz = [], knoepfe = [] } = {}) {
+  document.getElementById('karten-ansicht')?.remove();
+  const zu = () => { if (dlg.open) dlg.close(); };
+  const dlg = h('dialog', { id: 'karten-ansicht', 'aria-label': karte.titel, onclick: (e) => { if (e.target === dlg) zu(); } },
+    kartenDetail(karte, { zusatz, knoepfe: [knopf(t.zurueck, zu, 'still'), ...knoepfe.map((k) => { k.addEventListener('click', zu); return k; })] }));
+  dlg.addEventListener('close', () => dlg.remove());
+  document.body.append(dlg);
+  dlg.showModal();
+  dlg.querySelector('.haupt, button')?.focus();
+  return zu;
 }
 
 /** Ersetzt den Inhalt eines Elements. Leere Einträge (null, false) werden übersprungen. */

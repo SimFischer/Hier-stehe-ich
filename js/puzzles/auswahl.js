@@ -39,8 +39,8 @@ export function view(el, schritt, ctx, fertig) {
     const fehlend = schritt.erinnerung ? rules.fehlend(ctx.alleKarten, beutel) : [];
     setzeInhalt(el, 
       h('p', { class: 'anweisung' }, rich(schritt.anweisung || d.deckEinleitung)),
-      h('div', { class: `hand wahl${vorrat.length > 8 ? ' viele' : ''}` }, vorrat.map((k) => kartenChip(schritt.quelle === 'thesen' ? { ...k, text: k.text } : k,
-        { klein: vorrat.length > 8, gewaehlt: wahl.includes(k.id), onclick: () => { wahl = rules.umschalten(wahl, k.id, schritt.anzahl); rueck = ''; zeichne(); } }))),
+      h('div', { class: `hand wahl${vorrat.length > 8 ? ' viele' : ''}` }, vorrat.map((k) => kartenChip(k,
+        { klein: vorrat.length > 8, text: schritt.quelle === 'thesen', gewaehlt: wahl.includes(k.id), onclick: () => { wahl = rules.umschalten(wahl, k.id, schritt.anzahl); rueck = ''; zeichne(); } }))),
       fehlend.length ? h('div', { class: 'erinnerung' }, h('span', { class: 'klein' }, d.erinnerung),
         fehlend.map((k) => knopf(k.titel, () => { erinnere = k; rueck = ''; zeichne(); }, 'still klein'))) : null,
       h('div', { class: 'reihe fuss' },

@@ -81,7 +81,8 @@ async function pruefeSchritt(id, i, daten) {
   const koerper = blatt.querySelector('.blatt-koerper');
   await bilderGeladen(blatt);
   const fehler = [...seitlich()];
-  if (koerper.scrollHeight > koerper.clientHeight + 2) fehler.push(`Rätselblatt scrollt (${koerper.scrollHeight - koerper.clientHeight}px)`);
+  // Ausnahme: Vorbereitung der Disputation (Deckbau) darf scrollen, der Spieltisch nicht.
+  if (!koerper.querySelector('.d-vor') && koerper.scrollHeight > koerper.clientHeight + 2) fehler.push(`Rätselblatt scrollt (${koerper.scrollHeight - koerper.clientHeight}px)`);
   if (koerper.scrollWidth > koerper.clientWidth + 2) fehler.push(`Rätselblatt zu breit (${koerper.scrollWidth - koerper.clientWidth}px)`);
   fehler.push(...kleinteile(blatt));
   blatt.querySelector('.blatt-kopf .schliess')?.click();

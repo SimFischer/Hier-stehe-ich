@@ -30,7 +30,7 @@ export const t = {
   endeTitel: 'Geschafft!', endeText: 'Du hast Luthers Weg von 1505 bis 1522 nachgezeichnet. Zeigt euch eure Flugschriften und vergleicht: Welche Gründe habt ihr gewählt?',
   beutelLeer: 'Dein Beutel ist noch leer. Karten bekommst du an den Stationen.',
   albumStand: '{n} von {von} Karten gesammelt', albumFehlt: 'Noch nicht gefunden', albumWo: 'Station {nr}',
-  kartenStaerke: 'Stärke {n}', und: ' und ', zurueck: 'Zurück',
+  kartenStaerke: 'Stärke {n}', kartenInfo: '{titel} groß ansehen', und: ' und ', zurueck: 'Zurück',
   albumKirche: 'Karten der Kirche', albumKircheText: 'Diese Karten hast du in einer Disputation gesehen: {n} von {von}.', albumDuell: 'Sieg gegen {name}', albumLuther: 'Deine Karten',
   albumKircheFehlt: 'Noch nicht gesehen',
   typen: { gottesbild: 'Gottesbild', gnade: 'Gnade', bibel: 'Bibel', wissen: 'Wissen', these: 'These', kirche: 'Kirche', druck: 'Druck', gewissen: 'Gewissen', menschen: 'Menschen', rom: 'Rom' },

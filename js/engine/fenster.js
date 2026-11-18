@@ -1,5 +1,5 @@
 // Fenster über dem Spiel: Karte, Argumentebeutel, Notizbuch, Menü, Stationsabschluss, Startseite.
-import { h, setzeInhalt, knopf, rich, fenster, kartenChip, fuelle, melde } from './ui.js';
+import { h, setzeInhalt, knopf, rich, fenster, kartenChip, zeigeKartenDetail, fuelle, melde } from './ui.js';
 import { store, aendere, ersetze } from './save.js';
 import { neuerStand, station, szene, stationOffen, hotspotFlag, platten, loeseStation, springeZu } from './state.js';
 import { oeffneRaetsel } from './raetsel.js';
@@ -62,10 +62,10 @@ export function zeigeBeutel() {
     h('p', { class: 'rar-legende' }, Object.entries(t.seltenheit).map(([k, v]) => h('span', { class: k }, v))),
     h('p', { class: 'kicker' }, fuelle(t.albumStand, { n, von: cards.length })),
     n ? null : h('p', {}, t.beutelLeer),
-    h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k) : leer(k)))),
+    h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k, { onclick: () => zeigeKartenDetail(k) }) : leer(k)))),
     h('h3', { class: 'zwischen' }, t.albumKirche),
     h('p', { class: 'kicker' }, fuelle(t.albumKircheText, { n: gesehen.size, von: disputation.kirche.length })),
-    h('div', { class: 'hand album-karten' }, disputation.kirche.map((k) => (gesehen.has(k.id) ? kartenChip(k) : leer(k, true))))), { breit: true });
+    h('div', { class: 'hand album-karten' }, disputation.kirche.map((k) => (gesehen.has(k.id) ? kartenChip(k, { onclick: () => zeigeKartenDetail(k) }) : leer(k, true))))), { breit: true });
 }
 
 export function zeigeNotizbuch() {
@@ -145,7 +145,7 @@ export function zeigeAbschluss(ids) {
     h('div', { class: 'abschluss' },
       st.platte ? h('div', { class: 'platte-gross', html: bildHtml(st.bild) }, h('strong', {}, st.platte)) : null,
       h('p', {}, rich(st.abschluss)),
-      neu.length ? h('div', {}, h('h3', {}, t.neueKarten), h('div', { class: 'hand' }, neu.map((k) => kartenChip(k)))) : null,
+      neu.length ? h('div', {}, h('h3', {}, t.neueKarten), h('div', { class: 'hand' }, neu.map((k) => kartenChip(k, { onclick: () => zeigeKartenDetail(k) })))) : null,
       ende ? h('p', {}, t.endeText) : null,
       h('div', { class: 'reihe' }, ende ? knopf(t.schliessen, () => dlg.close(), 'haupt')
         : knopf(st.id === 's7' ? t.zurDruckerei : t.zurKarte, () => { dlg.close(); if (st.id === 's7') zeigeSzene(game.start); else zeigeKarte(); }, 'haupt'))));

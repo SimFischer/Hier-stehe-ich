@@ -1,5 +1,5 @@
 // Kartenspiel „Disputation“: Spieltisch. Die Regeln stehen in duell-regeln.js.
-import { h, setzeInhalt, knopf, kartenChip, fuelle } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
 import { bildHtml, figurHtml, kartenBild, bildUrl } from '../engine/bilder.js';
 import { disputation } from '../../data/disputation.js';
 import { rules, K, wert, summe, entkraeftet, deckVorschlag } from './duell-regeln.js';
@@ -59,7 +59,8 @@ export function view(el, schritt, ctx, fertig) {
         zuViel ? [
           h('h3', { class: 'zwischen' }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
           h('p', { class: 'klein' }, t.duellDeckText),
-          h('div', { class: 'hand d-sammlung' }, besitz.map((id) => kartenChip(K(id), { klein: true, gewaehlt: deck.includes(id), onclick: () => umschalten(id) })))
+          h('div', { class: 'hand d-sammlung' }, besitz.map((id) => h('span', { class: 'karte-huelle' }, kartenChip(K(id), { klein: true, gewaehlt: deck.includes(id), onclick: () => umschalten(id) }),
+            h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(id).titel }), onclick: () => gross({ id }) }, 'i'))))
         ] : h('p', { class: 'klein' }, fuelle(t.duellAlleKarten, { n: deck.length })),
         h('div', { class: 'reihe fuss' }, h('span', {}), knopf(t.duellLos, starte, 'haupt', { disabled: !ok }))));
   }
@@ -185,21 +186,15 @@ export function view(el, schritt, ctx, fertig) {
 
   // ---------- Großansicht einer Karte ----------
   function gross({ id, seite, uid, hand }) {
-    document.querySelector('.d-gross')?.remove();
     const k = K(id);
     const inst = seite && uid ? z?.seiten[seite].reihe.find((x) => x.uid === uid) : null;
     const jetzt = inst ? wert(z, seite, inst) : null;
-    const zu = () => huelle.remove();
     const vorsprung = hand ? rules.vorsprungNach(z, 'luther', uid) : null;
-    const huelle = h('div', { class: 'd-gross', role: 'dialog', 'aria-label': k.titel, onclick: (e) => { if (e.target === huelle) zu(); } },
-      h('div', { class: 'd-gross-karte' },
-        kartenChip(k, { extra: 'gross' }),
-        jetzt != null && jetzt !== k.staerke ? h('p', { class: 'klein' }, fuelle(t.duellJetzt, { n: jetzt })) : null,
-        hand ? h('p', { class: 'klein' }, fuelle(vorsprung > 0 ? t.duellDannVorne : t.duellDannHinten, { n: Math.abs(vorsprung) })) : null,
-        h('div', { class: 'reihe' }, knopf(t.zurueck, zu, 'still'),
-          hand ? knopf(t.duellAusspielen, () => { zu(); z = rules.spiele(z, 'luther', uid); weiter(); }, 'haupt') : null)));
-    el.append(huelle);
-    huelle.querySelector('.haupt, button')?.focus();
+    zeigeKartenDetail(k, {
+      zusatz: [jetzt != null && jetzt !== k.staerke ? fuelle(t.duellJetzt, { n: jetzt }) : null,
+        hand ? fuelle(vorsprung > 0 ? t.duellDannVorne : t.duellDannHinten, { n: Math.abs(vorsprung) }) : null],
+      knoepfe: hand ? [knopf(t.duellAusspielen, () => { z = rules.spiele(z, 'luther', uid); weiter(); }, 'haupt')] : []
+    });
   }
 
   // ---------- Ergebnis ----------
