@@ -4,7 +4,9 @@ import { rules, K, summe, entkraeftet } from '../js/puzzles/duell-regeln.js';
 /** Ein Zug Luthers. typ: 'klug' (kontert und spart) oder 'zufall'. */
 export function lutherZug(z, typ, rnd) {
   const l = z.seiten.luther; const k = z.seiten.kirche;
-  if (typ === 'zufall') return rnd() < 0.15 || !l.hand.length ? { art: 'passe' } : { art: 'spiele', uid: l.hand[Math.floor(rnd() * l.hand.length)].uid };
+  if (typ === 'zufall') return rnd() < 0.15 || !l.hand.length ? (l.anfuehrer && !l.hand.length && rnd() < 0.5 ? { art: 'spiele', uid: l.anfuehrer.uid } : { art: 'passe' }) : { art: 'spiele', uid: l.hand[Math.floor(rnd() * l.hand.length)].uid };
+  // Nur noch der Anführer übrig: spielen, wenn er die Führung bringt, sonst passen
+  if (!l.hand.length) return l.anfuehrer && rules.vorsprungNach(z, 'luther', l.anfuehrer.uid) > 0 ? { art: 'spiele', uid: l.anfuehrer.uid } : { art: 'passe' };
   const vorne = summe(z, 'luther') - summe(z, 'kirche');
   const opt = l.hand.map((x) => ({ uid: x.uid, k: K(x.id), nach: rules.vorsprungNach(z, 'luther', x.uid) }));
   const konter = opt.filter((o) => (o.k.entkraeftet || []).some((id) => k.reihe.some((c) => c.id === id && !entkraeftet(z, 'kirche', c))));
@@ -27,7 +29,7 @@ export function lutherZug(z, typ, rnd) {
 }
 
 /** Spielt eine ganze Disputation. Gibt den Endstand zurück. */
-export function spieleDuell(gegner, deck, typ, rnd, anfuehrer = null) {
+export function spieleDuell(gegner, deck, typ, rnd, anfuehrer = gegner.lutherAnfuehrer || null) {
   let z = rules.start(gegner, deck, Math.floor(rnd() * 2 ** 31), undefined, { anfuehrer });
   // Kluge Spieler tauschen Karten, die gegen dieses Deck nichts entkräften.
   if (typ === 'klug') for (let i = 0; i < (z.regeln.tausch || 0); i++) {

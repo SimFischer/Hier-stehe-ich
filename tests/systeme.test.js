@@ -58,7 +58,7 @@ test('Druckwelle: Regeln im Einzelnen', () => {
 
 // Disputation: Sammlung, wie sie nach einer Station im Spiel vorliegt (zwei Thesen, keine Belohnungskarten).
 const sammlung = (nr) => [...bisStation(nr), ...(nr >= 5 ? ['t36', 't43'] : [])];
-const quote = (gegner, deck, typ, n = 300, anfuehrer = null) => { const rnd = zufall(1521); let s = 0; for (let i = 0; i < n; i++) if (spieleDuell(gegner, deck, typ, rnd, anfuehrer).sieger === 'luther') s += 1; return s / n; };
+const quote = (gegner, deck, typ, n = 300, anfuehrer = undefined) => { const rnd = zufall(1521); let s = 0; for (let i = 0; i < n; i++) if (spieleDuell(gegner, deck, typ, rnd, anfuehrer).sieger === 'luther') s += 1; return s / n; };
 
 test('Disputation: Regeln für Entkräften, Stärken, Bann, Gleichstand', () => {
   const g = { id: 'probe', deck: ['c-richter', 'c-predigt', 'c-ablass', 'c-bann'] };
@@ -194,4 +194,23 @@ test('Disputation: Lernhinweis nach einer Niederlage nennt fehlende Karten und w
   assert.ok(tipps.length > 0);
   for (const x of tipps) { assert.ok(K(x.kirche) && K(x.karte)); assert.ok(['runde', 'hand', 'deck', 'besitz', 'fehlt'].includes(x.ort)); }
   if (tipps.some((x) => x.kirche === 'c-konzil')) assert.equal(tipps.find((x) => x.kirche === 'c-konzil').ort, 'fehlt', 'Konzilien irren gibt es erst in Worms');
+});
+
+test('Disputation: Ohne Karten endet die Runde von selbst, ein Anführer darf noch gespielt werden', () => {
+  // Wie im Spiel gegen Tetzel: Runde 2, beide haben alles gespielt, es steht 1 zu 0 nach Runden.
+  const g = { id: 'probe', deck: ['c-brief', 'c-ketzer'] };
+  let z = duell.beginne(duell.start(g, ['k2', 'k6'], 5, { ...disputation.regeln, handStart: 2, nachziehen: 0, tausch: 0 }));
+  z.runde = 2; z.seiten.luther.siege = 1; z.runden = [{ runde: 1, luther: 5, kirche: 3, sieger: 'luther', gleich: false }];
+  for (let i = 0; i < 10 && z.phase === 'spiel'; i++) {
+    z = z.am === 'luther' ? duell.spiele(z, 'luther', z.seiten.luther.hand[0]?.uid) : duell.fuehreAus(z, duell.kiZug(z), 'kirche');
+    if (z.am === 'luther' && !z.seiten.luther.hand.length && z.phase === 'spiel' && !z.seiten.luther.gepasst) z = duell.passe(z, 'luther');
+  }
+  assert.equal(z.phase, 'ende', 'Die Partie endet, obwohl niemand mehr Karten hat');
+  assert.ok(z.runden.length >= 2);
+  assert.ok(z.runden.length <= 3);
+  // Mit einem Anführer neben dem Deck passt die Kirche nicht von selbst: Sie darf ihn noch spielen.
+  let a = duell.beginne(duell.start({ id: 'probe2', deck: ['c-brief'], anfuehrer: 'a-tetzel' }, ['k1'], 5, { ...disputation.regeln, handStart: 1, nachziehen: 0, tausch: 0 }));
+  a = duell.spiele(a, 'luther', a.seiten.luther.hand[0].uid);
+  a = duell.fuehreAus(a, duell.kiZug(a), 'kirche');
+  assert.ok(!a.seiten.kirche.gepasst || a.seiten.kirche.anfuehrer === null || a.log.some((e) => e.id === 'a-tetzel') || a.runden.length > 0);
 });

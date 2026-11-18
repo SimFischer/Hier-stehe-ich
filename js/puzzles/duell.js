@@ -74,7 +74,7 @@ export function view(el, schritt, ctx, fertig) {
           fuehrer ? kartenChip(fuehrer, { mini: true, onclick: () => gross({ id: fuehrer.id }), gewaehlt: false }) : null,
           [...new Set(g.deck)].map((id) => kartenChip(K(id), { mini: true, onclick: () => gross({ id }) }))),
         fuehrer ? h('p', { class: 'klein' }, fuelle(t.duellAnfuehrerGegner, { name: fuehrer.titel })) : null,
-        kamp?.anfuehrer ? h('p', { class: 'klein' }, fuelle(t.duellAnfuehrerDu, { name: K(kamp.anfuehrer).titel })) : null,
+        kamp?.anfuehrer || g.lutherAnfuehrer ? h('p', { class: 'klein' }, fuelle(t.duellAnfuehrerDu, { name: K(kamp?.anfuehrer || g.lutherAnfuehrer).titel })) : null,
         zuViel ? [
           h('h3', { class: 'zwischen' }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
           h('p', { class: 'klein' }, t.duellDeckText),
@@ -87,7 +87,7 @@ export function view(el, schritt, ctx, fertig) {
   function starte() {
     if (!tutorial) (kamp ? kamp.merkeDeck : ctx.merkeDeck)(deck);
     versuch += 1; tutSchritt = 0;
-    z = rules.start(g, deck, (Date.now() ^ (versuch * 2654435761)) >>> 0, disputation.regeln, { anfuehrer: kamp?.anfuehrer || null });
+    z = rules.start(g, deck, (Date.now() ^ (versuch * 2654435761)) >>> 0, disputation.regeln, { anfuehrer: kamp?.anfuehrer || g.lutherAnfuehrer || null });
     if (!z.tausch) z = rules.beginne(z);
     gezeigteRunden = 0; banner = null; werteVorher = new Map();
     zeichne();
@@ -226,13 +226,14 @@ export function view(el, schritt, ctx, fertig) {
 
   function bannerEl() {
     const r = banner;
-    const ende = z.phase === 'ende' && gezeigteRunden === z.runden.length;
+    const ende = z.phase === 'ende' && gezeigteRunden >= z.runden.length;
     const text = r.sieger === 'luther' ? t.duellRundeDu : r.gleich ? t.duellRundeGleich : fuelle(t.duellRundeEr, { name: Wer });
     return h('div', { class: `d-banner ${r.sieger}`, role: 'alert' },
       h('p', { class: 'kicker' }, fuelle(t.duellRundeEnde, { n: r.runde })),
       h('strong', {}, text),
       h('p', { class: 'd-banner-zahl' }, h('span', {}, String(r.luther)), ' : ', h('span', {}, String(r.kirche))),
-      knopf(ende ? t.duellErgebnis : t.duellNaechsteRunde, () => { banner = null; if (ende) ergebnis(); else zeichne(); }, 'haupt gross'));
+      // Endeten mehrere Runden auf einmal (zum Beispiel, weil beide keine Karten mehr haben), folgt das nächste Banner.
+      knopf(ende ? t.duellErgebnis : t.duellNaechsteRunde, () => { banner = null; if (ende) ergebnis(); else weiter(); }, 'haupt gross'));
   }
 
   // ---------- Großansicht einer Karte ----------

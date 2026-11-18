@@ -122,8 +122,10 @@ export const disputation = {
     },
     worms: {
       id: 'worms', figur: 'sprecher', name: 'Sprecher des Kaisers', wer: 'der Sprecher des Kaisers', wen: 'den Sprecher des Kaisers', ort: 'Worms, 1521', anfuehrer: 'a-karl',
+      // In Worms steht Luther selbst als Anführer auf deiner Seite.
+      lutherAnfuehrer: 'a-luther',
       deck: ['c-papst', 'c-konzil', 'c-ordnung', 'c-mehrheit', 'c-bann', 'c-tradition', 'c-hus', 'c-richter'],
-      einleitung: 'Vor Kaiser und Reich spielt der Sprecher die stärksten Karten der Kirche aus. Der Kaiser selbst steht hinter ihm. Jetzt zeigt sich, was du gesammelt hast.',
+      einleitung: 'Vor Kaiser und Reich spielt der Sprecher die stärksten Karten der Kirche aus. Der Kaiser selbst steht hinter ihm. Doch auf deiner Seite steht Luther: Ihn kannst du einmal ausspielen.',
       sieg: 'Unruhe im Saal. Viele Fürsten sind beeindruckt: Auf jede starke Karte hatte Luther eine Antwort. Er hat die stärkeren Argumente.',
       niederlage: 'Der Sprecher behält die Oberhand. Luther widerruft trotzdem nicht.'
     }

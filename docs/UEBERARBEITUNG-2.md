@@ -24,10 +24,10 @@ Die Kirche hatte um 1520 die Argumenthoheit. Im Spiel sind ihre Karten deshalb s
 
 | Gegner | Siegquote |
 | --- | --- |
-| Tetzel, Station 4 | etwa 45 % |
-| Tetzel, Revanche Station 5 | etwa 90 % |
+| Tetzel, Station 4 | etwa 25 % |
+| Tetzel, Revanche Station 5 | etwa 85 % |
 | Eck in Leipzig | etwa 5 % |
-| Worms | etwa 65 % (ganze Sammlung statt passendem Deck: etwa 30 %) |
+| Worms (Luther selbst als Anführer) | etwa 65 % (ganze Sammlung statt passendem Deck: etwa 50 %) |
 | Kampagne Kapitel 1 bis 3 | 60 bis 100 % |
 | Papst Leo X. (letzter Gegner) | etwa 40 % |
 
@@ -40,3 +40,9 @@ Wahllos gespielt gewinnt man fast nie. Kinder werden unter den Werten des klugen
 - **Historische Personen** in der Kampagne (Prierias, Cajetan, Eck, Emser, Aleander, Albrecht, Herzog Georg, Karl V., Leo X.) vertreten ihre Position nacherzählt, ohne erfundene Zitate.
 - **Bilder für die Kampagne** fehlen noch (54 Stück, Prompts in `docs/ASSET-PROMPTS-3.md`). Bis dahin zeigen Karten und Gegner Ersatzbilder.
 - **Noch offen:** Erprobung am iPad und mit einer Klasse; Rückmeldung zu Station 5 bis Finale.
+
+## Nachtrag 18.11.2026: Erprobung gegen Tetzel
+
+- **Fehler behoben:** Hatten beide Seiten keine Karten mehr, endeten zwei Runden auf einmal. Der Spieltisch zeigte aber nur das erste Rundenergebnis und blieb danach stehen. Jetzt folgen alle Rundenergebnisse nacheinander, dann das Ergebnis der Disputation.
+- **Anführer:** Wer keine Handkarten mehr hat, aber noch einen Anführer, passt nicht mehr von selbst. Er darf ihn noch spielen oder passen.
+- **Worms:** Luther steht dort selbst als Anführer auf deiner Seite.

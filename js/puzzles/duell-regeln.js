@@ -98,8 +98,8 @@ function passeIntern(n, seite) {
   n.am = anders(seite);
   pruefeLeer(n);
 }
-/** Wer keine Karten mehr hat, passt von selbst. */
-function pruefeLeer(n) { if (n.phase === 'spiel' && !n.seiten[n.am].hand.length && !n.seiten[n.am].gepasst) passeIntern(n, n.am); }
+/** Wer keine Karten mehr hat (auch keinen Anführer), passt von selbst. */
+function pruefeLeer(n) { const s = n.seiten[n.am]; if (n.phase === 'spiel' && !s.hand.length && !s.anfuehrer && !s.gepasst) passeIntern(n, n.am); }
 
 export const rules = {
   /** Neue Disputation. anfuehrer: Luthers Anführer (Kampagne). Die Übung läuft ohne Mischen und nach Skript. */
