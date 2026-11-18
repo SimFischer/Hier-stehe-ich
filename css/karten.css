@@ -167,3 +167,15 @@ button.karte.sammel:not(.mini):hover:not(:disabled), button.karte.sammel:not(.mi
 .d-hand .karte.sammel.klein:not(.mini):not(.leer) .k-typ { display: none; }
 .d-hand .karte.sammel.klein:not(.mini):not(.leer) .k-faehig { margin-top: 5px; }
 .bk { width: 106px; } .bk-name { letter-spacing: 0; font-variant: normal; }
+/* Mit Symbol braucht die Kartenart keine Zierlinien mehr */
+.karte.sammel:not(.mini):not(.leer) .k-typ:has(.k-symbol)::before, .karte.sammel:not(.mini):not(.leer) .k-typ:has(.k-symbol)::after { display: none; }
+.k-typ > span:has(.k-symbol) { display: inline-flex; }
+/* Lange Wörter im Titel trennen statt abschneiden */
+.karte.sammel:not(.mini):not(.leer) .k-kopf strong, .bk-name { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; letter-spacing: 0.01em; }
+/* Titelband der Kirchenkarten: kräftiges Rot mit Goldkante */
+.karte.sammel.typ-rom:not(.mini):not(.leer) .k-kopf { background: linear-gradient(#c0563e, #8a2a1a 55%, #5a140b); border-color: #d9a441; }
+.bk.kirche .bk-name { background: linear-gradient(#c0563e, #8a2a1a); }
+/* Tischbild: rote Hälfte oben (Kirche), grüne unten (Luther), passend zur Mittellinie gestreckt */
+.d-tisch { background: linear-gradient(rgba(40, 26, 18, 0.15), rgba(40, 26, 18, 0.25)), var(--tisch, none) center 77% / 100% 130% no-repeat, radial-gradient(ellipse at 50% 50%, #6b4a30 0%, #4a3122 60%, #33221a 100%); }
+.d-reihe.kirche, .d-reihe.luther { background: rgba(0, 0, 0, 0.14); border-color: rgba(240, 217, 166, 0.35); }
+.d-status { text-shadow: 0 1px 2px #000; }

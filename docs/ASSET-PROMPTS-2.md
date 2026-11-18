@@ -4,6 +4,12 @@ Stand: 18.11.2026 · ergänzt `docs/ASSET-PROMPTS.md`
 
 Jeder Prompt unten ist vollständig: Stilrahmen, Zusatz für die Bildart und das Motiv. Du kannst ihn direkt kopieren.
 
+## Stand am 18.11.2026
+
+Eingebaut: Leipzig, Eck, Student, Kaplan, Spieltisch, beide Kartenrücken, alle zehn Symbole, alle 16 Kirchenkarten und 12 von 24 Karten Luthers.
+
+Noch offen: Kartenbilder für `kunst-t32`, `kunst-t36`, `kunst-t43`, `kunst-t86`, `kunst-k7`, `kunst-k8`, `kunst-k13`, `kunst-n2`, `kunst-k9`, `kunst-k10`, `kunst-k11`, `kunst-k14`. Bis dahin zeigen diese Karten ihr bisheriges Bild.
+
 ## So kommen die Bilder ins Spiel
 
 1. Datei genau so benennen wie angegeben (zum Beispiel `kunst-k4.jpg`) und in den Ordner `assets/` legen.
