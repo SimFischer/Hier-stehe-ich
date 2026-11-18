@@ -38,7 +38,7 @@ Wahllos gespielt gewinnt man fast nie. Kinder werden unter den Werten des klugen
 - **Leipzig** ist jetzt Station 6 ohne Druckplatte. Worms ist Station 7, die Wartburg Station 8. Der Fortsetzungscode ist deshalb in Fassung 3; ältere Codes gelten nicht mehr.
 - **Spielzeit:** Mit Übung, Revanche und Leipzig schätzt der Test rund 70 Minuten für den Kernpfad. Das passt zu einer Doppelstunde. Die Testgrenze liegt bei 75 Minuten.
 - **Historische Personen** in der Kampagne (Prierias, Cajetan, Eck, Emser, Aleander, Albrecht, Herzog Georg, Karl V., Leo X.) vertreten ihre Position nacherzählt, ohne erfundene Zitate.
-- **Bilder für die Kampagne** fehlen noch (54 Stück, Prompts in `docs/ASSET-PROMPTS-3.md`). Bis dahin zeigen Karten und Gegner Ersatzbilder.
+- **Bilder für die Kampagne:** Alle 54 Bilder (Anführer, neue Karten, Gegnerfiguren) sind eingebaut.
 - **Noch offen:** Erprobung am iPad und mit einer Klasse; Rückmeldung zu Station 5 bis Finale.
 
 ## Nachtrag 18.11.2026: Erprobung gegen Tetzel

@@ -281,3 +281,7 @@ button.karte.sammel.gwent:hover:not(:disabled), button.karte.sammel.gwent:focus-
 .th-nagel { top: 10px; left: 50%; }
 .th-nr { margin-top: 0; }
 .th-form.gedruckt, .th-form.gedruckt:disabled { opacity: 1; }
+/* Anführer im Kopf kompakt halten, damit die Hand groß bleibt */
+.d-anfuehrer { width: 38px; height: 50px; }
+.d-anfuehrer-wert { width: 20px; height: 20px; font-size: 0.875rem; }
+.d-kopf { min-height: 50px; padding-top: 0; padding-bottom: 0; }

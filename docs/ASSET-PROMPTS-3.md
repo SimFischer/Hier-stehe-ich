@@ -4,6 +4,10 @@ Stand: 18.11.2026 · ergänzt `docs/ASSET-PROMPTS.md` und `docs/ASSET-PROMPTS-2.
 
 Für die Kampagne „Das Spiel im Spiel“ fehlen 54 Bilder. Bis sie da sind, zeigt das Spiel Ersatzbilder. Jeder Prompt ist vollständig und direkt kopierbar.
 
+## Stand am 18.11.2026
+
+Alle 54 Bilder sind eingebaut. Aus dieser Liste fehlt nichts mehr.
+
 ## So kommen die Bilder ins Spiel
 
 Wie bisher: Datei genau so benennen wie angegeben, in einen Ordner legen und mir schicken. Ich verkleinere sie und trage sie ins Register ein. Kartenbilder als PNG oder JPG mit 1200 × 900, Figuren als PNG mit durchsichtigem Hintergrund (900 × 1400).
