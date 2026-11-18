@@ -1,4 +1,4 @@
-// Bonusspiel „Das Spiel im Spiel“: Kampagne mit zwölf Gegnern. Oben die Regeln (in Node testbar), unten die Anzeige.
+// Kartenspiel „Hammer & Siegel“ (Spiel im Spiel): Kampagne mit zwölf Gegnern. Oben die Regeln (in Node testbar), unten die Anzeige.
 // Der Fortschritt bleibt auf dem Gerät (localStorage). Der Fortsetzungscode der Geschichte bleibt davon unberührt.
 import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
 import { figurHtml, bildHtml, kartenBild } from '../engine/bilder.js';

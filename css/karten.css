@@ -325,3 +325,17 @@ button.karte.sammel.gwent:hover:not(:disabled), button.karte.sammel.gwent:focus-
 .kachel.gross.zu .kachel-bild img { filter: grayscale(0.35) brightness(0.8); }
 .kachel.gross.zu em { display: inline-block; justify-self: start; margin-top: var(--ab-2); padding: 4px 12px; border-radius: 14px; background: rgba(0, 0, 0, 0.45); color: #ffe08a; font-weight: bold; }
 .kachel.gross.zu em::before { content: "🔒 "; }
+
+/* Bildausschnitt in Kacheln: Köpfe sitzen oben, also oben anlegen und unten abschneiden */
+.kachel-bild img { object-position: 50% 12%; }
+/* „Hammer & Siegel“: Luther gegen den Kaiser, schräg geteilt, in der Mitte ein Siegel */
+.kachel-bild.duell-bild { position: relative; display: block; }
+.duell-links, .duell-rechts { position: absolute; top: 0; bottom: 0; overflow: hidden; }
+.duell-links { left: 0; width: 56%; clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%); }
+.duell-rechts { right: 0; width: 56%; clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%); }
+.duell-links img, .duell-rechts img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.duell-rechts img { filter: saturate(1.1) contrast(1.05); }
+.duell-zeichen { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-8deg); z-index: 2; display: grid; place-items: center;
+  width: 78px; height: 78px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e0705a, #8a2a1a 70%); border: 4px solid #f3d27a;
+  color: #fff3c4; font-weight: bold; font-variant: small-caps; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); }
+.kachel.gross .duell-bild { min-height: 210px; }

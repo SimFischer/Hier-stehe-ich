@@ -24,9 +24,9 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 - **Speichern:** Der Stand bleibt auf dem Gerät. Über den Titel oben öffnet sich das Menü mit dem Fortsetzungscode (acht Zeichen). Er merkt sich fertige Stationen und funktioniert auf jedem Gerät.
 - **Hilfen:** Jedes Rätsel hat drei gestufte Hilfen. Das Menü zeigt, wie viele genutzt wurden.
 - **Lehrkraftmodus:** Titel fünf Sekunden halten oder Umschalt + Enter. Dort lassen sich Stationen anspringen oder als gelöst markieren, und von dort geht es zum Kompendium (`lehrkraefte.html`) mit Schnellstart, Leitfaden, Lösungen, Fragen und Fachhinweisen.
-- **Bonusspiele:** Silbenrätsel, Druckerpresse (Taktspiel), Entführung (Steuerspiel mit Spitzeln), Lutherrose (zusammensetzen) und Gottesdienst. Sie stehen oben in der Leiste unter „Bonus“. Disputationen und das Spiel im Spiel stehen daneben unter „Disputation“.
+- **Bonusspiele:** Silbenrätsel, Druckerpresse (Taktspiel), Entführung (Steuerspiel mit Spitzeln), Lutherrose (zusammensetzen) und Gottesdienst. Sie stehen oben in der Leiste unter „Bonus“. Disputationen und das Kartenspiel „Hammer & Siegel“ stehen daneben unter „Disputation“.
 - **Kartenspiel „Disputation“:** Erkenntnisse werden Sammelkarten. In Disputationen gegen Tetzel, Eck und den Sprecher des Kaisers entkräften sie die starken Karten der Kirche. Bruder Johannes erklärt das Spiel in einer Übung (Station 2).
-- **Das Spiel im Spiel:** Nach dem Finale eine Kampagne mit zwölf Gegnern, Sternen, neuen Karten und Anführern. Der Fortschritt bleibt auf dem Gerät.
+- **Hammer & Siegel:** Das Kartenspiel als eigenes Spiel. Nach dem Finale eine Kampagne mit zwölf Gegnern, Sternen, neuen Karten und Anführern. Der Fortschritt bleibt auf dem Gerät.
 - **Datenschutz:** keine Namen, keine Konten, kein Server, keine externen Abrufe.
 - **Flugschrift:** „Drucken / PDF“ öffnet den Druckdialog, „Als Bild teilen“ das Teilen-Menü des iPads.
 

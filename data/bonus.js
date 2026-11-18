@@ -55,28 +55,34 @@ export const bonus = {
           { text: 'Du führst die Reiter. Niemand darf euch sehen.' }
         ] },
       { art: 'fahrt', titel: 'Durch den Wald',
-        anweisung: 'Lenke den Wagen mit Luther zur Wartburg. Die Spitzel dürfen euch nicht sehen: Bleib aus ihrem Blickfeld. Steuern mit den Pfeiltasten oder: Finger auf das Bild halten, der Wagen fährt dorthin.',
-        // Welt 1600 × 1200. Wachen laufen zwischen Wegpunkten hin und her oder stehen und schwenken den Blick.
+        anweisung: 'Lenke den Wagen mit Luther auf den Waldwegen zur Wartburg. Die Spitzel reiten auf festen Wegen (gestrichelt). Bleib aus ihrem Blickfeld. Pfeiltasten oder Finger auf einen Weg halten.',
+        // Welt 1600 × 1200. Der Wagen fährt nur auf den Wegen (Strecken von Punkt zu Punkt, Breite in wegBreite).
+        // Wachen reiten auf den Wegen hin und her oder stehen und schwenken den Blick.
         welt: { w: 1600, h: 1200, bild: 'bonus-wald' }, wagen: 'bonus-wagen', spitzel: 'bonus-reiter', burg: 'stadt-knoten',
-        start: { x: 110, y: 600 }, ziel: { x: 1500, y: 560, r: 70 }, tempo: 170,
-        rast: [{ x: 110, y: 600 }, { x: 560, y: 300 }, { x: 1020, y: 860 }, { x: 1350, y: 640 }],
+        start: { x: 110, y: 600 }, ziel: { x: 1500, y: 560, r: 70 }, tempo: 170, wegBreite: 76,
+        wege: [
+          [[110, 600], [400, 600]], [[400, 600], [400, 250]], [[400, 600], [400, 950]],
+          [[400, 250], [800, 250]], [[400, 600], [800, 600]], [[400, 950], [800, 950]],
+          [[800, 250], [800, 600]], [[800, 600], [800, 950]],
+          [[800, 250], [1200, 250]], [[800, 600], [1200, 600]], [[800, 950], [1200, 950]],
+          [[1200, 250], [1200, 600]], [[1200, 600], [1200, 950]], [[1200, 600], [1500, 560]]
+        ],
+        rast: [{ x: 110, y: 600 }, { x: 400, y: 800 }, { x: 1000, y: 950 }, { x: 1350, y: 580 }],
         sicht: { weite: 230, winkel: 32 },
         wachen: [
-          { weg: [[330, 140], [330, 1060]], tempo: 120 },
-          { weg: [[760, 1080], [760, 160]], tempo: 135 },
-          { weg: [[560, 700], [980, 520], [560, 520]], tempo: 110 },
-          { weg: [[1210, 120], [1210, 1080]], tempo: 150 },
-          { posten: [1500, 920], von: 180, bis: 250, schwenk: 0.7 },
-          { posten: [1000, 120], von: 60, bis: 150, schwenk: 0.6 }
+          { weg: [[400, 600], [1050, 600]], tempo: 140 },
+          { weg: [[800, 250], [800, 950]], tempo: 120 },
+          { weg: [[1200, 250], [1200, 950]], tempo: 150 },
+          { weg: [[400, 250], [1200, 250]], tempo: 110 }
         ],
         zeit: 'Zeit: {n} s', erwischt: 'Gesehen: {n}', bestwert: 'Bestzeit: {n} s', startKnopf: 'Los!',
         gesehen: 'Ein Spitzel hat euch gesehen! Zurück zum letzten Rastplatz.',
         rastErreicht: 'Rastplatz erreicht. Wer jetzt gesehen wird, beginnt hier.',
         ende: 'Geschafft! Die Zugbrücke geht hoch. Niemand weiß, wo Luther ist.',
         hilfen: [
-          'Die roten Kegel zeigen, wohin ein Spitzel schaut. Warte, bis er sich wegdreht oder vorbeigeritten ist.',
-          'Fahre hinter einem Spitzel her, dann sieht er dich nicht. Die gelben Kreise sind Rastplätze.',
-          'Fahre von Rastplatz zu Rastplatz: erst nach oben, dann nach unten rechts, dann nach rechts. Warte jeweils, bis der nächste Spitzel vorbei ist.'
+          'Die gestrichelten Linien zeigen, wo die Spitzel reiten. Die roten Kegel zeigen, wohin sie schauen. Warte an einer Abzweigung, bis einer vorbei ist.',
+          'Fahre hinter einem Spitzel her, dann sieht er dich nicht. Die hellen Kreise auf den Wegen sind Rastplätze.',
+          'Nimm den unteren Weg: erst nach unten, dann nach rechts bis zur Ecke, dann nach oben und zur Burg. Warte jeweils, bis der Spitzel auf der Kreuzung weitergeritten ist.'
         ] },
       { art: 'text', titel: 'Junker Jörg',
         absaetze: [

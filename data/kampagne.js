@@ -1,4 +1,4 @@
-// Bonusspiel „Das Spiel im Spiel“: eine Kampagne mit zwölf Gegnern in vier Kapiteln.
+// Kartenspiel „Hammer & Siegel“ (Spiel im Spiel): eine Kampagne mit zwölf Gegnern in vier Kapiteln.
 // Öffnet sich nach dem Finale. Regeln wie in der Disputation (js/puzzles/duell-regeln.js), Ablauf in js/puzzles/kampagne.js.
 // Was echte Personen im Spiel vertreten, ist nacherzählt. Es sind keine wörtlichen Zitate.
 // Neue Karten haben dieselben Felder wie data/cards.js. Bilder: kunst-<id> (docs/ASSET-PROMPTS-3.md), bis dahin das Ersatzbild in „bild“.
@@ -131,6 +131,6 @@ export const kampagne = {
     'k-leo': { id: 'k-leo', figur: 'leo', name: 'Papst Leo X.', ort: 'Rom, 1521', anfuehrer: 'a-leo', regeln: { handKirche: 9 },
       deck: ['c-papst', 'c-kurie', 'c-unfehlbar', 'c-bulle', 'c-bann', 'c-konzil', 'c-tradition', 'c-gehorsam', 'c-weihe', 'c-latein', 'c-ablass'], belohnungen: ['r5', 'r15', 'r11'],
       einleitung: 'Der letzte und stärkste Gegner: der Papst selbst, mit allen Karten der Kirche von Rom.',
-      sieg: 'Meisterhaft! Du kennst jede Karte und ihre Antwort. Das Spiel im Spiel ist gewonnen.', niederlage: 'Rom ist mächtig. Stell dein Deck neu zusammen und versuch es noch einmal.' }
+      sieg: 'Meisterhaft! Du kennst jede Karte und ihre Antwort. Hammer & Siegel ist gewonnen.', niederlage: 'Rom ist mächtig. Stell dein Deck neu zusammen und versuch es noch einmal.' }
   }
 };

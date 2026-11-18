@@ -80,7 +80,7 @@ test('Entführung: Blickkegel, Rastplätze sicher, ein vorsichtiger Fahrer kommt
   const dt = 0.05;
   while (!fahrtRules.amZiel(p, s.ziel) && t < 240) {
     const z = ziele[n];
-    const weiter = fahrtRules.bewege(p, z.x - p.x, z.y - p.y, s.tempo * dt, s.welt);
+    const weiter = fahrtRules.fahreZu(p, z, s.tempo * dt, s);
     if (!gesehen(weiter, t + dt)) p = weiter;
     t += dt;
     if (gesehen(p, t)) { erwischt += 1; p = { ...s.rast[rast] }; }
@@ -88,6 +88,11 @@ test('Entführung: Blickkegel, Rastplätze sicher, ein vorsichtiger Fahrer kommt
   }
   assert.ok(fahrtRules.amZiel(p, s.ziel), `Ziel nach ${t.toFixed(0)} s nicht erreicht`);
   assert.ok(t < 150, `zu lang: ${t.toFixed(0)} s`);
+  // Der Wagen bleibt immer auf den Wegen, und jeder Rastplatz liegt auf einem Weg.
+  for (const r of [...s.rast, s.start]) assert.ok(fahrtRules.naechster(r, s.wege).d < s.wegBreite / 2, `${r.x},${r.y} liegt auf einem Weg`);
+  for (const w of s.wachen.filter((x) => x.weg)) for (const [x, y] of w.weg) assert.ok(fahrtRules.naechster({ x, y }, s.wege).d < 1, 'Spitzel reiten auf Wegen');
+  const neben = fahrtRules.bewege({ x: 600, y: 600 }, 0, -1, 200, s.welt, s.wege, s.wegBreite);
+  assert.ok(Math.abs(neben.y - 600) <= s.wegBreite / 2, 'Vom Weg kommt man nicht ab');
 });
 
 test('Lutherrose: Schichten nur von außen nach innen', () => {

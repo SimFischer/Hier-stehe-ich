@@ -163,10 +163,57 @@ export const fahrtRules = {
     while (diff < -Math.PI) diff += 2 * Math.PI;
     return Math.abs(diff) <= sicht.winkel * RAD;
   },
-  bewege(p, dx, dy, weite, welt) {
+  /** Nächster Punkt auf einer Strecke. */
+  aufStrecke(p, [[ax, ay], [bx, by]]) {
+    const vx = bx - ax, vy = by - ay, l2 = vx * vx + vy * vy;
+    const f = l2 ? Math.max(0, Math.min(1, ((p.x - ax) * vx + (p.y - ay) * vy) / l2)) : 0;
+    return { x: ax + vx * f, y: ay + vy * f };
+  },
+  /** Nächster Punkt auf dem ganzen Wegenetz und wie weit er entfernt ist. */
+  naechster(p, wege) {
+    let best = null;
+    for (const w of wege) { const q = fahrtRules.aufStrecke(p, w); const d = Math.hypot(q.x - p.x, q.y - p.y); if (!best || d < best.d) best = { ...q, d, weg: w }; }
+    return best;
+  },
+  /** Ein Schritt in Richtung dx, dy. Mit Wegen: Wer vom Weg abkommt, wird auf den Weg zurückgeschoben (gleitet an der Kante entlang). */
+  bewege(p, dx, dy, weite, welt, wege = null, breite = 0) {
     const l = Math.hypot(dx, dy); if (!l) return p;
     const s = Math.min(weite, l);
-    return { x: Math.max(30, Math.min(welt.w - 30, p.x + (dx / l) * s)), y: Math.max(30, Math.min(welt.h - 30, p.y + (dy / l) * s)), a: Math.atan2(dy, dx) };
+    let n = { x: Math.max(30, Math.min(welt.w - 30, p.x + (dx / l) * s)), y: Math.max(30, Math.min(welt.h - 30, p.y + (dy / l) * s)) };
+    if (wege) {
+      const q = fahrtRules.naechster(n, wege);
+      const rand = breite / 2 - 8;
+      if (q.d > rand) { const f = rand / q.d; n = { x: q.x + (n.x - q.x) * f, y: q.y + (n.y - q.y) * f }; }
+    }
+    if (Math.hypot(n.x - p.x, n.y - p.y) < 0.01) return p;
+    return { ...n, a: Math.atan2(n.y - p.y, n.x - p.x) };
+  },
+  /** Nächster Wegpunkt auf dem kürzesten Weg über das Wegenetz zum Ziel (für Finger und Testfahrer). */
+  naechsterZiel(p, ziel, wege) {
+    const key = ([x, y]) => `${x},${y}`;
+    const knoten = new Map();
+    const kante = (a, b) => { const d = Math.hypot(a[0] - b[0], a[1] - b[1]); for (const [u, v] of [[a, b], [b, a]]) { if (!knoten.has(key(u))) knoten.set(key(u), { pt: u, nb: [] }); knoten.get(key(u)).nb.push({ k: key(v), d }); } };
+    for (const [a, b] of wege) kante(a, b);
+    const von = fahrtRules.naechster(p, wege); const nach = fahrtRules.naechster(ziel, wege);
+    const P = [von.x, von.y], Z = [nach.x, nach.y];
+    if (von.weg === nach.weg) return { x: Z[0], y: Z[1] };
+    kante(P, von.weg[0]); kante(P, von.weg[1]); kante(Z, nach.weg[0]); kante(Z, nach.weg[1]);
+    // Dijkstra
+    const dist = new Map([[key(P), 0]]); const vor = new Map(); const offen = new Set([key(P)]);
+    while (offen.size) {
+      let u = null; for (const k of offen) if (u == null || dist.get(k) < dist.get(u)) u = k;
+      offen.delete(u); if (u === key(Z)) break;
+      for (const { k, d } of knoten.get(u).nb) { const nd = dist.get(u) + d; if (nd < (dist.get(k) ?? Infinity)) { dist.set(k, nd); vor.set(k, u); offen.add(k); } }
+    }
+    let k = key(Z); if (!vor.has(k)) return { x: Z[0], y: Z[1] };
+    while (vor.get(k) !== key(P)) k = vor.get(k);
+    const pt = knoten.get(k).pt; return { x: pt[0], y: pt[1] };
+  },
+  /** Fahre auf den Wegen in Richtung Ziel. */
+  fahreZu(p, ziel, weite, s) {
+    if (!s.wege) return fahrtRules.bewege(p, ziel.x - p.x, ziel.y - p.y, weite, s.welt);
+    const z = fahrtRules.naechsterZiel(p, ziel, s.wege);
+    return fahrtRules.bewege(p, z.x - p.x, z.y - p.y, weite, s.welt, s.wege, s.wegBreite);
   },
   amZiel: (p, ziel) => Math.hypot(p.x - ziel.x, p.y - ziel.y) <= ziel.r
 };
@@ -204,7 +251,19 @@ export function fahrt(el, schritt, ctx, fertig) {
     // Wald blasser zeichnen (Graufilter, wo das Gerät ihn kann), dann abdunkeln
     if (bilder.wald?.complete && bilder.wald.naturalWidth) { g.save(); g.filter = 'saturate(0.3) brightness(0.9)'; g.drawImage(bilder.wald, 0, 0, W.w, W.h); g.restore(); } else { g.fillStyle = '#3e5b45'; g.fillRect(0, 0, W.w, W.h); }
     // Der Wald tritt zurück: dunkler und blasser, damit Wagen und Spitzel klar zu sehen sind.
-    g.fillStyle = 'rgba(24, 30, 22, 0.45)'; g.fillRect(0, 0, W.w, W.h);
+    g.fillStyle = 'rgba(24, 30, 22, 0.5)'; g.fillRect(0, 0, W.w, W.h);
+    // Die Wege: heller Sandweg mit dunklem Rand, gut zu sehen
+    if (schritt.wege) {
+      g.lineCap = 'round'; g.lineJoin = 'round';
+      for (const [breite, farbe] of [[schritt.wegBreite + 14, '#3a2717'], [schritt.wegBreite, '#d9c08a']]) {
+        g.lineWidth = breite; g.strokeStyle = farbe;
+        for (const [a, b] of schritt.wege) { g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); }
+      }
+      // Routen der Spitzel: rot gestrichelt auf dem Weg
+      g.save(); g.setLineDash([22, 18]); g.lineWidth = 6; g.strokeStyle = 'rgba(192, 57, 43, 0.85)';
+      for (const w of schritt.wachen) if (w.weg) { g.beginPath(); w.weg.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); }
+      g.restore();
+    }
     schritt.rast.forEach((r, i) => {
       g.beginPath(); g.arc(r.x, r.y, 48, 0, 2 * Math.PI); g.fillStyle = i <= rast ? 'rgba(243, 210, 122, 0.75)' : 'rgba(240, 217, 166, 0.45)'; g.fill();
       ring(r.x, r.y, 48, '#fff3c4', 5);
@@ -233,8 +292,8 @@ export function fahrt(el, schritt, ctx, fertig) {
       zeit += dt; blitz = Math.max(0, blitz - dt);
       let dx = 0, dy = 0;
       for (const k of tasten) { dx += PFEILE[k][0]; dy += PFEILE[k][1]; }
-      if (!dx && !dy && ziel) { dx = ziel.x - p.x; dy = ziel.y - p.y; if (Math.hypot(dx, dy) < 8) dx = dy = 0; }
-      if (dx || dy) p = fahrtRules.bewege(p, dx, dy, schritt.tempo * dt, W);
+      if (dx || dy) p = fahrtRules.bewege(p, dx, dy, schritt.tempo * dt, W, schritt.wege, schritt.wegBreite);
+      else if (ziel && Math.hypot(ziel.x - p.x, ziel.y - p.y) > 8) p = fahrtRules.fahreZu(p, ziel, schritt.tempo * dt, schritt);
       schritt.rast.forEach((r, i) => { if (i > rast && Math.hypot(p.x - r.x, p.y - r.y) < 46) { rast = i; meldung.textContent = schritt.rastErreicht; meldung.className = 'rueck'; } });
       if (schritt.wachen.some((w) => fahrtRules.gesehen(p, fahrtRules.wachePos(w, zeit), schritt.sicht))) {
         erwischt += 1; blitz = 0.6; p = { ...schritt.rast[rast], a: 0 }; meldung.textContent = schritt.gesehen; meldung.className = 'rueck offen';

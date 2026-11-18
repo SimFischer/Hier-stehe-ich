@@ -56,7 +56,7 @@ export const game = {
     // Eck, Student und Kaplan: eigene Bilder geplant (docs/ASSET-PROMPTS-2.md). Bis dahin gilt das Ersatzbild.
     eck: { name: 'Johann Eck', farbe: '#5B3A3A', bild: 'fig-eck', ersatz: 'fig-stand-6', echt: true },
     student: { name: 'Student aus Wittenberg', farbe: '#3F5870', bild: 'fig-student', ersatz: 'fig-geselle' },
-    // Gegner im Spiel im Spiel (Kampagne). Eigene Bilder geplant (docs/ASSET-PROMPTS-3.md), bis dahin Ersatzbilder.
+    // Gegner in „Hammer & Siegel“ (Kampagne). Eigene Bilder geplant (docs/ASSET-PROMPTS-3.md), bis dahin Ersatzbilder.
     novize: { name: 'Novizenmeister', farbe: '#2B2622', bild: 'fig-novizenmeister', ersatz: 'fig-mitbruder' },
     prediger: { name: 'Ablassprediger', farbe: '#D8CDB8', bild: 'fig-ablassprediger', ersatz: 'fig-tetzel' },
     prierias: { name: 'Silvester Prierias', farbe: '#D8CDB8', bild: 'fig-prierias', ersatz: 'fig-stand-4', echt: true },

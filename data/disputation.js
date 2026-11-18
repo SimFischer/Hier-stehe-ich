@@ -143,7 +143,7 @@ export const disputation = {
     'Tippe die Karten der Kirche an und lies, wie stark sie sind. Dann such in deiner Hand eine Karte, die sie entkräftet.',
     'Spiel deine Konterkarten erst, wenn die starke Kirchenkarte liegt. Eine Runde darfst du auch verloren geben, um Karten zu sparen.'
   ],
-  // Rätsel, die nur aus einer Disputation bestehen: Übung, Revanchen und das Spiel im Spiel.
+  // Rätsel, die nur aus einer Disputation bestehen: Übung, Revanchen und das Kartenspiel „Hammer & Siegel“.
   // nach: Station, nach der sie auf der Karte erscheinen. szene: Der Eintrag führt zu einem Ort statt direkt ins Spiel.
   // merker: Das Spiel zählt als Bonusspiel (Fortsetzungscode). Sonst bleibt nichts gespeichert außer dem Sieg.
   liste: ['uebung', 'duell-tetzel', 'duell-eck', 'duell-worms', 'kampagne'],
@@ -160,8 +160,8 @@ export const disputation = {
     'duell-worms': { id: 'duell-worms', titel: 'Noch einmal in Worms', nach: 's6', minuten: 6, bild: 'kunst-a-karl',
       kurz: 'Spiel die Disputation vor dem Reichstag noch einmal.',
       schritte: [{ art: 'duell', gegner: 'worms', titel: 'Vor Kaiser und Reich', szene: 'saal' }] },
-    kampagne: { id: 'kampagne', titel: 'Das Spiel im Spiel', nach: 'f', merker: true, minuten: 30, bild: 'kunst-a-leo',
-      kurz: 'Zwölf Gegner, neue Karten und Anführer: das Kartenspiel als eigenes Abenteuer.',
-      schritte: [{ art: 'kampagne', titel: 'Das Spiel im Spiel', szene: 'saal' }] }
+    kampagne: { id: 'kampagne', titel: 'Hammer & Siegel', nach: 'f', merker: true, minuten: 30, bild: 'kunst-a-luther', bildGegner: 'kunst-a-karl',
+      kurz: 'Das Kartenspiel der Reformation: Luthers Hammer gegen das Siegel Roms. Zwölf Gegner, neue Karten, Anführer.',
+      schritte: [{ art: 'kampagne', titel: 'Hammer & Siegel', szene: 'saal' }] }
   }
 };

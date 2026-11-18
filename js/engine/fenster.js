@@ -33,9 +33,13 @@ export function zeigeKarte() {
 }
 
 /** Kachel mit Bild für Bonusspiele und Disputationen. */
-function kachel({ bild, titel, kurz, status, offen, fertig, gross = false, onclick }) {
+function kachel({ bild, bildGegner = null, titel, kurz, status, offen, fertig, gross = false, onclick }) {
   return h('button', { type: 'button', class: `kachel${gross ? ' gross' : ''}${fertig ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen, onclick },
-    h('span', { class: 'kachel-bild', 'aria-hidden': 'true', html: bildHtml(bild) }),
+    // Mit Gegnerbild: zwei Bilder gegeneinander, in der Mitte ein Zeichen wie bei einem Duell
+    bildGegner ? h('span', { class: 'kachel-bild duell-bild', 'aria-hidden': 'true' },
+      h('span', { class: 'duell-links', html: bildHtml(bild) }), h('span', { class: 'duell-rechts', html: bildHtml(bildGegner) }),
+      h('span', { class: 'duell-zeichen' }, t.dispGegen))
+      : h('span', { class: 'kachel-bild', 'aria-hidden': 'true', html: bildHtml(bild) }),
     fertig ? h('span', { class: 'kachel-haken', 'aria-hidden': 'true' }, '✓') : null,
     h('span', { class: 'kachel-text' }, h('strong', {}, titel), h('span', {}, kurz), h('em', {}, status)));
 }
@@ -54,7 +58,7 @@ export function zeigeBonus() {
     }))), { breit: true });
 }
 
-/** Reiter „Disputation“: das Spiel im Spiel groß, darunter Übung und Revanchen. */
+/** Reiter „Disputation“: das Kartenspiel „Hammer & Siegel“ groß, darunter Übung und Revanchen. */
 export function zeigeDisputation() {
   const s = store.state;
   const oeffne = (d) => { dlg.close(); if (d.szene) zeigeSzene(d.szene); else oeffneRaetsel(d.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); };
@@ -73,7 +77,7 @@ export function zeigeDisputation() {
   });
   const dlg = fenster(t.disputationReiter, h('div', { class: 'kacheln-fenster' },
     h('p', {}, t.dispFensterText),
-    kachel({ bild: kamp.bild, titel: t.dispSpielImSpiel, kurz: kamp.kurz, offen: kampOffen, gross: true,
+    kachel({ bild: kamp.bild, bildGegner: kamp.bildGegner, titel: t.dispSpielImSpiel, kurz: kamp.kurz, offen: kampOffen, gross: true,
       fertig: Object.keys(kampStand.sterne).length === alleGegner.length,
       status: kampOffen ? fuelle(t.dispFortschritt, { n: sterne, von: alleGegner.length * 3, k: kampStand.karten.length }) : fuelle(t.bonusZu, { ort: station(kamp.nach).name }),
       onclick: () => oeffne(kamp) }),

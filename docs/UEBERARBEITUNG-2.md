@@ -54,3 +54,10 @@ Wahllos gespielt gewinnt man fast nie. Kinder werden unter den Werten des klugen
 - **„Nachdenken“** ist kein Bonusspiel mehr. Die beiden Fragen stehen im Kompendium als Impuls für die Doppelstunde.
 - **Entführung:** Der Wald ist blasser und dunkler. Wagen, Wartburg, Rastplätze und Spitzel sind hell umrandet und gut zu erkennen.
 - **Neue Karte wählen (Spiel im Spiel):** Antippen zeigt die Karte groß, erst „Übernehmen“ nimmt sie in die Sammlung.
+
+## Nachtrag 18.11.2026: Wegenetz, Name, Bilder
+
+- **Entführung auf Wegen:** Der Wagen fährt nur auf hellen Wegen, die Spitzel reiten auf festen, rot gestrichelten Routen. Mit dem Finger: auf einen Weg halten, der Wagen sucht sich den Weg dorthin. Ein passendes Hintergrundbild ist bestellt (`docs/ASSET-PROMPTS-4.md`).
+- **Name:** Das Kartenspiel als eigenes Spiel heißt jetzt „Hammer & Siegel“: Luthers Hammer (Thesenanschlag) gegen das Siegel Roms.
+- **Bild im Reiter „Disputation“:** Luther gegen den Kaiser, schräg geteilt, mit einem Siegel in der Mitte.
+- **Bildausschnitt:** Kacheln schneiden unten ab, die Köpfe bleiben sichtbar.

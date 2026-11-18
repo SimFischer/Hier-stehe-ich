@@ -54,13 +54,13 @@ export const teacher = {
       'Gespielt wird wie bei bekannten Sammelkartenspielen: abwechselnd legen, passen, zwei Runden gewinnen. Vor Worms baut man ein Deck aus höchstens zwölf Karten und sieht dabei die Karten des Gegners.',
       'Nach einer Niederlage zeigt das Spiel, welche Karte geholfen hätte und wo es sie gibt. In Leipzig fehlt bewusst noch die Antwort auf die Konzilien. Man verliert meist und bekommt danach „Konzilien irren“.',
       'Station 2 enthält eine geführte Übung mit Bruder Johannes. Danach folgt der Bogen: Tetzel gewinnt meist (Station 4), mit den Thesen gelingt die Revanche (Station 5), Eck gewinnt in Leipzig (Station 6), in Worms siegen Luthers Argumente (Station 7).',
-      'Nach dem Finale öffnet sich „Das Spiel im Spiel“: zwölf Gegner, Sterne, neue Karten und Anführer. Gut als Belohnung für schnelle Gruppen oder zu Hause. Der Fortschritt bleibt auf dem Gerät.',
+      'Nach dem Finale öffnet sich „Hammer & Siegel“, das Kartenspiel als eigenes Spiel: zwölf Gegner, Sterne, neue Karten und Anführer. Gut als Belohnung für schnelle Gruppen oder zu Hause. Der Fortschritt bleibt auf dem Gerät.',
       'Tetzel und Worms gehören zum Kernpfad. Auch nach einer Niederlage geht es weiter. In Worms bestimmt das Ergebnis nur die Auswertung, nicht das Urteil. Revanche, Leipzig und die große Disputation sind freiwillig.',
       'Gesprächsimpuls danach: Warum reicht ein starkes, aber unpassendes Argument nicht? Welche Karte war für dich die wichtigste und warum?'
     ]
   },
   bonusTitel: 'Bonusspiele',
-  bonusText: 'Alle Bonusspiele sind freiwillig. Sie stehen oben in der Leiste unter „Bonus“ und öffnen sich nach der genannten Station. Disputationen und das Spiel im Spiel stehen unter „Disputation“.',
+  bonusText: 'Alle Bonusspiele sind freiwillig. Sie stehen oben in der Leiste unter „Bonus“ und öffnen sich nach der genannten Station. Disputationen und „Hammer & Siegel“ stehen unter „Disputation“.',
   loesungenTitel: 'Lösungen',
   loesungenText: 'Die Lösungen werden aus den Spieldaten erzeugt. Öffne sie bewusst: Wer mitliest, sieht sie auch.',
   loesungenOeffnen: 'Lösungen zeigen', loesungenDruck: 'Geöffnete Lösungen werden mitgedruckt. Geschlossene nicht.',
