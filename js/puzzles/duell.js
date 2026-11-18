@@ -1,7 +1,7 @@
 // Kartenspiel „Disputation“: Spieltisch. Die Regeln stehen in duell-regeln.js.
 // Drei Arten: Disputation in der Geschichte, geführte Übung (Gegner mit „tutorial“) und Kampagne (schritt.kampagne).
 import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
-import { bildHtml, figurHtml, kartenBild, bildUrl } from '../engine/bilder.js';
+import { bildHtml, figurHtml, portraetHtml, kartenBild, bildUrl } from '../engine/bilder.js';
 import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
 import { rules, K, wert, summe, entkraeftet, deckVorschlag } from './duell-regeln.js';
@@ -51,7 +51,7 @@ export function view(el, schritt, ctx, fertig) {
   function vorbereitung() {
     if (tutorial) {
       setzeInhalt(el, h('div', { class: 'd-vor' },
-        h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: figurHtml(fig) }),
+        h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
           h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', {}, fuelle(t.duellGegen, { name: wen })), h('p', {}, g.einleitung))),
         h('p', {}, t.tutorialStart),
         h('div', { class: 'reihe fuss' }, h('span', {}), knopf(t.duellLos, starte, 'haupt'))));
@@ -64,7 +64,7 @@ export function view(el, schritt, ctx, fertig) {
     setzeInhalt(el,
       h('div', { class: 'd-vor' },
         h('div', { class: 'd-gegner-kopf' },
-          h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: figurHtml(fig) }),
+          h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
           h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', {}, fuelle(t.duellGegen, { name: wen })), h('p', {}, g.einleitung))),
         h('details', { class: 'd-regeln', open: ersterKampf && versuch === 0 }, h('summary', {}, t.duellRegeln),
           h('ol', {}, disputation.regelText.map((r) => h('li', {}, r)))),
@@ -158,7 +158,7 @@ export function view(el, schritt, ctx, fertig) {
     const leuchtet = (name) => (ziel === name ? ' tut-ziel' : '');
 
     const kopfKirche = h('div', { class: `d-kopf kirche${z.am === 'kirche' && z.phase === 'spiel' ? ' dran' : ''}` },
-      h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: figurHtml(fig) }),
+      h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
       h('div', { class: 'd-name' }, h('strong', {}, g.name), edelsteine(k.siege)),
       anfuehrerKnopf('kirche', false),
       h('span', { class: 'd-handzahl', 'aria-label': fuelle(t.duellHandZahl, { n: k.hand.length }) },
@@ -188,7 +188,7 @@ export function view(el, schritt, ctx, fertig) {
     // Erklärkasten der Übung
     const schritt = tutorial && !banner && z.am === 'luther' && z.phase === 'spiel' ? tut() : null;
     const coach = schritt ? h('div', { class: `tut-box${schritt.erwartet ? ' aufgabe' : ''}`, role: 'status' },
-      h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: figurHtml(fig) }),
+      h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
       h('div', {}, h('strong', {}, g.name), h('p', {}, schritt.text),
         schritt.erwartet ? null : knopf(t.weiter, () => { tutWeiter(); zeichne(); }, 'haupt klein'))) : null;
 
@@ -262,7 +262,7 @@ export function view(el, schritt, ctx, fertig) {
     const wo = (id) => { const c = K(id); return c.duell ? fuelle(t.duellWoSieg, { name: disputation.gegner[c.duell].name }) : fuelle(t.duellWoStation, { nr: ctx.station(c.station).nr, name: ctx.station(c.station).name }); };
     const tippText = (x) => ({ runde: t.duellTippRunde, hand: t.duellTippHand, deck: t.duellTippDeck, besitz: t.duellTippBesitz, fehlt: fuelle(t.duellTippFehlt, { wo: wo(x.karte) }) })[x.ort];
     setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : 'niederlage'}` },
-      h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: figurHtml(fig) }),
+      h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
         h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', { class: 'd-ende-titel' }, sieg ? t.duellSieg : t.duellNiederlage), h('p', {}, sieg ? g.sieg : g.niederlage))),
       h('ul', { class: 'd-runden' }, z.runden.map((x) => h('li', { class: x.sieger }, fuelle(t.duellRundeZeile, { n: x.runde, du: x.luther, er: x.kirche }),
         ' ', h('strong', {}, x.sieger === 'luther' ? t.duellGewonnen : t.duellVerloren)))),

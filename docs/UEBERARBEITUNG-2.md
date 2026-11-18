@@ -61,3 +61,5 @@ Wahllos gespielt gewinnt man fast nie. Kinder werden unter den Werten des klugen
 - **Name:** Das Kartenspiel als eigenes Spiel heißt jetzt „Hammer & Siegel“: Luthers Hammer (Thesenanschlag) gegen das Siegel Roms.
 - **Bild im Reiter „Disputation“:** Luther gegen den Kaiser, schräg geteilt, mit einem Siegel in der Mitte.
 - **Bildausschnitt:** Kacheln schneiden unten ab, die Köpfe bleiben sichtbar.
+- **Gegnerbilder:** Kapitelkacheln und Porträts am Spieltisch zeigen Brustbilder (Anführerbilder). Figuren ohne eigenes Brustbild werden auf Kopf und Schultern zugeschnitten.
+- **Große Bildschirme:** Die Hand bleibt handlich, Zahlen und Namen auf den Karten wachsen mit der Karte, der Anführer im Kopf zeigt das Gesicht mit kleiner Zahl in der Ecke.

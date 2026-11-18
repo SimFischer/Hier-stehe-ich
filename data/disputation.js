@@ -78,7 +78,7 @@ export const disputation = {
   // siegAls: Ein Sieg zählt wie ein Sieg gegen diesen Gegner (Revanche).
   gegner: {
     uebung: {
-      id: 'uebung', figur: 'mitbruder', name: 'Bruder Johannes', ort: 'Erfurt, 1505', uebung: true,
+      id: 'uebung', figur: 'mitbruder', portrait: 'kunst-a-novize', name: 'Bruder Johannes', ort: 'Erfurt, 1505', uebung: true,
       // Feste Reihenfolge, damit die geführte Partie immer gleich abläuft
       deck: ['c-werke', 'c-ketzer', 'c-richter', 'c-brief'], deckLuther: ['k1', 'k2', 'k4', 'w3', 'k3', 'k6'],
       regeln: { handStart: 4, tausch: 0, nachziehen: 1 }, skript: ['c-werke', 'passe', 'c-richter', 'c-ketzer', 'passe'],
@@ -121,7 +121,7 @@ export const disputation = {
       niederlage: 'Eck hat dich in die Enge getrieben. Gegen Konzilien und Papst fehlte dir eine Antwort. Doch in der Niederlage findet Luther sie.'
     },
     worms: {
-      id: 'worms', figur: 'sprecher', name: 'Sprecher des Kaisers', wer: 'der Sprecher des Kaisers', wen: 'den Sprecher des Kaisers', ort: 'Worms, 1521', anfuehrer: 'a-karl',
+      id: 'worms', figur: 'sprecher', portrait: 'fig-sprecher-kein', name: 'Sprecher des Kaisers', wer: 'der Sprecher des Kaisers', wen: 'den Sprecher des Kaisers', ort: 'Worms, 1521', anfuehrer: 'a-karl',
       // In Worms steht Luther selbst als Anführer auf deiner Seite.
       lutherAnfuehrer: 'a-luther',
       deck: ['c-papst', 'c-konzil', 'c-ordnung', 'c-mehrheit', 'c-bann', 'c-tradition', 'c-hus', 'c-richter'],

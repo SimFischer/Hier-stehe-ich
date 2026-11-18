@@ -22,6 +22,11 @@ export function bildHtml(name, klasse = '') {
 export const szeneHtml = (bild = {}) => bildHtml(bild.datei, 'szenenbild') || bildHtml(bild.ersatz, 'szenenbild') || szeneSvg(bild);
 export const szeneUrl = (bild = {}) => bildUrl(bild.datei) || bildUrl(bild.ersatz) || svgUrl(szeneSvg(bild));
 // ersatz: Bild, das gilt, bis das eigene Bild der Figur im Register steht.
+/** Porträt eines Gegners im Kartenspiel: eigenes Bild (portrait), sonst das Bild seines Anführers, sonst die Figur. */
+export function portraetHtml(gegner, figur) {
+  const name = gegner.portrait || (gegner.anfuehrer && hatBild(`kunst-${gegner.anfuehrer}`) ? `kunst-${gegner.anfuehrer}` : null);
+  return name && hatBild(name) ? bildHtml(name, 'portraet-bild') : (bildHtml(figur.bild, 'figur-buste') || bildHtml(figur.ersatz, 'figur-buste') || figurHtml(figur));
+}
 export const figurHtml = (figur = {}) => bildHtml(figur.bild, 'figurbild') || bildHtml(figur.ersatz, 'figurbild') || figurSvg(figur.farbe);
 export const statistHtml = (nr) => bildHtml(`fig-statist-${(nr % 4) + 1}`, 'figurbild') || figurSvg();
 /** Reichsstand im Saal: sechs Typen, die sich auf den Plätzen wiederholen. */

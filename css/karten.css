@@ -339,3 +339,41 @@ button.karte.sammel.gwent:hover:not(:disabled), button.karte.sammel.gwent:focus-
   width: 78px; height: 78px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e0705a, #8a2a1a 70%); border: 4px solid #f3d27a;
   color: #fff3c4; font-weight: bold; font-variant: small-caps; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6); }
 .kachel.gross .duell-bild { min-height: 210px; }
+
+/* Kampagne: Gegner als große Kachel mit Brustbild */
+.kamp-tafel { grid-template-rows: 150px auto auto auto; padding: 0 0 var(--ab-3); overflow: hidden; gap: 2px; }
+.kamp-bild { display: block; width: 100%; height: 150px; overflow: hidden; border-bottom: 3px solid #b48a5c; margin-bottom: var(--ab-2); background: #2a1c14; }
+.kamp-bild img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.kamp-bild .figurbild { object-fit: contain; object-position: 50% 0; }
+.kamp-tafel.zu .kamp-bild img { filter: grayscale(1) brightness(0.7); }
+/* Runde Porträts am Spieltisch: Brustbild füllt den Kreis, Gesicht oben */
+.d-portrait .portraet-bild { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; transform: none; }
+
+/* ---------- Große Bildschirme: alles im Verhältnis ---------- */
+/* Zahlen und Zeichen wachsen mit der Karte (Containerbreite) */
+.karte.sammel.gwent { container-type: inline-size; }
+.karte.sammel.gwent .k-staerke, .karte.sammel.gwent.klein .k-staerke, .karten-detail .karte.sammel.gwent.gross .k-staerke { font-size: max(0.875rem, 13cqw); }
+.karte.sammel.gwent .k-schild strong, .karte.sammel.gwent.klein .k-schild strong { font-size: max(0.875rem, 8.5cqw); }
+.karten-detail .karte.sammel.gwent.gross .k-schild strong { font-size: max(1rem, 7.5cqw); }
+/* Spieltisch: Reihen wachsen mit, die Hand bleibt handlich */
+.d-tisch { grid-template-rows: auto minmax(110px, 1fr) auto minmax(110px, 1fr) auto clamp(150px, 24vh, 230px); }
+.bk { max-height: 190px; }
+.d-reihe { overflow-y: visible; }
+@media (max-height: 700px) { .d-tisch { grid-template-rows: auto minmax(90px, 1fr) auto minmax(90px, 1fr) auto clamp(130px, 22vh, 170px); } }
+/* Anführer im Kopf: Gesicht frei, Zahl klein in der Ecke */
+.d-anfuehrer { width: 46px; height: 50px; overflow: visible; }
+.d-anfuehrer .bk-bild { border-radius: 4px; overflow: hidden; }
+.d-anfuehrer .bk-bild img { object-position: 50% 12%; }
+.d-anfuehrer-wert { left: auto; top: auto; right: -8px; bottom: -6px; width: 22px; height: 22px; font-size: 0.875rem; z-index: 2; }
+/* Brustbild aus einer Ganzkörperfigur: Kopf und Schultern */
+.figur-buste { display: block; height: 290%; width: auto; max-width: none; margin: 0 auto; object-fit: contain; }
+.d-portrait .figur-buste { height: 260%; transform: translateY(6%); }
+.kamp-bild { background: radial-gradient(ellipse at 50% 30%, #6b4a30, #2a1c14); }
+.d-portrait .figur-buste, .d-portrait .portraet-bild { align-self: start; }
+/* Gegnerkacheln: feste Breite, damit Bild und Ausschnitt überall gleich wirken */
+.kamp-gegner { grid-template-columns: repeat(3, minmax(0, 300px)); justify-content: start; }
+.kamp-tafel { grid-template-rows: 180px auto auto auto; }
+.kamp-bild { height: 180px; }
+@media (max-width: 700px) { .kamp-gegner { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.d-portrait img.figur-buste { width: auto; max-width: none; height: 270%; transform: none; justify-self: center; margin-top: 4%; }
+.d-portrait { position: relative; } .d-portrait img.figur-buste { position: absolute; top: 4%; left: 50%; width: auto; height: 270%; margin: 0; transform: translateX(-50%); }

@@ -1,7 +1,7 @@
 // Kartenspiel „Hammer & Siegel“ (Spiel im Spiel): Kampagne mit zwölf Gegnern. Oben die Regeln (in Node testbar), unten die Anzeige.
 // Der Fortschritt bleibt auf dem Gerät (localStorage). Der Fortsetzungscode der Geschichte bleibt davon unberührt.
 import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
-import { figurHtml, bildHtml, kartenBild } from '../engine/bilder.js';
+import { figurHtml, portraetHtml, bildHtml, kartenBild } from '../engine/bilder.js';
 import { kampagne } from '../../data/kampagne.js';
 import { K } from './duell-regeln.js';
 import { view as duellView } from './duell.js';
@@ -71,7 +71,7 @@ export function view(el, schritt, ctx, fertig) {
           const g = kampagne.gegner[id];
           const offen = rules.offen(stand, id);
           return h('button', { type: 'button', class: `kamp-tafel${offen ? '' : ' zu'}${stand.sterne[id] ? ' besiegt' : ''}`, disabled: !offen, onclick: () => spiel(id) },
-            h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: figurHtml(ctx.figuren[g.figur] || {}) }),
+            h('span', { class: 'kamp-bild', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
             h('strong', {}, g.name), h('span', { class: 'klein' }, g.ort),
             offen ? sterneHtml(stand.sterne[id] || 0) : h('span', { class: 'klein' }, t.kampGesperrt));
         })))),
@@ -94,7 +94,7 @@ export function view(el, schritt, ctx, fertig) {
     const sieg = z.sieger === 'luther';
     const wahl = r.ersterSieg ? rules.belohnungen(g, besitz()) : [];
     const zeichne = (gewaehlt = null) => setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : 'niederlage'}` },
-      h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: figurHtml(ctx.figuren[g.figur] || {}) }),
+      h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
         h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', { class: 'd-ende-titel' }, sieg ? t.duellSieg : t.duellNiederlage), h('p', {}, sieg ? g.sieg : g.niederlage))),
       h('ul', { class: 'd-runden' }, z.runden.map((x) => h('li', { class: x.sieger }, fuelle(t.duellRundeZeile, { n: x.runde, du: x.luther, er: x.kirche }),
         ' ', h('strong', {}, x.sieger === 'luther' ? t.duellGewonnen : t.duellVerloren)))),
