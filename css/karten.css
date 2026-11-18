@@ -1,0 +1,169 @@
+/* Sammelkarten im Stil eines Sammelkartenspiels: Rahmen nach Seltenheit, großes Kartenbild,
+   Titelband, Stärke-Siegel, Kartenart mit Zierlinien, Fähigkeiten und kursiver Kartentext.
+   Diese Datei kommt nach components.css und duell.css und gewinnt bei Gleichstand. */
+
+/* ---------- Grundkarte ---------- */
+.karte.sammel:not(.mini):not(.leer) {
+  --rahmen: linear-gradient(150deg, #b48a5c 0%, #5c3f26 30%, #a77b4f 55%, #4a321e 80%, #9c7148 100%);
+  --papier: radial-gradient(ellipse at 50% 0%, #fffaf0 0%, #f5e8ca 55%, #e8d4a8 100%);
+  --siegel: radial-gradient(circle at 35% 30%, #ffffff 0%, color-mix(in srgb, var(--kf) 55%, #ffffff) 22%, var(--kf) 58%, #1f1a17 115%);
+  --siegel-rand: #f3e6c8;
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "bild" "kopf" "typ" "faehig" "text";
+  grid-template-rows: auto auto auto auto 1fr;
+  gap: 0; padding: 0; text-align: center; color: var(--tinte);
+  border: 5px solid transparent; border-radius: 14px;
+  background: var(--papier) padding-box, var(--rahmen) border-box;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 8px 16px rgba(31, 26, 23, 0.35);
+  overflow: hidden; font-size: 0.9375rem; line-height: 1.25;
+}
+.karte.sammel.rar-selten:not(.mini):not(.leer) { --rahmen: linear-gradient(150deg, #f4f8fb 0%, #7f97ad 28%, #e3ecf4 52%, #56718a 78%, #c9d7e3 100%); }
+.karte.sammel.rar-episch:not(.mini):not(.leer) { --rahmen: linear-gradient(150deg, #e7cff7 0%, #6b3f8a 30%, #c79be6 55%, #43245a 80%, #a77bc9 100%);
+  box-shadow: 0 0 12px rgba(150, 90, 200, 0.45), 0 8px 16px rgba(31, 26, 23, 0.35); }
+.karte.sammel.rar-legendaer:not(.mini):not(.leer) { --rahmen: linear-gradient(150deg, #fff6cf 0%, #c8961e 28%, #fff0b0 50%, #9a6b12 75%, #f3d27a 100%);
+  --siegel-rand: #ffe9a0; box-shadow: 0 0 16px rgba(240, 190, 60, 0.6), 0 8px 16px rgba(31, 26, 23, 0.35); }
+/* Karten der Kirche: rötliches Papier, dunkles Siegel */
+.karte.sammel.typ-rom:not(.mini):not(.leer) { --papier: radial-gradient(ellipse at 50% 0%, #fdf2ec 0%, #efd6c8 55%, #ddb7a3 100%); }
+
+/* ---------- Kartenbild ---------- */
+.karte.sammel:not(.mini):not(.leer) .k-bild {
+  grid-area: bild; position: relative; aspect-ratio: 4 / 3; height: auto; margin: 0;
+  border: 0; border-bottom: 3px solid var(--kf); border-radius: 9px 9px 0 0;
+  background: radial-gradient(circle at 50% 42%, #fffaf0 0%, #f2e2bf 45%, color-mix(in srgb, var(--kf) 35%, #d9c193) 100%);
+}
+.karte.sammel:not(.mini):not(.leer) .k-bild img { width: auto; height: 88%; max-width: 88%; max-height: 88%; object-fit: contain; filter: drop-shadow(0 3px 3px rgba(31, 26, 23, 0.25)); }
+/* Eigenes Kartenbild füllt das ganze Fenster */
+.karte.sammel.mit-kunst:not(.mini):not(.leer) .k-bild img { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; filter: none; }
+.karte.sammel:not(.mini):not(.leer) .k-bild::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 18px rgba(31, 26, 23, 0.35); }
+
+/* ---------- Titelband ---------- */
+.karte.sammel:not(.mini):not(.leer) .k-kopf {
+  grid-area: kopf; position: static; z-index: 1; display: block; margin: -18px 10px 0; padding: 5px 8px 6px;
+  background: linear-gradient(color-mix(in srgb, var(--kf) 82%, #ffffff), var(--kf) 55%, color-mix(in srgb, var(--kf) 75%, #000000));
+  color: #fffaf0; border: 2px solid rgba(31, 26, 23, 0.75); border-radius: 6px;
+  box-shadow: 0 3px 6px rgba(31, 26, 23, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.karte.sammel:not(.mini):not(.leer) .k-kopf strong { display: block; font-size: 1rem; line-height: 1.15; font-variant: small-caps; letter-spacing: 0.03em; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6); }
+
+/* ---------- Stärke-Siegel oben links ---------- */
+.karte.sammel:not(.mini):not(.leer) .k-staerke {
+  position: absolute; top: 6px; left: 6px; z-index: 2; width: 44px; height: 44px;
+  font-size: 1.45rem; color: #fff; text-shadow: 0 1px 2px #000;
+  background: var(--siegel); border: 3px solid var(--siegel-rand); border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(31, 26, 23, 0.8), 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+.karte.sammel.typ-rom:not(.mini):not(.leer) .k-staerke { --siegel: radial-gradient(circle at 35% 30%, #ffd9cf 0%, #b23a26 30%, #5a140b 75%, #1f0703 110%); }
+
+/* ---------- Kartenart und Seltenheit ---------- */
+.karte.sammel:not(.mini):not(.leer) .k-typ {
+  grid-area: typ; justify-self: center; display: flex; align-items: center; gap: 6px; margin: 7px 8px 3px; padding: 0;
+  background: none; border-radius: 0; color: color-mix(in srgb, var(--kf) 85%, #000000);
+  font-size: 0.875rem; font-weight: bold; font-variant: small-caps; letter-spacing: 0.06em;
+}
+.karte.sammel:not(.mini):not(.leer) .k-typ::before, .karte.sammel:not(.mini):not(.leer) .k-typ::after {
+  content: ""; width: 18px; height: 2px; background: linear-gradient(90deg, transparent, var(--kf)); }
+.karte.sammel:not(.mini):not(.leer) .k-typ::after { background: linear-gradient(90deg, var(--kf), transparent); }
+.k-symbol { width: 20px; height: 20px; object-fit: contain; }
+.karte.sammel:not(.mini):not(.leer) .k-rar { font-variant: normal; font-weight: normal; color: var(--tinte-weich); }
+.karte.sammel:not(.mini):not(.leer) .k-rar::before { content: "◆"; font-size: 1rem; text-shadow: 0 0 1px #000; }
+.karte.sammel.rar-gewoehnlich .k-rar::before { color: #a07a52; }
+.karte.sammel.rar-selten .k-rar::before { color: #7fb0e0; }
+.karte.sammel.rar-episch .k-rar::before { color: #b77be6; }
+.karte.sammel.rar-legendaer .k-rar::before { color: #f0b928; }
+
+/* ---------- Fähigkeiten und Kartentext ---------- */
+.karte.sammel:not(.mini):not(.leer) .k-faehig {
+  grid-area: faehig; margin: 2px 8px 0; padding: 4px 7px; text-align: left;
+  background: rgba(255, 255, 255, 0.6); border: 1px solid color-mix(in srgb, var(--kf) 35%, transparent); border-left: 4px solid var(--kf); border-radius: 4px;
+  font-size: 0.875rem; line-height: 1.25;
+}
+.karte.sammel:not(.mini):not(.leer) .k-faehig span::before { content: "✦ "; color: var(--kf); }
+.karte.sammel:not(.mini):not(.leer) .k-text {
+  grid-area: text; align-self: start; margin: 6px 10px 8px; padding: 5px 0 0; border-top: 1px solid rgba(31, 26, 23, 0.18);
+  font-style: italic; font-size: 0.875rem; color: var(--tinte-weich);
+}
+/* Thesennummer als kleines Siegel im Bild */
+.karte.sammel:not(.mini):not(.leer) .k-nr { right: 6px; bottom: 6px; padding: 1px 7px; border-radius: 10px; background: rgba(31, 26, 23, 0.8); color: #fff3c4; font-size: 0.9375rem; }
+
+/* ---------- Auswahl, Hover ---------- */
+button.karte.sammel:not(.mini) { transition: transform 0.18s, box-shadow 0.18s; }
+button.karte.sammel:not(.mini):hover:not(:disabled), button.karte.sammel:not(.mini):focus-visible { transform: translateY(-5px) rotate(-1deg); }
+.karte.sammel.gewaehlt:not(.mini):not(.leer) { transform: translateY(-5px); box-shadow: 0 0 0 3px #fffaf0, 0 0 0 6px var(--gruen), 0 10px 18px rgba(31, 26, 23, 0.4); background: var(--papier) padding-box, var(--rahmen) border-box; }
+.karte.sammel.gewaehlt:not(.mini):not(.leer) .k-kopf strong::before { content: none; }
+.karte.sammel.gewaehlt:not(.mini):not(.leer)::before {
+  content: "✓"; position: absolute; top: 6px; right: 6px; z-index: 3; display: grid; place-items: center; width: 30px; height: 30px;
+  border-radius: 50%; background: var(--gruen); color: #fff; font-weight: bold; border: 2px solid #fffaf0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Klein: Hand, Deckbau, Auswahl ---------- */
+.karte.sammel.klein:not(.mini):not(.leer) { font-size: 0.875rem; }
+.karte.sammel.klein:not(.mini):not(.leer) .k-bild { aspect-ratio: 16 / 10; }
+.karte.sammel.klein:not(.mini):not(.leer) .k-kopf { margin: -14px 6px 0; padding: 3px 5px 4px; }
+.karte.sammel.klein:not(.mini):not(.leer) .k-kopf strong { font-size: 0.9375rem; }
+.karte.sammel.klein:not(.mini):not(.leer) .k-staerke { width: 36px; height: 36px; font-size: 1.2rem; top: 4px; left: 4px; }
+.karte.sammel.klein:not(.mini):not(.leer) .k-typ { margin: 4px 6px 2px; }
+.karte.sammel.klein:not(.mini):not(.leer) .k-faehig { margin: 2px 6px 6px; padding: 3px 5px; }
+
+/* Hand im Kartenspiel: Bild flach, Fähigkeit lesbar */
+.d-hand .karte.sammel.klein:not(.mini) { width: 156px; grid-template-rows: minmax(0, 54px) auto auto minmax(0, 1fr) auto; align-content: stretch; background: var(--papier) padding-box, var(--rahmen) border-box; }
+.d-hand .karte.sammel.klein:not(.mini) .k-bild { aspect-ratio: auto; height: 100%; }
+.d-hand .karte.sammel.klein:not(.mini) .k-bild img { height: 92%; }
+.d-hand .karte.sammel.klein.mit-kunst .k-bild img { height: 100%; }
+.d-hand .karte.sammel.klein:not(.mini) .k-faehig { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; align-self: start; }
+
+/* Deckbau: kleinere Bilder */
+.d-sammlung .karte.sammel.klein:not(.mini) .k-bild { height: auto; aspect-ratio: 2 / 1; }
+.d-sammlung .karte.sammel .k-typ { display: none; }
+
+/* Album: etwas breiter, damit die Karten wie Karten wirken */
+.album .album-karten { grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: var(--ab-4); }
+
+/* Großansicht im Kartenspiel */
+.d-gross-karte .karte.sammel:not(.mini) { display: grid; font-size: 1rem; }
+.d-gross-karte .karte.sammel:not(.mini) .k-bild { aspect-ratio: auto; height: clamp(110px, 24vh, 190px); }
+.d-gross-karte .karte.sammel:not(.mini) .k-kopf strong { font-size: 1.2rem; }
+.d-gross-karte .karte.sammel:not(.mini) .k-staerke { width: 52px; height: 52px; font-size: 1.7rem; }
+
+/* Leere Plätze im Album: Kartenrücken */
+.karte.sammel.leer { border-radius: 14px; border: 4px solid #8a6a4a; background: repeating-linear-gradient(45deg, #5c3f26 0 7px, #6b4a2f 7px 14px); box-shadow: inset 0 0 0 3px #c8a46a, 0 6px 12px rgba(0, 0, 0, 0.3); color: #f3e6c8; }
+.karte.sammel.leer.kirche { border-color: #6e1f14; background: repeating-linear-gradient(45deg, #5a140b 0 7px, #6e1f14 7px 14px); }
+.karte.sammel.leer.mit-ruecken { background: var(--ruecken) center / cover; }
+.karte.sammel.leer .k-frage { color: #f3d27a; text-shadow: 0 2px 0 #000; }
+.karte.sammel.leer .k-typ { background: rgba(31, 26, 23, 0.75); color: #fff3c4; border-radius: 10px; padding: 1px 10px; }
+
+/* ---------- Karten auf dem Tisch ---------- */
+.bk { border: 4px solid transparent; padding: 0; border-radius: 10px; overflow: hidden;
+  background: linear-gradient(#fffaf0, #eedfbd) padding-box, linear-gradient(150deg, #b48a5c, #5c3f26 35%, #a77b4f 60%, #4a321e) border-box;
+  grid-template-rows: minmax(0, 1fr) auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45); }
+.bk.kirche { background: linear-gradient(#fdf2ec, #e3c2b2) padding-box, linear-gradient(150deg, #b48a5c, #5c3f26 35%, #a77b4f 60%, #4a321e) border-box; }
+.bk.rar-selten { background-image: linear-gradient(#fffaf0, #eedfbd), linear-gradient(150deg, #f4f8fb, #7f97ad 30%, #e3ecf4 55%, #56718a); }
+.bk.rar-episch { background-image: linear-gradient(#fffaf0, #eedfbd), linear-gradient(150deg, #e7cff7, #6b3f8a 30%, #c79be6 55%, #43245a); }
+.bk.rar-legendaer { background-image: linear-gradient(#fffaf0, #eedfbd), linear-gradient(150deg, #fff6cf, #c8961e 30%, #fff0b0 55%, #9a6b12); }
+.bk.kirche.rar-selten, .bk.kirche.rar-episch, .bk.kirche.rar-legendaer { background-image: linear-gradient(#fdf2ec, #e3c2b2), var(--bk-rahmen, linear-gradient(150deg, #e7cff7, #6b3f8a 30%, #c79be6 55%, #43245a)); }
+.bk.kirche.rar-selten { --bk-rahmen: linear-gradient(150deg, #f4f8fb, #7f97ad 30%, #e3ecf4 55%, #56718a); }
+.bk.kirche.rar-legendaer { --bk-rahmen: linear-gradient(150deg, #fff6cf, #c8961e 30%, #fff0b0 55%, #9a6b12); }
+.bk-bild { border-radius: 0; background: radial-gradient(circle at 50% 42%, #fffaf0, color-mix(in srgb, var(--kf) 30%, #d9c193)); }
+.bk.mit-kunst .bk-bild img { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; }
+.bk-name { padding: 2px 3px 3px; background: linear-gradient(color-mix(in srgb, var(--kf) 82%, #ffffff), var(--kf)); color: #fffaf0; font-variant: small-caps; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6); }
+.bk-wert { top: 3px; right: auto; left: 3px; min-width: 32px; height: 32px; border: 2px solid #f3e6c8; box-shadow: 0 0 0 2px rgba(31, 26, 23, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: radial-gradient(circle at 35% 30%, #fff, color-mix(in srgb, var(--kf) 55%, #fff) 22%, var(--kf) 60%, #1f1a17 115%); text-shadow: 0 1px 2px #000; }
+.bk.kirche .bk-wert { background: radial-gradient(circle at 35% 30%, #ffd9cf, #b23a26 30%, #5a140b 75%); }
+.bk.plus .bk-wert { background: radial-gradient(circle at 35% 30%, #e6ffe0, #3f9a4e 35%, #1d4f26 90%); }
+.bk.minus .bk-wert, .bk.entkraeftet .bk-wert { background: radial-gradient(circle at 35% 30%, #eee, #77706a 40%, #3a3531 95%); }
+.d-reihe { padding-top: 8px; }
+
+/* Spieltisch: eigenes Tischbild, falls vorhanden */
+.d-tisch { background: linear-gradient(rgba(40, 26, 18, 0.35), rgba(40, 26, 18, 0.55)), var(--tisch, none) center / cover, radial-gradient(ellipse at 50% 50%, #6b4a30 0%, #4a3122 60%, #33221a 100%); }
+.d-handzahl .ruecken { background: var(--ruecken, none) center / cover, repeating-linear-gradient(45deg, #7f2f1f 0 4px, #a6432e 4px 8px); }
+
+/* Legende der Seltenheit im Album */
+.rar-legende { display: flex; flex-wrap: wrap; gap: var(--ab-3); margin: 0 0 var(--ab-3); font-size: var(--text-klein); }
+.rar-legende span::before { content: "◆ "; text-shadow: 0 0 1px #000; }
+.rar-legende .gewoehnlich::before { color: #a07a52; } .rar-legende .selten::before { color: #7fb0e0; } .rar-legende .episch::before { color: #b77be6; } .rar-legende .legendaer::before { color: #f0b928; }
+.karte.sammel:not(.mini):not(.leer) .k-typ { flex-wrap: nowrap; gap: 4px; max-width: calc(100% - 12px); white-space: nowrap; }
+.karte.sammel:not(.mini):not(.leer) .k-typ::before, .karte.sammel:not(.mini):not(.leer) .k-typ::after { width: 12px; flex: none; }
+/* Hand: Art-Zeile weglassen, dafür mehr Bild */
+.d-hand .karte.sammel.klein:not(.mini):not(.leer) { grid-template-rows: minmax(0, 70px) auto 0 minmax(0, 1fr) auto; }
+.d-hand .karte.sammel.klein:not(.mini):not(.leer) .k-typ { display: none; }
+.d-hand .karte.sammel.klein:not(.mini):not(.leer) .k-faehig { margin-top: 5px; }
+.bk { width: 106px; } .bk-name { letter-spacing: 0; font-variant: normal; }

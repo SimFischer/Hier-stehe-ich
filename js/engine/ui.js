@@ -1,7 +1,7 @@
 // Kleine Helfer für den Bildschirm. Keine Spielinhalte.
 import { glossary } from '../../data/glossary.js';
 import { t } from '../../data/ui.js';
-import { bildHtml } from './bilder.js';
+import { bildHtml, kartenBild, symbolHtml } from './bilder.js';
 import { cards } from '../../data/cards.js';
 import { disputation } from '../../data/disputation.js';
 
@@ -95,16 +95,18 @@ export function faehigkeiten(k) {
 export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = false, mini = false, aus = false, extra = '' } = {}) {
   const typ = karte.typ || karte.art;
   const rar = karte.seltenheit ? ` rar-${karte.seltenheit}` : '';
+  // Seltenheit zeigt der Rahmen und ein farbiger Stein; das Wort steht im Titel-Tipp und in der Bildschirmleser-Beschreibung.
   const staerke = karte.staerke ? h('span', { class: 'k-staerke', 'aria-hidden': 'true' }, String(karte.staerke)) : null;
   if (mini) return h(onclick ? 'button' : 'span', { type: onclick ? 'button' : null, class: `karte sammel mini typ-${typ}${rar}${gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': onclick ? String(gewaehlt) : null, onclick },
     h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke));
   const faehig = faehigkeiten(karte);
-  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte sammel typ-${typ}${rar}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''} ${extra}`.trim(),
+  const bild = kartenBild(karte);
+  return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null, class: `karte sammel typ-${typ}${rar}${bild.kunst ? ' mit-kunst' : ''}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''} ${extra}`.trim(),
     'aria-pressed': onclick ? String(gewaehlt) : null, disabled: aus, onclick,
-    'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', ...faehig, klein ? '' : karte.text].filter(Boolean).join('. ') },
+    'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', karte.seltenheit ? t.seltenheit[karte.seltenheit] : '', ...faehig, klein ? '' : karte.text].filter(Boolean).join('. ') },
     h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke),
-    h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(karte.bild) }, karte.nr ? h('span', { class: 'k-nr' }, String(karte.nr)) : null),
-    h('span', { class: 'k-typ' }, t.typen[typ] || typ, karte.seltenheit ? h('em', { class: 'k-rar', title: t.seltenheit[karte.seltenheit] }, klein ? null : t.seltenheit[karte.seltenheit]) : null),
+    h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }, karte.nr ? h('span', { class: 'k-nr' }, String(karte.nr)) : null),
+    h('span', { class: 'k-typ' }, h('span', { 'aria-hidden': 'true', html: symbolHtml(typ) }), t.typen[typ] || typ, karte.seltenheit ? h('em', { class: 'k-rar', title: t.seltenheit[karte.seltenheit] }) : null),
     faehig.length ? h('span', { class: 'k-faehig' }, faehig.map((f) => h('span', {}, f))) : null,
     klein ? null : h('span', { class: 'k-text' }, karte.text));
 }

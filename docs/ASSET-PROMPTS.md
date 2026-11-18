@@ -1,3 +1,5 @@
+> Fehlende Bilder für Kartenspiel, Leipzig und neue Figuren: siehe `docs/ASSET-PROMPTS-2.md`.
+
 # Verbindliche Anpassungen vom 13.11.2026
 
 Die aktuelle Nutzerentscheidung für schwebendes Licht ersetzt alle älteren Gottesgestalt-Vorgaben. Karten werden aus Geodaten gebaut; Rom zeigt keine spätere Kuppel. Gebäude bleiben freie Kulissen. Siehe ASSET-QUELLEN.md.

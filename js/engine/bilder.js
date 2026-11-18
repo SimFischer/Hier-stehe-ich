@@ -21,10 +21,15 @@ export function bildHtml(name, klasse = '') {
 // ersatz: Bild, das gilt, bis die eigentliche Datei im Register steht (zum Beispiel Leipzig).
 export const szeneHtml = (bild = {}) => bildHtml(bild.datei, 'szenenbild') || bildHtml(bild.ersatz, 'szenenbild') || szeneSvg(bild);
 export const szeneUrl = (bild = {}) => bildUrl(bild.datei) || bildUrl(bild.ersatz) || svgUrl(szeneSvg(bild));
-export const figurHtml = (figur = {}) => bildHtml(figur.bild, 'figurbild') || figurSvg(figur.farbe);
+// ersatz: Bild, das gilt, bis das eigene Bild der Figur im Register steht.
+export const figurHtml = (figur = {}) => bildHtml(figur.bild, 'figurbild') || bildHtml(figur.ersatz, 'figurbild') || figurSvg(figur.farbe);
 export const statistHtml = (nr) => bildHtml(`fig-statist-${(nr % 4) + 1}`, 'figurbild') || figurSvg();
 /** Reichsstand im Saal: sechs Typen, die sich auf den Plätzen wiederholen. */
 export const standHtmlSaal = (platz, nickt) => bildHtml(`fig-stand-${(platz % 6) + 1}${nickt ? '-nickend' : ''}`, 'figurbild') || kopfSvg(nickt);
 export const standbildHtml = (wer, haltung) => bildHtml(`stand-${wer}-${haltung}`, 'figurbild') || standSvg(wer, haltung);
 export const motivHtml = (motiv) => bildHtml(motiv.bild, '') || motivSvg(motiv.id);
 export const motivUrl = (motiv) => bildUrl(motiv.bild) || svgUrl(motivSvg(motiv.id));
+/** Kartenbild: Liegt ein eigenes Kartenbild „kunst-<id>“ im Register, gilt es. Sonst das Bild aus den Kartendaten. */
+export const kartenBild = (karte) => (hatBild(`kunst-${karte.id}`) ? { name: `kunst-${karte.id}`, kunst: true } : { name: karte.bild, kunst: false });
+/** Symbol der Kartenart, falls vorhanden (symbol-gnade, symbol-rom …). */
+export const symbolHtml = (typ) => bildHtml(`symbol-${typ}`, 'k-symbol');

@@ -132,12 +132,12 @@ test('Bilder: Register und Dateien stimmen, alle Verweise existieren', () => {
   };
   for (const quelle of [game, scenes, puzzles, bonus, systeme, cards, disputation]) suche(quelle, '');
   assert.ok(verweise.length > 60, `${verweise.length} Bildverweise gefunden`);
-  const wartet = scenes.filter((sz) => sz.bild?.ersatz && !assets[sz.bild.datei]).map((sz) => sz.bild.datei);
+  const wartet = [...scenes.map((sz) => sz.bild), ...Object.values(game.figuren)].filter((b) => b?.ersatz && !assets[b.datei || b.bild]).map((b) => b.datei || b.bild);
   for (const v of verweise) assert.ok(assets[v] || wartet.includes(v), `Bild ${v} steht im Register`);
   // Jede Szene, jede Figur und jede Druckplatte hat ein Bild.
   // Eine Szene darf auf ihr eigenes Bild warten, wenn ein Ersatzbild eingetragen ist (Leipzig).
   for (const sz of scenes) assert.ok(assets[sz.bild?.datei] || assets[sz.bild?.ersatz], `Szene ${sz.id}: Hintergrund`);
-  for (const [id, f] of Object.entries(game.figuren)) if (f.farbe && id !== 'ich') assert.ok(assets[f.bild], `Figur ${id}: Bild`);
+  for (const [id, f] of Object.entries(game.figuren)) if (f.farbe && id !== 'ich') assert.ok(assets[f.bild] || assets[f.ersatz], `Figur ${id}: Bild`);
   for (const st of game.stationen.filter((x) => x.platte)) assert.ok(assets[st.bild], `Platte ${st.id}`);
 });
 

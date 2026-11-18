@@ -51,12 +51,15 @@ export function zeigeBeutel() {
   const s = store.state;
   const hat = (k) => s.cards.includes(k.id);
   const n = cards.filter(hat).length;
-  const leer = (k, kirche = false) => h('div', { class: `karte sammel leer${kirche ? ' kirche' : ''}`, 'aria-label': kirche ? t.albumKircheFehlt : t.albumFehlt },
+  const ruecken = (kirche) => bildUrl(kirche ? 'ruecken-kirche' : 'ruecken-luther');
+  const leer = (k, kirche = false) => h('div', { class: `karte sammel leer${kirche ? ' kirche' : ''}${ruecken(kirche) ? ' mit-ruecken' : ''}`, 'aria-label': kirche ? t.albumKircheFehlt : t.albumFehlt,
+    style: ruecken(kirche) ? `--ruecken: url("${ruecken(kirche)}")` : null },
     h('span', { class: 'k-frage', 'aria-hidden': 'true' }, '?'),
     h('span', { class: 'k-typ' }, kirche ? t.albumKircheFehlt : k.duell ? fuelle(t.albumDuell, { name: disputation.gegner[k.duell].name }) : fuelle(t.albumWo, { nr: station(k.station).nr })));
   const gesehen = kirchenGesehen(s.flags);
   fenster(t.beutel, h('div', { class: 'album' },
     h('h3', {}, t.albumLuther),
+    h('p', { class: 'rar-legende' }, Object.entries(t.seltenheit).map(([k, v]) => h('span', { class: k }, v))),
     h('p', { class: 'kicker' }, fuelle(t.albumStand, { n, von: cards.length })),
     n ? null : h('p', {}, t.beutelLeer),
     h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k) : leer(k)))),

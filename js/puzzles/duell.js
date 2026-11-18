@@ -1,6 +1,6 @@
 // Kartenspiel „Disputation“: Spieltisch. Die Regeln stehen in duell-regeln.js.
 import { h, setzeInhalt, knopf, kartenChip, fuelle } from '../engine/ui.js';
-import { bildHtml, figurHtml } from '../engine/bilder.js';
+import { bildHtml, figurHtml, kartenBild, bildUrl } from '../engine/bilder.js';
 import { disputation } from '../../data/disputation.js';
 import { rules, K, wert, summe, entkraeftet, deckVorschlag } from './duell-regeln.js';
 
@@ -37,6 +37,9 @@ export function view(el, schritt, ctx, fertig) {
   const Wer = wer[0].toUpperCase() + wer.slice(1);
   const wen = g.wen || g.name;
   const lebt = () => el.isConnected;
+  // Eigene Bilder für Tisch und Kartenrücken, falls vorhanden (data/assets.js).
+  const url = (name) => (bildUrl(name) ? `url("${bildUrl(name)}")` : 'none');
+  const tischStil = `--tisch: ${url('tisch-disputation')}; --ruecken: ${url('ruecken-kirche')}`;
 
   // ---------- Vorbereitung: Gegner, Regeln, Deck ----------
   function vorbereitung() {
@@ -75,12 +78,13 @@ export function view(el, schritt, ctx, fertig) {
     const w = wert(z, seite, inst);
     const vorher = werteVorher.get(inst.uid);
     const ent = entkraeftet(z, seite, inst);
-    const klassen = ['bk', `typ-${k.typ}`, `rar-${k.seltenheit}`, seite,
+    const bild = kartenBild(k);
+    const klassen = ['bk', `typ-${k.typ}`, `rar-${k.seltenheit}`, seite, bild.kunst ? 'mit-kunst' : '',
       ent ? 'entkraeftet' : '', w > k.staerke ? 'plus' : w < k.staerke ? 'minus' : '',
       inst.uid === letzte ? 'neu' : '', vorher != null && vorher !== w ? 'pop' : '', ent && vorher != null && vorher !== 1 ? 'bricht' : ''];
     return h('button', { type: 'button', class: klassen.filter(Boolean).join(' '), onclick: () => gross({ id: inst.id, seite, uid: inst.uid }),
       'aria-label': `${k.titel}, ${fuelle(t.kartenStaerke, { n: w })}${ent ? `, ${t.duellEntkraeftet}` : ''}` },
-      h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(k.bild) }),
+      h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }),
       h('span', { class: 'bk-name' }, k.titel),
       h('span', { class: 'bk-wert', 'aria-hidden': 'true' }, w !== k.staerke ? h('s', {}, String(k.staerke)) : null, String(w)),
       ent ? h('span', { class: 'bk-riss', 'aria-hidden': 'true' }) : null);
@@ -136,7 +140,7 @@ export function view(el, schritt, ctx, fertig) {
         onclick: () => { if (tausch) { if (z.tausch > 0) { z = rules.tausche(z, inst.uid); zeichne(); } } else gross({ id: inst.id, seite: 'luther', uid: inst.uid, hand: true }); } });
     }));
 
-    setzeInhalt(el, h('div', { class: `d-tisch${banner ? ' mit-banner' : ''}` },
+    setzeInhalt(el, h('div', { class: `d-tisch${banner ? ' mit-banner' : ''}`, style: tischStil },
       kopfKirche,
       h('div', { class: 'd-reihe kirche', 'aria-label': fuelle(t.duellReihe, { name: g.name }) }, k.reihe.map((inst) => brettKarte('kirche', inst, letzteUid))),
       status,

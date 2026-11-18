@@ -42,7 +42,7 @@ export const game = {
     pilger: { name: 'Pilger', farbe: '#7A6A4F', bild: 'fig-pilger' },
     mitbruder: { name: 'Bruder Johannes', farbe: '#2B2622', bild: 'fig-mitbruder' },
     luther: { name: 'Martin Luther', farbe: '#1F1A17', bild: 'fig-luther-professor', echt: true },
-    kaplan: { name: 'Kaplan', farbe: '#4A3F55', bild: 'fig-mitbruder' },
+    kaplan: { name: 'Kaplan', farbe: '#4A3F55', bild: 'fig-kaplan', ersatz: 'fig-mitbruder' },
     tetzel: { name: 'Johann Tetzel', farbe: '#D8CDB8', bild: 'fig-tetzel', echt: true },
     baeuerin: { name: 'Bäuerin', farbe: '#A6432E', bild: 'fig-baeuerin' },
     kaufmann: { name: 'Kaufmann', farbe: '#3F5870', bild: 'fig-kaufmann' },
@@ -50,9 +50,9 @@ export const game = {
     geselle: { name: 'Geselle', farbe: '#5E7350', bild: 'fig-geselle' },
     witwe: { name: 'Witwe', farbe: '#4B4640', bild: 'fig-witwe' },
     sprecher: { name: 'Sprecher des Kaisers', farbe: '#2F2A3A', bild: 'fig-sprecher', echt: true },
-    // Für Johann Eck gibt es noch kein eigenes Bild (geplant: fig-eck). Bis dahin steht dort ein Geistlicher aus dem Reichstag.
-    eck: { name: 'Johann Eck', farbe: '#5B3A3A', bild: 'fig-stand-6', echt: true },
-    student: { name: 'Student aus Wittenberg', farbe: '#3F5870', bild: 'fig-geselle' },
+    // Eck, Student und Kaplan: eigene Bilder geplant (docs/ASSET-PROMPTS-2.md). Bis dahin gilt das Ersatzbild.
+    eck: { name: 'Johann Eck', farbe: '#5B3A3A', bild: 'fig-eck', ersatz: 'fig-stand-6', echt: true },
+    student: { name: 'Student aus Wittenberg', farbe: '#3F5870', bild: 'fig-student', ersatz: 'fig-geselle' },
     junker: { name: 'Junker Jörg', farbe: '#5A3B2A', bild: 'fig-luther-junker', echt: true },
     marktfrau: { name: 'Marktfrau', farbe: '#A6432E', bild: 'fig-marktfrau' },
     kind: { name: 'Kind', farbe: '#C8963E', bild: 'fig-kind' },
