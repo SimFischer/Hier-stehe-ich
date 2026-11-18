@@ -56,38 +56,38 @@ export const bonus = {
         ] },
       { art: 'fahrt', titel: 'Durch den Wald',
         anweisung: 'Lenke den Wagen mit Luther auf den Waldwegen zur Wartburg. Die Spitzel reiten auf festen Wegen (gestrichelt). Bleib aus ihrem Blickfeld. Pfeiltasten oder Finger auf einen Weg halten.',
-        // Welt 1600 × 1200. Der Wagen fährt nur auf den Wegen (Strecken von Punkt zu Punkt, Breite in wegBreite).
+        // Welt 1600 × 1200, Wege und Burg sind im Bild (bonus-wald) gemalt und liegen genau auf diesen Strecken. Der Wagen fährt nur auf den Wegen (Strecken von Punkt zu Punkt, Breite in wegBreite).
         // Wachen reiten auf den Wegen hin und her oder stehen und schwenken den Blick.
-        welt: { w: 1600, h: 1200, bild: 'bonus-wald' }, wagen: 'bonus-wagen', spitzel: 'bonus-reiter', burg: 'stadt-knoten',
-        start: { x: 110, y: 600 }, ziel: { x: 1500, y: 560, r: 70 }, tempo: 170, wegBreite: 76,
+        welt: { w: 1600, h: 1200, bild: 'bonus-wald', wegeImBild: true }, wagen: 'bonus-wagen', spitzel: 'bonus-reiter', burg: 'stadt-knoten',
+        start: { x: 110, y: 598 }, ziel: { x: 1465, y: 598, r: 70 }, tempo: 170, wegBreite: 76,
         wege: [
-          [[110, 600], [400, 600]], [[400, 600], [400, 250]], [[400, 600], [400, 950]],
-          [[400, 250], [800, 250]], [[400, 600], [800, 600]], [[400, 950], [800, 950]],
-          [[800, 250], [800, 600]], [[800, 600], [800, 950]],
-          [[800, 250], [1200, 250]], [[800, 600], [1200, 600]], [[800, 950], [1200, 950]],
-          [[1200, 250], [1200, 600]], [[1200, 600], [1200, 950]], [[1200, 600], [1500, 560]]
+          [[110, 598], [406, 598]], [[406, 598], [406, 252]], [[406, 598], [406, 938]],
+          [[406, 252], [794, 252]], [[406, 598], [794, 598]], [[406, 938], [794, 938]],
+          [[794, 252], [794, 598]], [[794, 598], [794, 938]],
+          [[794, 252], [1190, 252]], [[794, 598], [1190, 598]], [[794, 938], [1190, 938]],
+          [[1190, 252], [1190, 598]], [[1190, 598], [1190, 938]], [[1190, 598], [1420, 598]]
         ],
-        rast: [{ x: 110, y: 600 }, { x: 400, y: 800 }, { x: 1000, y: 950 }, { x: 1350, y: 580 }],
+        rast: [{ x: 110, y: 598 }, { x: 406, y: 770 }, { x: 1000, y: 938 }, { x: 1350, y: 598 }],
         sicht: { weite: 230, winkel: 32 },
         wachen: [
-          { weg: [[400, 600], [1050, 600]], tempo: 140 },
-          { weg: [[800, 250], [800, 950]], tempo: 120 },
-          { weg: [[1200, 250], [1200, 950]], tempo: 150 },
-          { weg: [[400, 250], [1200, 250]], tempo: 110 }
+          { weg: [[406, 598], [1050, 598]], tempo: 140 },
+          { weg: [[794, 252], [794, 938]], tempo: 120 },
+          { weg: [[1190, 252], [1190, 938]], tempo: 150 },
+          { weg: [[406, 252], [1190, 252]], tempo: 110 }
         ],
         // Schwer: schnellere Spitzel mit weiterem Blick, ein Reiter im Süden, zwei Posten an den Kreuzungen im Osten
         // und nur zwei Rastplätze. Durch kommt, wer den Weg plant: über den Süden und dann durch die Mitte.
         schwer: {
-          rast: [{ x: 110, y: 600 }, { x: 400, y: 800 }, { x: 1350, y: 580 }],
+          rast: [{ x: 110, y: 598 }, { x: 406, y: 770 }, { x: 1350, y: 598 }],
           sicht: { weite: 250, winkel: 34 },
           wachen: [
-            { weg: [[400, 600], [1050, 600]], tempo: 175 },
-            { weg: [[800, 250], [800, 950]], tempo: 150 },
-            { weg: [[1200, 250], [1200, 950]], tempo: 188 },
-            { weg: [[400, 250], [1200, 250]], tempo: 138 },
-            { weg: [[450, 950], [1150, 950]], tempo: 110 },
-            { posten: [1200, 950], von: 180, bis: 270, schwenk: 0.7 },
-            { posten: [1200, 250], von: 90, bis: 180, schwenk: 0.6 }
+            { weg: [[406, 598], [1050, 598]], tempo: 175 },
+            { weg: [[794, 252], [794, 938]], tempo: 150 },
+            { weg: [[1190, 252], [1190, 938]], tempo: 188 },
+            { weg: [[406, 252], [1190, 252]], tempo: 138 },
+            { weg: [[450, 938], [1150, 938]], tempo: 110 },
+            { posten: [1190, 938], von: 180, bis: 270, schwenk: 0.7 },
+            { posten: [1190, 252], von: 90, bis: 180, schwenk: 0.6 }
           ]
         },
         stufeFrage: 'Wie schwer soll die Fahrt sein?',

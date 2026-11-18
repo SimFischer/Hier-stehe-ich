@@ -105,7 +105,7 @@ test('Entführung schwer: Rastplätze sicher, mit geplantem Weg lösbar', () => 
   for (const w of s.wachen.filter((x) => x.weg)) for (const [x, y] of w.weg) assert.ok(fahrtRules.naechster({ x, y }, s.wege).d < 1, 'Spitzel reiten auf Wegen');
   for (const w of s.wachen.filter((x) => x.posten)) assert.ok(fahrtRules.naechster({ x: w.posten[0], y: w.posten[1] }, s.wege).d < 1, 'Posten stehen am Weg');
   // Geplanter Weg: über den Süden, dann durch die Mitte zur Burg. Wer gesehen wird, beginnt am letzten Rastplatz.
-  const ziele = [[400, 800], [400, 950], [800, 950], [800, 600], [1200, 600], [1350, 580]].map(([x, y]) => ({ x, y })).concat(s.ziel);
+  const ziele = [[406, 770], [406, 938], [794, 938], [794, 598], [1190, 598], [1350, 598]].map(([x, y]) => ({ x, y })).concat(s.ziel);
   let p = { ...s.start }, t = 0, n = 0, r = 0, nr = 0;
   const dt = 0.05;
   while (!fahrtRules.amZiel(p, s.ziel) && t < 300) {

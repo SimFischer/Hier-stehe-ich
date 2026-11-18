@@ -259,16 +259,19 @@ export function fahrt(el, basis, ctx, fertig) {
   function ring(x, y, r, farbe, breite = 6) { g.beginPath(); g.arc(x, y, r, 0, 2 * Math.PI); g.lineWidth = breite; g.strokeStyle = farbe; g.stroke(); }
   function male() {
     // Wald blasser zeichnen (Graufilter, wo das Gerät ihn kann), dann abdunkeln
-    if (bilder.wald?.complete && bilder.wald.naturalWidth) { g.save(); g.filter = 'saturate(0.3) brightness(0.9)'; g.drawImage(bilder.wald, 0, 0, W.w, W.h); g.restore(); } else { g.fillStyle = '#3e5b45'; g.fillRect(0, 0, W.w, W.h); }
-    // Der Wald tritt zurück: dunkler und blasser, damit Wagen und Spitzel klar zu sehen sind.
-    g.fillStyle = 'rgba(24, 30, 22, 0.5)'; g.fillRect(0, 0, W.w, W.h);
-    // Die Wege: heller Sandweg mit dunklem Rand, gut zu sehen
-    if (schritt.wege) {
+    const imBild = W.wegeImBild && bilder.wald?.complete && bilder.wald.naturalWidth;
+    if (bilder.wald?.complete && bilder.wald.naturalWidth) { g.save(); g.filter = imBild ? 'saturate(0.7)' : 'saturate(0.3) brightness(0.9)'; g.drawImage(bilder.wald, 0, 0, W.w, W.h); g.restore(); } else { g.fillStyle = '#3e5b45'; g.fillRect(0, 0, W.w, W.h); }
+    // Der Wald tritt zurück, damit Wagen und Spitzel klar zu sehen sind. Sind die Wege im Bild gemalt, nur leicht.
+    g.fillStyle = imBild ? 'rgba(24, 30, 22, 0.18)' : 'rgba(24, 30, 22, 0.5)'; g.fillRect(0, 0, W.w, W.h);
+    // Die Wege: heller Sandweg mit dunklem Rand (nur, wenn das Bild sie nicht schon zeigt)
+    if (schritt.wege && !imBild) {
       g.lineCap = 'round'; g.lineJoin = 'round';
       for (const [breite, farbe] of [[schritt.wegBreite + 14, '#3a2717'], [schritt.wegBreite, '#d9c08a']]) {
         g.lineWidth = breite; g.strokeStyle = farbe;
         for (const [a, b] of schritt.wege) { g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); }
       }
+    }
+    if (schritt.wege) {
       // Routen der Spitzel: rot gestrichelt auf dem Weg
       g.save(); g.setLineDash([22, 18]); g.lineWidth = 6; g.strokeStyle = 'rgba(192, 57, 43, 0.85)';
       for (const w of schritt.wachen) if (w.weg) { g.beginPath(); w.weg.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); }
@@ -279,7 +282,7 @@ export function fahrt(el, basis, ctx, fertig) {
       ring(r.x, r.y, 48, '#fff3c4', 5);
     });
     ring(schritt.ziel.x, schritt.ziel.y, 96, 'rgba(255, 243, 196, 0.9)', 8);
-    if (!bildMittig(bilder.burg, schritt.ziel.x, schritt.ziel.y, 170)) { g.fillStyle = '#3f5870'; g.fillRect(schritt.ziel.x - 50, schritt.ziel.y - 50, 100, 100); }
+    if (!imBild && !bildMittig(bilder.burg, schritt.ziel.x, schritt.ziel.y, 170)) { g.fillStyle = '#3f5870'; g.fillRect(schritt.ziel.x - 50, schritt.ziel.y - 50, 100, 100); }
     for (const w of schritt.wachen) {
       const wp = fahrtRules.wachePos(w, zeit);
       g.beginPath(); g.moveTo(wp.x, wp.y); g.arc(wp.x, wp.y, schritt.sicht.weite, wp.a - schritt.sicht.winkel * RAD, wp.a + schritt.sicht.winkel * RAD); g.closePath();
