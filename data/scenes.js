@@ -137,8 +137,8 @@ export const scenes = [
       { text: 'Sieh dir die Bücher und das Schreiben aus Rom an.' }
     ],
     hotspots: [
-      { id: 'buecher', label: 'Bücherstapel', x: 55, y: 55, art: 'ansehen', gibt: 'k9', merken: true,
-        text: 'Luthers Bücher, ein ganzer Stapel. In einem steht: Auch Konzilien, die großen Versammlungen der Kirche, haben sich schon geirrt. Sie haben einander sogar widersprochen.' },
+      { id: 'buecher', label: 'Bücherstapel', x: 55, y: 55, art: 'ansehen', merken: true,
+        text: 'Luthers Bücher, ein ganzer Stapel. Seit Leipzig schreibt er offen: Auch Konzilien, die großen Versammlungen der Kirche, haben sich schon geirrt.' },
       { id: 'bann', label: 'Schreiben aus Rom', x: 87, y: 64, art: 'ansehen', merken: true,
         text: 'Eine Abschrift aus Rom. Im Januar 1521 hat Papst Leo X. den Kirchenbann über Luther verhängt. Luther ist damit aus der Kirche ausgeschlossen.' },
       { id: 'fenster', label: 'Fenster', x: 51, y: 40, art: 'ansehen', optional: true,
@@ -150,10 +150,10 @@ export const scenes = [
   { id: 'saal', name: 'Der Saal im Bischofshof', zeit: 'Worms, 18. April 1521', bild: { typ: 'saal', datei: 'bg-saal' }, hotspots: [] },
   {
     // Nebenort. Eigenes Bild folgt (bg-leipzig). Bis dahin zeigt die Szene den Saal.
-    id: 'leipzig', name: 'Die Pleißenburg in Leipzig', zeit: 'Sommer 1519', nebenort: true, bild: { typ: 'saal', datei: 'bg-leipzig', ersatz: 'bg-saal' },
+    id: 'leipzig', name: 'Die Pleißenburg in Leipzig', zeit: 'Sommer 1519', bild: { typ: 'saal', datei: 'bg-leipzig', ersatz: 'bg-saal' },
     einstieg: [{ text: 'Leipzig, Sommer 1519. In der Pleißenburg streiten Gelehrte vor vielen Zuhörern über den Glauben. So ein Streitgespräch heißt Disputation.' }],
     ziel: [
-      { wenn: { flag: 'duell:eck' }, text: 'Fordere Eck erneut heraus, wann immer du willst. Oder öffne die Karte.' },
+      { wenn: { done: 'sl' }, text: 'Hier ist alles erledigt. Öffne die Karte.' },
       { wenn: { flag: 'h:leipzig.eck' }, text: 'Tritt ans Rednerpult und fordere Eck heraus.' },
       { text: 'Sieh dir deinen Gegner an.' }
     ],
@@ -162,7 +162,7 @@ export const scenes = [
         text: 'Johann Eck ist Professor in Ingolstadt und ein gefürchteter Redner. Er kennt die Beschlüsse der Konzilien genau. Für ihn ist klar: Wer dem Papst widerspricht, redet wie der Ketzer Jan Hus.' },
       { id: 'studenten', label: 'Studenten', figur: 'student', x: 80, y: 92, art: 'ansehen', merken: true, optional: true,
         text: 'Etwa 200 Studenten sind mit Luther aus Wittenberg gekommen. Die Stimmung in der Stadt ist aufgeheizt.' },
-      { id: 'pult', label: 'Rednerpult', x: 52, y: 62, art: 'raetsel', ziel: 'leipzig', wenn: { flag: 'h:leipzig.eck' },
+      { id: 'pult', label: 'Rednerpult', x: 52, y: 62, art: 'raetsel', ziel: 'leipzig', wenn: { flag: 'h:leipzig.eck' }, zeigtWenn: { nichtDone: 'sl' },
         gesperrt: 'Sieh dir erst deinen Gegner an.' }
     ]
   },

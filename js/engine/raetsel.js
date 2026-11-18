@@ -19,13 +19,14 @@ import { view as standbild } from '../puzzles/standbild.js';
 import { view as markt } from '../puzzles/marktplatz.js';
 import { view as druck } from '../puzzles/druckwelle.js';
 import { view as duell } from '../puzzles/duell.js';
+import { view as kampagne } from '../puzzles/kampagne.js';
 import { view as auswahl } from '../puzzles/auswahl.js';
 import { view as uebersetzung } from '../puzzles/uebersetzung.js';
 import { view as flugschrift } from '../puzzles/flugschrift.js';
 import { wahl, text, gespraech } from '../puzzles/schritte.js';
 import { silben, presse, fahrt, rose, reflexion } from '../puzzles/bonus.js';
 
-const module = { zuordnen, waage, standbild, markt, druck, duell, auswahl, uebersetzung, flugschrift, wahl, text, gespraech, silben, presse, fahrt, rose, reflexion };
+const module = { zuordnen, waage, standbild, markt, druck, duell, kampagne, auswahl, uebersetzung, flugschrift, wahl, text, gespraech, silben, presse, fahrt, rose, reflexion };
 export const systeme = { marktplatz, druckwelle, verhoer };
 
 // Fortschritt innerhalb eines Rätsels: bleibt, solange die Seite offen ist.

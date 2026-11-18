@@ -1,6 +1,7 @@
 // Leitet die Lösungen aus den Spieldaten ab: für das Lehrkräftekompendium und die Tests.
 // Es gibt keine zweite Lösungsliste. Was hier steht, kommt aus data/.
 import { aufbau } from '../puzzles/zuordnen.js';
+import { karte as kartei, lutherKarten } from '../../data/kartei.js';
 
 const PFEIL = ' → ';
 
@@ -19,9 +20,9 @@ export function loesung(schritt, { cards, systeme, figuren, disputation }) {
       .map(([k, r]) => `${r.label} ${st.passt[k].map((w) => r.werte.find((x) => x.id === w).label).join(' / ')}`).join('; ')}`);
     case 'markt': return system.figuren.map((f) => `${figuren[f.id].name}${PFEIL}${f.antworten.filter((a) => a.passt).map((a) => a.text).join(' / ')}`);
     case 'duell': {
-      const kirche = (id) => disputation.kirche.find((k) => k.id === id);
+      const kirche = (id) => kartei(id);
       return [...new Set(disputation.gegner[schritt.gegner].deck)].map(kirche).sort((a, b) => b.staerke - a.staerke)
-        .map((k) => `${k.titel} (${k.staerke})${PFEIL}${cards.filter((c) => (c.entkraeftet || []).includes(k.id)).map((c) => c.titel).join(' / ') || '–'}`);
+        .map((k) => `${k.titel} (${k.staerke})${PFEIL}${lutherKarten.filter((c) => !c.anfuehrer && (c.entkraeftet || []).includes(k.id) && (c.station || c.duell)).map((c) => c.titel).join(' / ') || '–'}`);
     }
     case 'uebersetzung': return schritt.verse.map((v) => v.optionen.find((o) => o.richtig).text);
     case 'silben': return schritt.fragen.map((f) => `${f.frage}${PFEIL}${f.silben.join('')}`);

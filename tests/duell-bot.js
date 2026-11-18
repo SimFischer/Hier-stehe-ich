@@ -11,10 +11,13 @@ export function lutherZug(z, typ, rnd) {
   const mussGewinnen = k.siege > l.siege || (k.siege === 1 && l.siege === 1);
   if (k.gepasst) {
     if (vorne > 0) return { art: 'passe' };
+    if (l.anfuehrer && rules.vorsprungNach(z, 'luther', l.anfuehrer.uid) > 0 && !opt.some((o) => o.nach > 0)) return { art: 'spiele', uid: l.anfuehrer.uid };
     const reicht = opt.filter((o) => o.nach > 0).sort((a, b) => a.k.staerke - b.k.staerke);
     return reicht.length ? { art: 'spiele', uid: (konter.find((o) => o.nach > 0) || reicht[0]).uid } : { art: 'passe' };
   }
   if (konter.length) return { art: 'spiele', uid: konter.reduce((a, b) => (b.nach > a.nach ? b : a)).uid };
+  // Anführer (Kampagne): für eine Runde, die zählt
+  if (l.anfuehrer && (mussGewinnen || z.runde >= 2)) { const nach = rules.vorsprungNach(z, 'luther', l.anfuehrer.uid); if (nach > 0 && (k.gepasst || mussGewinnen)) return { art: 'spiele', uid: l.anfuehrer.uid }; }
   if (!mussGewinnen && l.siege === 0 && vorne < -12 && l.reihe.length >= 1) return { art: 'passe' };
   if (!mussGewinnen && vorne >= 3 && l.reihe.length >= 2 && l.hand.length <= k.hand.length) return { art: 'passe' };
   // Konterkarten aufheben, solange es andere gibt.
@@ -24,10 +27,10 @@ export function lutherZug(z, typ, rnd) {
 }
 
 /** Spielt eine ganze Disputation. Gibt den Endstand zurück. */
-export function spieleDuell(gegner, deck, typ, rnd) {
-  let z = rules.start(gegner, deck, Math.floor(rnd() * 2 ** 31));
+export function spieleDuell(gegner, deck, typ, rnd, anfuehrer = null) {
+  let z = rules.start(gegner, deck, Math.floor(rnd() * 2 ** 31), undefined, { anfuehrer });
   // Kluge Spieler tauschen Karten, die gegen dieses Deck nichts entkräften.
-  if (typ === 'klug') for (let i = 0; i < z.regeln.tausch; i++) {
+  if (typ === 'klug') for (let i = 0; i < (z.regeln.tausch || 0); i++) {
     const nutzlos = z.seiten.luther.hand.filter((x) => !(K(x.id).entkraeftet || []).some((id) => gegner.deck.includes(id)) && !K(x.id).zieht)
       .sort((a, b) => K(a.id).staerke - K(b.id).staerke)[0];
     if (nutzlos) z = rules.tausche(z, nutzlos.uid);
@@ -35,6 +38,7 @@ export function spieleDuell(gegner, deck, typ, rnd) {
   z = rules.beginne(z);
   for (let i = 0; i < 300 && z.phase === 'spiel'; i++) {
     z = z.am === 'kirche' ? rules.fuehreAus(z, rules.kiZug(z), 'kirche') : rules.fuehreAus(z, lutherZug(z, typ, rnd), 'luther');
+    if (z.phase === 'tausch') z = rules.beginne(z);
   }
   return z;
 }

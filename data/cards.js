@@ -31,7 +31,7 @@ export const cards = [
     titel: 'Nicht käuflich', text: 'Vergebung kann man nicht kaufen.' },
   { id: 'n1', art: 'argument', station: 's4', duell: 'tetzel', bild: 'fig-witwe', typ: 'menschen', staerke: 4, seltenheit: 'selten', entkraeftet: ['c-petersdom'], zieht: 1,
     titel: 'Die Not der Leute', text: 'Arme Leute geben ihr letztes Geld. Luther sieht ihre Not.' },
-  { id: 't27', art: 'these', station: 's5', bild: 'ablasskasten', typ: 'these', staerke: 2, seltenheit: 'gewoehnlich', bund: true, entkraeftet: ['c-ablass'], nr: 27, titel: 'These 27',
+  { id: 't27', art: 'these', station: 's5', bild: 'ablasskasten', typ: 'these', staerke: 2, seltenheit: 'gewoehnlich', bund: true, entkraeftet: ['c-ablass', 'c-ablassprediger'], nr: 27, titel: 'These 27',
     alt: 'Menschenlehre predigt, wer sagt: Sobald die Münze im Kasten klingt, fliegt die Seele aus dem Fegefeuer.',
     text: 'Niemand kann eine Seele mit Geld freikaufen.',
     frage: { text: 'Worum ging es in These 27?', optionen: [
@@ -49,7 +49,7 @@ export const cards = [
     frage: { text: 'Worum ging es in These 36?', optionen: [
       { text: 'Echte Reue genügt. Einen Brief braucht es nicht.', richtig: true },
       { text: 'Nur der Papst kann vergeben.' }, { text: 'Strafen dürfen nie erlassen werden.' }] } },
-  { id: 't43', art: 'these', station: 's5', bild: 'werk-fasten', typ: 'these', staerke: 2, seltenheit: 'gewoehnlich', bund: true, entkraeftet: ['c-werke'], nr: 43, titel: 'These 43',
+  { id: 't43', art: 'these', station: 's5', bild: 'werk-fasten', typ: 'these', staerke: 2, seltenheit: 'gewoehnlich', bund: true, entkraeftet: ['c-werke', 'c-ablassprediger'], nr: 43, titel: 'These 43',
     alt: 'Wer dem Armen gibt oder dem Bedürftigen leiht, handelt besser, als wer Ablass kauft.',
     text: 'Hilf lieber Menschen in Not, statt Ablass zu kaufen.',
     frage: { text: 'Worum ging es in These 43?', optionen: [
@@ -67,13 +67,13 @@ export const cards = [
     titel: 'Viele haben es gelesen', text: 'In wenigen Wochen sprach man im ganzen Reich über die Thesen.' },
   { id: 'k13', art: 'argument', station: 's5', bild: 'bonus-presse-teile-4', typ: 'druck', staerke: 2, seltenheit: 'episch', staerkt: { gruppe: ['these', 'druck'], plus: 2 },
     titel: 'Die Druckerpresse', text: 'Gedruckt erreichen Luthers Gedanken Tausende statt einiger Gelehrter.' },
-  { id: 'n2', art: 'argument', station: 's5', duell: 'eck', bild: 'fig-geselle', typ: 'menschen', staerke: 4, seltenheit: 'selten', entkraeftet: ['c-mehrheit'],
+  { id: 'n2', art: 'argument', station: 'sl', duell: 'eck', bild: 'fig-geselle', typ: 'menschen', staerke: 4, seltenheit: 'selten', entkraeftet: ['c-mehrheit'],
     titel: 'Rückhalt der Studenten', text: 'Etwa 200 Studenten aus Wittenberg begleiten Luther nach Leipzig.' },
-  { id: 'k9', art: 'argument', station: 's6', bild: 'fig-stand-3', typ: 'kirche', staerke: 4, seltenheit: 'episch', entkraeftet: ['c-konzil', 'c-hus'],
+  { id: 'k9', art: 'argument', station: 'sl', bild: 'fig-stand-3', typ: 'kirche', staerke: 4, seltenheit: 'episch', entkraeftet: ['c-konzil', 'c-hus', 'c-unfehlbar'],
     titel: 'Konzilien irren', text: 'Auch Konzilien können irren. Sie haben einander widersprochen.' },
-  { id: 'k10', art: 'argument', station: 's6', bild: 'fig-luther-worms', typ: 'gewissen', staerke: 6, seltenheit: 'legendaer', entkraeftet: ['c-bann'], standhaft: true,
+  { id: 'k10', art: 'argument', station: 's6', bild: 'fig-luther-worms', typ: 'gewissen', staerke: 6, seltenheit: 'legendaer', entkraeftet: ['c-bann', 'c-widerrufe'], standhaft: true,
     titel: 'Gewissen', text: 'Mein Gewissen ist an Gottes Wort gebunden.' },
-  { id: 'k11', art: 'argument', station: 's7', bild: 'motiv-3', typ: 'bibel', staerke: 4, seltenheit: 'selten', entkraeftet: ['c-tradition'],
+  { id: 'k11', art: 'argument', station: 's7', bild: 'motiv-3', typ: 'bibel', staerke: 4, seltenheit: 'selten', entkraeftet: ['c-tradition', 'c-latein'],
     titel: 'Bibel für alle', text: 'Jeder soll die Bibel selbst lesen können.' },
   { id: 'k14', art: 'argument', station: 's7', bild: 'fig-marktfrau', typ: 'bibel', staerke: 3, seltenheit: 'selten', zieht: 1, staerkt: { gruppe: ['bibel'], plus: 1 },
     titel: 'Dem Volk aufs Maul', text: 'Luther hört, wie die Leute auf dem Markt reden. So schreibt er seine Bibel.' }

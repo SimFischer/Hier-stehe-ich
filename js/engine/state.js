@@ -98,9 +98,11 @@ export function springeZu(s, id) {
 export function bonusEnde(s, id) { if (!s.bonus.includes(id)) s.bonus.push(id); }
 
 /** Ende einer Disputation. Der erste Sieg bringt die Belohnungskarte. */
-export function duellEnde(s, gegner, sieg) {
-  setze(s, `duell:${gegner}`);
-  if (!sieg) return { neu: null };
+export function duellEnde(s, id, sieg) {
+  setze(s, `duell:${id}`);
+  // Eine Revanche zählt wie ein Sieg gegen den ursprünglichen Gegner (siegAls).
+  const gegner = disputation.gegner[id]?.siegAls || id;
+  if (!sieg || !disputation.gegner[gegner]?.belohnung) return { neu: null };
   if (!s.siege.includes(gegner)) s.siege.push(gegner);
   const b = disputation.gegner[gegner].belohnung;
   return { neu: b && gibKarte(s, b) ? b : null };

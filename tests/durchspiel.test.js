@@ -176,7 +176,7 @@ function durchspielen(folge, gut) {
     const r = lies(kodiere(s));
     assert.ok(r.stand, `Code nach Station ${id}`);
     assert.deepEqual([...r.stand.done].sort(), [...s.done].sort());
-    for (const k of S.kartenAusStand(s)) assert.ok(r.stand.cards.includes(k));
+    for (const k of S.kartenAusStand(s)) assert.ok(r.stand.cards.includes(k), `Karte ${k} nach Code (${id})`);
     codes.push(kodiere(s));
   }
   return { s, codes };
@@ -192,7 +192,7 @@ test('Kernpfad: sorgfältig gespielt, Station 1 vor 2', () => {
 });
 
 test('Kernpfad: schwach gespielt, Station 2 vor 1, falsche Karten in Worms', () => {
-  const { s, codes } = durchspielen(['p', 's2', 's1', 's3', 's4', 's5', 's6', 's7', 'f'], false);
+  const { s, codes } = durchspielen(['p', 's2', 's1', 's3', 's4', 's5', 'sl', 's6', 's7', 'f'], false);
   assert.equal(s.done.length, game.stationen.length, 'Auch ein schwacher Durchgang kommt ans Ende');
   assert.equal(s.stufen.druck, 1);
   assert.ok(s.stufen.verhoer < 3);

@@ -8,12 +8,17 @@ import { rules as duell, K, wert, summe } from '../js/puzzles/duell-regeln.js';
 import { marktplatz } from '../data/systems/marktplatz.js';
 import { druckwelle } from '../data/systems/druckwelle.js';
 import { disputation } from '../data/disputation.js';
+import { kampagne } from '../data/kampagne.js';
+import { game } from '../data/game.js';
+import { rules as kamp, reihenfolge, neuerKampagnenStand } from '../js/puzzles/kampagne.js';
 import { cards } from '../data/cards.js';
 
 const N = 500;
 const laeufe = (fn) => Object.fromEntries(['sorgfaeltig', 'schwach', 'zufall'].map((typ) => { const rnd = zufall(1517); return [typ, Array.from({ length: N }, () => fn(typ, rnd))]; }));
 // Mindestwissen: nur die Pflichtkarten der Stationen davor, dazu die zwei Thesen, die im Saal am wenigsten helfen.
-const bisStation = (nr) => cards.filter((k) => k.art !== 'these' && !k.duell && Number(k.station.slice(1)) <= nr).map((k) => k.id);
+// Karten bis zu einer Station (nach ihrer Nummer auf der Karte), ohne Thesen und Belohnungen
+const stationNr = (id) => game.stationen.find((st) => st.id === id).nr;
+const bisStation = (nr) => cards.filter((k) => k.art !== 'these' && !k.duell && stationNr(k.station) <= nr).map((k) => k.id);
 const beutelMarkt = bisStation(4).filter((k) => k !== 'k6');
 
 test('Marktplatz: lösbar, ausgewogen, endet immer', () => {
@@ -53,7 +58,7 @@ test('Druckwelle: Regeln im Einzelnen', () => {
 
 // Disputation: Sammlung, wie sie nach einer Station im Spiel vorliegt (zwei Thesen, keine Belohnungskarten).
 const sammlung = (nr) => [...bisStation(nr), ...(nr >= 5 ? ['t36', 't43'] : [])];
-const quote = (gegner, deck, typ, n = 300) => { const rnd = zufall(1521); let s = 0; for (let i = 0; i < n; i++) if (spieleDuell(gegner, deck, typ, rnd).sieger === 'luther') s += 1; return s / n; };
+const quote = (gegner, deck, typ, n = 300, anfuehrer = null) => { const rnd = zufall(1521); let s = 0; for (let i = 0; i < n; i++) if (spieleDuell(gegner, deck, typ, rnd, anfuehrer).sieger === 'luther') s += 1; return s / n; };
 
 test('Disputation: Regeln für Entkräften, Stärken, Bann, Gleichstand', () => {
   const g = { id: 'probe', deck: ['c-richter', 'c-predigt', 'c-ablass', 'c-bann'] };
@@ -90,36 +95,94 @@ test('Disputation: Jede starke Kirchenkarte hat eine Antwort, jedes Spiel endet'
   for (const k of disputation.kirche) if (k.staerke >= 6) assert.ok(cards.some((c) => (c.entkraeftet || []).includes(k.id)), `${k.id} kann entkräftet werden`);
   for (const c of cards) for (const id of c.entkraeftet || []) assert.ok(K(id), `${c.id}: ${id} gibt es`);
   for (const g of Object.values(disputation.gegner)) {
-    if (g.belohnung) assert.equal(K(g.belohnung).duell, g.id, `Belohnung ${g.belohnung} gehört zu ${g.id}`);
+    if (g.belohnung) assert.equal(K(g.belohnung).duell, g.siegAls || g.id, `Belohnung ${g.belohnung} gehört zu ${g.id}`);
     const rnd = zufall(3);
     for (let i = 0; i < 100; i++) {
-      const z = spieleDuell(g, sammlung(7), i % 2 ? 'klug' : 'zufall', rnd);
+      const z = spieleDuell(g, sammlung(8), i % 2 ? 'klug' : 'zufall', rnd);
       assert.equal(z.phase, 'ende'); assert.ok(z.runden.length >= 2 && z.runden.length <= 3);
     }
   }
   // Die Kirche ist ohne Gegenkarten überlegen: Ihr Deck ist im Schnitt mehr als doppelt so stark.
   const mittelStaerke = (ids) => ids.reduce((n, id) => n + K(id).staerke, 0) / ids.length;
-  assert.ok(mittelStaerke(disputation.gegner.worms.deck) > 2 * mittelStaerke(sammlung(6)));
+  assert.ok(mittelStaerke(disputation.gegner.worms.deck) > 2 * mittelStaerke(sammlung(7)));
 });
 
-test('Disputation: Balance je Gegner und Zeitpunkt', () => {
+test('Disputation: Handlungsbogen in der Geschichte', () => {
   const G = disputation.gegner;
+  // Station 4: Tetzel ist meist stärker. Station 5: Mit den Thesen gewinnt man die Revanche.
   const tetzel = quote(G.tetzel, deckFuer(sammlung(4), G.tetzel), 'klug');
   const tetzelZufall = quote(G.tetzel, sammlung(4), 'zufall');
   const ohneKonter = quote(G.tetzel, sammlung(4).filter((id) => !['k3', 'k4', 'w2', 'k6', 'w1'].includes(id)), 'klug');
-  const eckFrueh = quote(G.eck, deckFuer(sammlung(5), G.eck), 'klug');
-  const eckSpaet = quote(G.eck, deckFuer(sammlung(6), G.eck), 'klug');
-  const worms = quote(G.worms, deckFuer(sammlung(6), G.worms), 'klug');
-  const wormsAlles = quote(G.worms, sammlung(6), 'klug');
-  const frei = quote(G.frei, deckFuer([...sammlung(7), 'n1', 'n2', 't27', 't86'], G.frei), 'klug');
-  console.log('Siegquoten:', { tetzel, tetzelZufall, ohneKonter, eckFrueh, eckSpaet, worms, wormsAlles, frei });
-  assert.ok(tetzel >= 0.65, 'Tetzel ist klug gespielt meist zu schlagen');
-  assert.ok(tetzelZufall <= 0.3, 'Wahllos gespielt verliert man meist');
-  assert.ok(ohneKonter <= 0.1, 'Ohne die passenden Erkenntnisse ist die Kirche überlegen');
-  assert.ok(eckFrueh <= 0.2 && eckSpaet >= 0.45, 'Leipzig: Vor Worms fehlt die Antwort auf die Konzilien');
-  assert.ok(worms >= 0.55, 'Worms ist mit passendem Deck gut zu schlagen');
-  assert.ok(wormsAlles < worms, 'Ein Deck passend zum Gegner hilft');
-  assert.ok(frei >= 0.35 && frei <= 0.85, 'Die große Disputation ist eine Herausforderung');
+  const revanche = quote(G.tetzel2, deckFuer(sammlung(5), G.tetzel2), 'klug');
+  // Leipzig (Station 6): Ohne „Konzilien irren“ verliert man fast immer. Danach ist Eck zu schlagen.
+  const leipzig = quote(G.eck, deckFuer(sammlung(5), G.eck), 'klug');
+  const eckSpaet = quote(G.eck, deckFuer(sammlung(7), G.eck), 'klug');
+  // Worms (Station 7): Mit allen Erkenntnissen und passendem Deck gewinnt Luther meist.
+  const worms = quote(G.worms, deckFuer(sammlung(7), G.worms), 'klug');
+  const wormsAlles = quote(G.worms, sammlung(7).slice(0, 12), 'klug');
+  console.log('Siegquoten Geschichte:', { tetzel, tetzelZufall, ohneKonter, revanche, leipzig, eckSpaet, worms, wormsAlles });
+  assert.ok(tetzel >= 0.2 && tetzel <= 0.55, 'Tetzel ist beim ersten Mal meist stärker');
+  assert.ok(tetzelZufall <= 0.2 && ohneKonter <= 0.1, 'Ohne die passenden Erkenntnisse ist die Kirche überlegen');
+  assert.ok(revanche >= 0.7 && revanche > tetzel + 0.25, 'Mit den Thesen dreht sich das Spiel');
+  assert.ok(leipzig <= 0.15 && eckSpaet >= 0.45, 'Leipzig: Vor der Erkenntnis fehlt die Antwort auf die Konzilien');
+  assert.ok(worms >= 0.55 && wormsAlles < worms, 'Worms: Luther hat die stärkeren Argumente, wenn das Deck passt');
+});
+
+test('Übung: Die geführte Partie läuft nach Skript und endet mit einem Sieg', () => {
+  const g = disputation.gegner.uebung;
+  let z = duell.start(g, [], 1);
+  assert.equal(z.tausch, 0);
+  z = duell.beginne(z);
+  const erwartet = g.tutorial.filter((x) => x.erwartet).map((x) => x.erwartet);
+  for (const was of erwartet) {
+    while (z.am === 'kirche' && z.phase === 'spiel') z = duell.fuehreAus(z, duell.kiZug(z), 'kirche');
+    const vorher = z;
+    z = was === 'passe' ? duell.passe(z, 'luther') : duell.spiele(z, 'luther', z.seiten.luther.hand.find((x) => x.id === was).uid);
+    assert.notEqual(z, vorher, `Schritt ${was} ist erlaubt`);
+  }
+  assert.equal(z.phase, 'ende'); assert.equal(z.sieger, 'luther');
+  for (const x of g.tutorial) assert.ok(x.text && x.ziel, 'Jeder Schritt hat Text und Ziel');
+});
+
+test('Kampagne: Aufbau, Freischaltung, Sterne, Belohnungen', () => {
+  // Jeder Gegner einmal in der Reihenfolge, alle Karten und Anführer existieren
+  assert.equal(new Set(reihenfolge).size, reihenfolge.length);
+  for (const id of reihenfolge) {
+    const g = kampagne.gegner[id];
+    for (const k of [...g.deck, g.anfuehrer, ...g.belohnungen].filter(Boolean)) assert.ok(K(k), `${id}: Karte ${k}`);
+    assert.ok(g.einleitung && g.sieg && g.niederlage, `${id}: Texte`);
+  }
+  for (const k of kampagne.karten) assert.ok(reihenfolge.some((id) => kampagne.gegner[id].belohnungen.includes(k.id)), `${k.id} ist zu gewinnen`);
+  for (const a of kampagne.anfuehrer) assert.ok(K(a.id)?.anfuehrer, `Anführer ${a.id}`);
+  // Freischaltung: erst der erste Gegner, nach einem Sieg der nächste
+  let st = neuerKampagnenStand();
+  assert.ok(kamp.offen(st, reihenfolge[0]) && !kamp.offen(st, reihenfolge[1]));
+  const sieg20 = { sieger: 'luther', runden: [{ sieger: 'luther' }, { sieger: 'luther' }] };
+  const sieg21 = { sieger: 'luther', runden: [{ sieger: 'luther' }, { sieger: 'kirche' }, { sieger: 'luther' }] };
+  assert.equal(kamp.sterneFuer(sieg20, 9), 3); assert.equal(kamp.sterneFuer(sieg21, 12), 1); assert.equal(kamp.sterneFuer({ sieger: 'kirche', runden: [] }, 8), 0);
+  let r = kamp.eintragen(st, reihenfolge[0], sieg21, 12);
+  assert.ok(r.ersterSieg && kamp.offen(r.stand, reihenfolge[1]));
+  r = kamp.eintragen(r.stand, reihenfolge[0], sieg20, 9);
+  assert.ok(r.ersterSieg, 'Drei Sterne zum ersten Mal: noch eine Belohnung');
+  assert.ok(!kamp.eintragen(r.stand, reihenfolge[0], sieg20, 9).ersterSieg, 'Danach keine weitere');
+  st = { ...r.stand, sterne: Object.fromEntries(reihenfolge.map((id) => [id, 3])) };
+  assert.equal(kamp.anfuehrerFrei(st).length, kampagne.anfuehrer.length, 'Mit allen Sternen sind alle Anführer frei');
+});
+
+test('Kampagne: Schwierigkeit steigt, jeder Gegner ist zu schlagen', () => {
+  let besitz = [...sammlung(9), 'n1', 'n2', 't27', 't32', 't86'];
+  const quoten = {};
+  for (const id of reihenfolge) {
+    const g = kampagne.gegner[id];
+    quoten[id] = quote(g, deckFuer(besitz, g), 'klug', 150, 'a-luther');
+    assert.ok(quoten[id] >= 0.35, `${id} ist mit klugem Spiel zu schlagen (${quoten[id]})`);
+    assert.ok(quote(g, besitz.slice(0, 12), 'zufall', 60, 'a-luther') <= 0.35, `${id}: Wahllos gespielt verliert man meist`);
+    besitz = [...besitz, ...g.belohnungen.filter((x) => !besitz.includes(x)).slice(0, 1)];
+  }
+  console.log('Siegquoten Kampagne:', quoten);
+  const kap = (i) => kampagne.kapitel[i].gegner.reduce((n, id) => n + quoten[id], 0) / 3;
+  assert.ok(kap(0) > kap(3), 'Kapitel 4 ist schwerer als Kapitel 1');
+  assert.ok(quoten['k-leo'] <= 0.7, 'Der Papst ist der stärkste Gegner');
 });
 
 test('Disputation: Lernhinweis nach einer Niederlage nennt fehlende Karten und wo es sie gibt', () => {

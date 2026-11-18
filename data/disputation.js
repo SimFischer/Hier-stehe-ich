@@ -41,35 +41,91 @@ export const disputation = {
     { id: 'c-mehrheit', typ: 'rom', gruppe: 'reich', bild: 'fig-stand-1', staerke: 8, seltenheit: 'selten',
       titel: 'Alle gegen einen', text: 'Kaiser, Fürsten und Bischöfe sind sich einig. Und du?' }
   ],
-  // figur: aus game.figuren. belohnung: Karte für den ersten Sieg.
+  // Anführer: liegen neben dem Deck und können einmal je Disputation wie eine Karte gespielt werden (wie bei Gwent).
+  anfuehrer: [
+    { id: 'a-novize', anfuehrer: true, typ: 'rom', gruppe: 'lehre', bild: 'fig-mitbruder', staerke: 3, seltenheit: 'legendaer', zieht: 1,
+      titel: 'Der Novizenmeister', text: 'Er bringt den jungen Mönchen bei, was die Kirche lehrt.' },
+    { id: 'a-tetzel', anfuehrer: true, typ: 'rom', gruppe: 'ablass', bild: 'fig-tetzel', staerke: 5, seltenheit: 'legendaer', staerkt: { gruppe: ['ablass'], plus: 1 },
+      titel: 'Johann Tetzel', text: 'Der Dominikaner predigt den Ablass für den Bau des Petersdoms.' },
+    { id: 'a-prierias', anfuehrer: true, typ: 'rom', gruppe: 'amt', bild: 'fig-stand-4', staerke: 6, seltenheit: 'legendaer', schwaecht: { gruppe: ['bibel'], minus: 1 },
+      titel: 'Silvester Prierias', text: 'Der Theologe des Papstes schreibt 1518 als Erster in Rom gegen Luther.' },
+    { id: 'a-cajetan', anfuehrer: true, typ: 'rom', gruppe: 'amt', bild: 'fig-stand-3', staerke: 7, seltenheit: 'legendaer', standhaft: true,
+      titel: 'Kardinal Cajetan', text: 'Im Oktober 1518 verhört er Luther in Augsburg und verlangt den Widerruf.' },
+    { id: 'a-eck', anfuehrer: true, typ: 'rom', gruppe: 'amt', bild: 'fig-eck', staerke: 6, seltenheit: 'legendaer', staerkt: { gruppe: ['amt'], plus: 1 },
+      titel: 'Professor Eck', text: 'Der Theologe aus Ingolstadt fordert Luther 1519 in Leipzig heraus.' },
+    { id: 'a-emser', anfuehrer: true, typ: 'rom', gruppe: 'lehre', bild: 'fig-stand-6', staerke: 5, seltenheit: 'legendaer', schwaecht: { gruppe: ['druck'], minus: 1 },
+      titel: 'Hieronymus Emser', text: 'Der Sekretär von Herzog Georg streitet in vielen Schriften gegen Luther.' },
+    { id: 'a-aleander', anfuehrer: true, typ: 'rom', gruppe: 'amt', bild: 'fig-sprecher', staerke: 6, seltenheit: 'legendaer', bann: true,
+      titel: 'Nuntius Aleander', text: 'Der Gesandte des Papstes treibt 1521 in Worms das Urteil gegen Luther voran.' },
+    { id: 'a-albrecht', anfuehrer: true, typ: 'rom', gruppe: 'ablass', bild: 'geldweg-albrecht', staerke: 7, seltenheit: 'legendaer', staerkt: { gruppe: ['ablass'], plus: 2 },
+      titel: 'Albrecht von Mainz', text: 'Der Erzbischof ließ den Ablass predigen. Luther schickte ihm 1517 seine Thesen.' },
+    { id: 'a-georg', anfuehrer: true, typ: 'rom', gruppe: 'reich', bild: 'fig-stand-1', staerke: 7, seltenheit: 'legendaer', schwaecht: { gruppe: ['menschen'], minus: 1 },
+      titel: 'Herzog Georg', text: 'Er bleibt beim alten Glauben und verbietet Luthers Bibel in seinem Land.' },
+    { id: 'a-karl', anfuehrer: true, typ: 'rom', gruppe: 'reich', bild: 'fig-kaiser', staerke: 8, seltenheit: 'legendaer', standhaft: true, staerkt: { gruppe: ['reich'], plus: 1 },
+      titel: 'Kaiser Karl V.', text: 'Der junge Kaiser will die Einheit von Reich und Kirche bewahren.' },
+    { id: 'a-leo', anfuehrer: true, typ: 'rom', gruppe: 'amt', bild: 'fig-stand-4-nickend', staerke: 9, seltenheit: 'legendaer', standhaft: true, staerkt: { gruppe: ['amt'], plus: 1 },
+      titel: 'Papst Leo X.', text: 'Der Papst aus der Familie Medici verhängt im Januar 1521 den Bann über Luther.' },
+    { id: 'a-luther', anfuehrer: true, typ: 'gewissen', bild: 'fig-luther-worms', staerke: 5, seltenheit: 'legendaer', standhaft: true,
+      titel: 'Martin Luther', text: 'Mönch, Doktor der Theologie und Professor in Wittenberg.' },
+    { id: 'a-melanchthon', anfuehrer: true, typ: 'wissen', bild: 'fig-student', staerke: 3, seltenheit: 'legendaer', zieht: 2,
+      titel: 'Philipp Melanchthon', text: 'Der junge Professor für Griechisch wird Luthers engster Mitarbeiter.' },
+    { id: 'a-friedrich', anfuehrer: true, typ: 'menschen', bild: 'fig-stand-2', staerke: 6, seltenheit: 'legendaer', standhaft: true, entkraeftet: ['c-reichsacht', 'c-bann'],
+      titel: 'Friedrich der Weise', text: 'Der Kurfürst von Sachsen lässt Luther nach dem Reichstag heimlich auf die Wartburg bringen.' },
+    { id: 'a-katharina', anfuehrer: true, typ: 'menschen', bild: 'fig-marktfrau', staerke: 4, seltenheit: 'legendaer', staerkt: { gruppe: ['menschen'], plus: 2 },
+      titel: 'Katharina von Bora', text: 'Die frühere Nonne heiratet 1525 Luther und führt das große Haus.' }
+  ],
+  // figur: aus game.figuren. belohnung: Karte für den ersten Sieg. anfuehrer: Karte, die der Gegner einmal spielen kann.
+  // siegAls: Ein Sieg zählt wie ein Sieg gegen diesen Gegner (Revanche).
   gegner: {
+    uebung: {
+      id: 'uebung', figur: 'mitbruder', name: 'Bruder Johannes', ort: 'Erfurt, 1505', uebung: true,
+      // Feste Reihenfolge, damit die geführte Partie immer gleich abläuft
+      deck: ['c-werke', 'c-ketzer', 'c-richter', 'c-brief'], deckLuther: ['k1', 'k2', 'k4', 'w3', 'k3', 'k6'],
+      regeln: { handStart: 4, tausch: 0, nachziehen: 1 }, skript: ['c-werke', 'passe', 'c-richter', 'c-ketzer', 'passe'],
+      // Geführte Partie: Jeder Schritt erklärt etwas. erwartet: Karte, die du spielen sollst, oder 'passe'. ziel: was aufleuchtet.
+      tutorial: [
+        { ziel: 'summen', text: 'Das ist der Spieltisch. Oben spielt Bruder Johannes, unten spielst du. Die runden Zahlen sind die Summen eurer Reihen.' },
+        { ziel: 'k1', erwartet: 'k1', text: 'Tippe auf die Karte „Die Angst kennen“. Du siehst sie groß und kannst lesen, was sie kann. Dann tippe auf „Ausspielen“.' },
+        { ziel: 'reihe-kirche', text: 'Johannes legt „Gute Werke zählen“ mit Stärke 7. Die Kirche hat starke Karten. Aber du hast eine Antwort.' },
+        { ziel: 'k2', erwartet: 'k2', text: 'Spiel „Werke reichen nicht“. Sie entkräftet „Gute Werke zählen“. Diese Karte zählt dann nur noch 1.' },
+        { ziel: 'reihe-luther', text: 'Treffer! Die Kirchenkarte lag schon, darum ziehst du eine Karte nach. Johannes hat gepasst. Du liegst vorne.' },
+        { ziel: 'passen', erwartet: 'passe', text: 'Tippe auf „Passen“. Haben beide gepasst, endet die Runde. Die höhere Summe gewinnt sie.' },
+        { ziel: 'reihe-kirche', text: 'Runde 2. Wer zwei Runden gewinnt, gewinnt die Disputation. Johannes spielt seine stärkste Karte: Stärke 9.' },
+        { ziel: 'k4', erwartet: 'k4', text: '„Wie der Vater“ entkräftet „Gott, der strenge Richter“. Spiel sie aus.' },
+        { ziel: 'summen', text: 'Johannes liegt wieder vorne. Achtung: Bei Gleichstand gewinnt die Kirche. Sie hat die Argumenthoheit.' },
+        { ziel: 'w3', erwartet: 'w3', text: 'Spiel „Gott entscheidet“. Dann liegst du vorne.' },
+        { ziel: 'passen', erwartet: 'passe', text: 'Johannes hat gepasst. Passe auch, dann gewinnst du. Tipp für später: Heb starke Karten für die nächste Runde auf.' }
+      ],
+      einleitung: 'Im Kloster üben die Mönche das Streiten nach Regeln. Bruder Johannes zeigt dir, wie eine Disputation geht.',
+      sieg: 'Bruder Johannes lacht. Gut gemacht! So geht eine Disputation.', niederlage: 'Noch einmal von vorn. Bruder Johannes erklärt es dir.'
+    },
     tetzel: {
-      id: 'tetzel', figur: 'tetzel', name: 'Johann Tetzel', ort: 'Jüterbog, 1517', belohnung: 'n1',
-      deck: ['c-predigt', 'c-brief', 'c-brief', 'c-ablass', 'c-fegefeuer', 'c-richter', 'c-petersdom', 'c-werke', 'c-ketzer'],
-      einleitung: 'Tetzel will dich vor allen Leuten widerlegen. Dieses Streitgespräch ist erfunden, die Argumente sind es nicht.',
+      id: 'tetzel', figur: 'tetzel', name: 'Johann Tetzel', ort: 'Jüterbog, 1517', belohnung: 'n1', anfuehrer: 'a-tetzel',
+      deck: ['c-predigt', 'c-ablassprediger', 'c-brief', 'c-ablass', 'c-fegefeuer', 'c-richter', 'c-petersdom', 'c-werke', 'c-ketzer'],
+      einleitung: 'Tetzel will dich vor allen Leuten widerlegen. Die Menge glaubt ihm, und er spielt seine eigene Karte aus. Dieses Streitgespräch ist erfunden, die Argumente nicht.',
       sieg: 'Tetzel packt seinen Kasten zusammen. Die Leute haben genau zugehört.',
-      niederlage: 'Tetzel lacht. Seine Karten waren heute stärker. Sammle mehr Erkenntnisse und fordere ihn später erneut heraus.'
+      niederlage: 'Tetzel lacht. Die Menschen glauben ihm mehr als dir. Noch fehlen dir Karten. Bald hast du die Gelegenheit zur Revanche.'
+    },
+    tetzel2: {
+      id: 'tetzel2', siegAls: 'tetzel', figur: 'tetzel', name: 'Johann Tetzel', ort: 'Jüterbog, Ende 1517', belohnung: 'n1', anfuehrer: 'a-tetzel',
+      deck: ['c-predigt', 'c-ablassprediger', 'c-brief', 'c-ablass', 'c-fegefeuer', 'c-richter', 'c-petersdom', 'c-werke', 'c-ketzer'],
+      einleitung: 'Die Thesen sind gedruckt und gehen von Hand zu Hand. Tetzel hört davon und will dagegenhalten. Jetzt hast du neue Karten.',
+      sieg: 'Die gedruckten Thesen haben gewirkt. Tetzel verkauft kaum noch Briefe.',
+      niederlage: 'Tetzel hält sich noch. Stell dein Deck neu zusammen: Die Thesen sind deine stärkste Waffe.'
     },
     eck: {
-      id: 'eck', figur: 'eck', name: 'Johann Eck', ort: 'Leipzig, 1519', belohnung: 'n2',
+      id: 'eck', figur: 'eck', name: 'Johann Eck', ort: 'Leipzig, 1519', belohnung: 'n2', anfuehrer: 'a-eck',
       deck: ['c-eck', 'c-konzil', 'c-papst', 'c-hus', 'c-tradition', 'c-ketzer', 'c-werke', 'c-bann', 'c-richter'],
       einleitung: 'Eck ist der beste Redner der Gegenseite. Er will zeigen: Wer dem Papst widerspricht, ist ein Ketzer.',
       sieg: 'Eck schweigt einen Moment. Die Wittenberger Studenten jubeln.',
-      niederlage: 'Eck hat dich in die Enge getrieben. Gegen Konzilien und Papst fehlten dir die passenden Karten.'
+      niederlage: 'Eck hat dich in die Enge getrieben. Gegen Konzilien und Papst fehlte dir eine Antwort. Doch in der Niederlage findet Luther sie.'
     },
     worms: {
-      id: 'worms', figur: 'sprecher', name: 'Sprecher des Kaisers', wer: 'der Sprecher des Kaisers', wen: 'den Sprecher des Kaisers', ort: 'Worms, 1521',
+      id: 'worms', figur: 'sprecher', name: 'Sprecher des Kaisers', wer: 'der Sprecher des Kaisers', wen: 'den Sprecher des Kaisers', ort: 'Worms, 1521', anfuehrer: 'a-karl',
       deck: ['c-papst', 'c-konzil', 'c-ordnung', 'c-mehrheit', 'c-bann', 'c-tradition', 'c-hus', 'c-richter'],
-      einleitung: 'Vor Kaiser und Reich spielt der Sprecher die stärksten Karten der Kirche aus. Stell dein Deck mit Bedacht zusammen.',
-      sieg: 'Unruhe im Saal. Viele Fürsten sind beeindruckt. Auf jede starke Karte hatte Luther eine Antwort.',
+      einleitung: 'Vor Kaiser und Reich spielt der Sprecher die stärksten Karten der Kirche aus. Der Kaiser selbst steht hinter ihm. Jetzt zeigt sich, was du gesammelt hast.',
+      sieg: 'Unruhe im Saal. Viele Fürsten sind beeindruckt: Auf jede starke Karte hatte Luther eine Antwort. Er hat die stärkeren Argumente.',
       niederlage: 'Der Sprecher behält die Oberhand. Luther widerruft trotzdem nicht.'
-    },
-    frei: {
-      id: 'frei', figur: 'sprecher', name: 'Die ganze Kirche', wer: 'die ganze Kirche', wen: 'die ganze Kirche', ort: 'Freie Disputation',
-      deck: ['c-papst', 'c-konzil', 'c-ordnung', 'c-mehrheit', 'c-bann', 'c-eck', 'c-ablass', 'c-predigt', 'c-richter', 'c-tradition', 'c-hus', 'c-fegefeuer'],
-      einleitung: 'Alle starken Karten der Kirche in einem Deck. Schaffst du es mit deiner ganzen Sammlung?',
-      sieg: 'Meisterhaft! Du kennst jede Karte und ihre Antwort.',
-      niederlage: 'Knapp daneben. Stell dein Deck neu zusammen und versuch es noch einmal.'
     }
   },
   regelText: [
@@ -78,37 +134,32 @@ export const disputation = {
     'Haben beide gepasst, gewinnt die höhere Summe die Runde. Bei Gleichstand gewinnt die Kirche: Sie hat die Argumenthoheit.',
     'Wer zwei Runden gewinnt, gewinnt die Disputation. Deine übrigen Karten nimmst du in die nächste Runde mit.',
     'Entkräften: Manche deiner Karten machen eine starke Karte der Kirche schwach. Solange deine Karte liegt, zählt die Kirchenkarte nur 1.',
-    'Treffer: Entkräftest du eine Karte, die schon liegt, ziehst du sofort eine Karte nach.'
+    'Treffer: Entkräftest du eine Karte, die schon liegt, ziehst du sofort eine Karte nach.',
+    'Anführer: Manche Gegner haben eine besondere Karte neben dem Deck. Sie können sie einmal in der ganzen Disputation spielen.'
   ],
   hilfen: [
     'Tippe die Karten der Kirche an und lies, wie stark sie sind. Dann such in deiner Hand eine Karte, die sie entkräftet.',
     'Spiel deine Konterkarten erst, wenn die starke Kirchenkarte liegt. Eine Runde darfst du auch verloren geben, um Karten zu sparen.'
   ],
-  // Rätsel, die nur aus einer Disputation bestehen: Revanche, Nebenort Leipzig, freie Disputation.
+  // Rätsel, die nur aus einer Disputation bestehen: Übung, Revanchen und das Spiel im Spiel.
   // nach: Station, nach der sie auf der Karte erscheinen. szene: Der Eintrag führt zu einem Ort statt direkt ins Spiel.
   // merker: Das Spiel zählt als Bonusspiel (Fortsetzungscode). Sonst bleibt nichts gespeichert außer dem Sieg.
-  liste: ['leipzig', 'duell-tetzel', 'duell-worms', 'frei'],
+  liste: ['uebung', 'duell-tetzel', 'duell-eck', 'duell-worms', 'kampagne'],
   raetsel: {
-    leipzig: { id: 'leipzig', titel: 'Die Leipziger Disputation', nach: 's5', szene: 'leipzig', merker: true, minuten: 8,
-      kurz: 'Neuer Ort: Luther gegen Johann Eck, 1519.',
-      schritte: [
-        { art: 'duell', gegner: 'eck', titel: 'Luther gegen Eck', szene: 'leipzig',
-          hilfen: ['Eck spielt die Karten der Gelehrten: Konzilien, Papst, Tradition.', 'Gegen „Die Konzilien“ und „Wie Jan Hus“ hilft nur eine Karte. Du findest sie in Worms (Station 6).', '„Maßstab Bibel“ entkräftet Papst und Tradition. „Konzilien irren“ entkräftet Konzilien und Hus. „Gewissen“ schützt vor dem Bann.'] },
-        { art: 'text', titel: 'Was in Leipzig geschah',
-          absaetze: [
-            { text: 'Die Disputation dauerte fast drei Wochen. Eck trieb Luther in die Enge.' },
-            { text: 'Am Ende sagte Luther: Auch ein Konzil kann irren. Manche Sätze von Jan Hus seien gut christlich.' },
-            { text: 'Damit war der Bruch mit Rom kaum noch aufzuhalten. Ein Jahr später drohte der Papst Luther mit dem Bann.' }
-          ] }
-      ] },
+    uebung: { id: 'uebung', titel: 'Übung: So geht die Disputation', nach: 's2', minuten: 3,
+      kurz: 'Bruder Johannes erklärt dir das Kartenspiel Schritt für Schritt.',
+      schritte: [{ art: 'duell', gegner: 'uebung', titel: 'Übung mit Bruder Johannes', szene: 'kloster' }] },
     'duell-tetzel': { id: 'duell-tetzel', titel: 'Revanche gegen Tetzel', nach: 's4', minuten: 5,
       kurz: 'Fordere Tetzel mit deinen neuen Karten heraus.',
-      schritte: [{ art: 'duell', gegner: 'tetzel', titel: 'Revanche gegen Tetzel', szene: 'jueterbog' }] },
+      schritte: [{ art: 'duell', gegner: 'tetzel2', titel: 'Revanche gegen Tetzel', szene: 'jueterbog' }] },
+    'duell-eck': { id: 'duell-eck', titel: 'Revanche gegen Eck', nach: 'sl', minuten: 6,
+      kurz: 'Spiel die Leipziger Disputation noch einmal.',
+      schritte: [{ art: 'duell', gegner: 'eck', titel: 'Revanche gegen Eck', szene: 'leipzig' }] },
     'duell-worms': { id: 'duell-worms', titel: 'Noch einmal in Worms', nach: 's6', minuten: 6,
       kurz: 'Spiel die Disputation vor dem Reichstag noch einmal.',
       schritte: [{ art: 'duell', gegner: 'worms', titel: 'Vor Kaiser und Reich', szene: 'saal' }] },
-    frei: { id: 'frei', titel: 'Die große Disputation', nach: 'f', merker: true, minuten: 8,
-      kurz: 'Alle starken Karten der Kirche gegen deine ganze Sammlung.',
-      schritte: [{ art: 'duell', gegner: 'frei', titel: 'Die große Disputation', szene: 'saal' }] }
+    kampagne: { id: 'kampagne', titel: 'Das Spiel im Spiel', nach: 'f', merker: true, minuten: 30,
+      kurz: 'Zwölf Gegner, neue Karten und Anführer: das Kartenspiel als eigenes Abenteuer.',
+      schritte: [{ art: 'kampagne', titel: 'Das Spiel im Spiel', szene: 'saal' }] }
   }
 };

@@ -34,7 +34,7 @@ export function texte() {
 // Sekunden je Rätselschritt: Bedienzeit zusätzlich zum Lesen.
 const BEDIENZEIT = {
   zuordnen: (s) => 7 * (s.items?.length || 5), waage: () => 50, standbild: (s) => 40 * s.strophen.length, markt: () => 90, druck: () => 150,
-  auswahl: (s) => 12 * s.anzahl, duell: () => 300, wahl: () => 15, text: () => 0, gespraech: () => 0, uebersetzung: (s) => 35 * s.verse.length, flugschrift: () => 100
+  auswahl: (s) => 12 * s.anzahl, duell: (s) => (s.gegner === 'uebung' ? 150 : 300), wahl: () => 15, text: () => 0, gespraech: () => 0, uebersetzung: (s) => 35 * s.verse.length, flugschrift: () => 100
 };
 // Welcher Teil eines Spielsystems in einem Durchgang gelesen wird.
 const SYSTEMANTEIL = { marktplatz: 0.75, druckwelle: 0.8, verhoer: 1 };

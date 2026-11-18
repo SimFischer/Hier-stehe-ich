@@ -52,7 +52,7 @@ test('Stationen: Szene, Rätsel, Karten, Platte, Begründung', () => {
     assert.equal(r.station, st.id);
     assert.ok(r.lernziel.length > 0, `${st.id}: Lernziel`);
     if (st.id !== 'f') {
-      assert.ok(st.platte, `${st.id}: Druckplatte`);
+      assert.ok(st.platte || st.ohnePlatte, `${st.id}: Druckplatte`);
       assert.ok(st.karten.length > 0, `${st.id}: Argumentkarte`);
       const letzter = r.schritte.at(-1);
       assert.ok(letzter.art === 'wahl' && letzter.begruendung, `${st.id}: endet mit der Begründungsauswahl`);
@@ -68,7 +68,8 @@ test('Rätsel: Schritte, Lösungen, drei Hilfen', () => {
     r.schritte.forEach((s, i) => {
       const wo = `${r.id}[${i}]`;
       assert.ok(ARTEN.includes(s.art), `${wo}: Art ${s.art}`);
-      if (MIT_HILFEN.includes(s.art) || s.erinnerung) assert.equal(s.hilfen?.length, 3, `${wo}: drei Hilfen`);
+      // Die geführte Übung braucht keine Hilfen: Bruder Johannes erklärt jeden Schritt.
+      if ((MIT_HILFEN.includes(s.art) && s.gegner !== 'uebung') || s.erinnerung) assert.equal(s.hilfen?.length, 3, `${wo}: drei Hilfen`);
       if (s.system) assert.ok(systeme[s.system], `${wo}: System ${s.system}`);
       if (s.szene) assert.ok(szene(s.szene), `${wo}: Szene ${s.szene}`);
       if (s.art === 'gespraech') assert.ok(dialog(s.dialog), `${wo}: Gespräch ${s.dialog}`);
@@ -175,7 +176,7 @@ test('Zeit: Kernpfad liegt bei rund 40 Minuten', () => {
   const summe = Object.values(zeiten).reduce((a, b) => a + b, 0);
   console.log('Geschätzte Minuten je Station:', Object.entries(zeiten).map(([k, v]) => `${k} ${v.toFixed(1)}`).join(' · '), `· Summe ${summe.toFixed(1)}`);
   // Ziel laut Konzept: rund 40 Minuten. Überarbeitung 1 und 2 (Kartenspiel Disputation) machen das Spiel bewusst länger,
-  // siehe docs/UEBERARBEITUNG-2.md. Erlaubt sind jetzt bis 58 Minuten.
-  assert.ok(summe >= 34 && summe <= 58, `Kernpfad ${summe.toFixed(1)} Minuten`);
+  // siehe docs/UEBERARBEITUNG-2.md. Mit Übung, Tetzel-Revanche und Leipzig sind bis 75 Minuten erlaubt (Doppelstunde).
+  assert.ok(summe >= 34 && summe <= 75, `Kernpfad ${summe.toFixed(1)} Minuten`);
   for (const st of game.stationen) assert.ok(Math.abs(zeiten[st.id] - st.minuten) <= 2.5, `${st.id}: geplant ${st.minuten}, geschätzt ${zeiten[st.id].toFixed(1)} Minuten`);
 });

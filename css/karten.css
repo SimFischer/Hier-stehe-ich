@@ -163,3 +163,61 @@ button.karte.sammel.gwent:hover:not(:disabled), button.karte.sammel.gwent:focus-
 /* Im Deckbau sitzt oben rechts der Info-Knopf, der Haken wandert nach unten rechts über das Schild */
 .karte-huelle .karte.sammel.gwent.gewaehlt::before { top: auto; bottom: 34%; right: 6px; }
 .karte.sammel.gwent .k-schild strong { overflow-wrap: normal; }
+
+/* ---------- Anführer am Spieltisch ---------- */
+.d-anfuehrer { position: relative; flex: none; width: 46px; height: 64px; padding: 0; overflow: hidden; cursor: pointer;
+  border: 2px solid #f3d27a; border-radius: 6px; background: #2a1c14; box-shadow: 0 0 10px rgba(243, 210, 122, 0.6); }
+.d-anfuehrer .bk-bild { position: absolute; inset: 0; }
+.d-anfuehrer .bk-bild img { width: 100%; height: 100%; object-fit: cover; }
+.d-anfuehrer-wert { position: absolute; left: 2px; top: 2px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: radial-gradient(circle, #fbf3dc, #e3cf9f); color: #1f1a17; font-size: 0.875rem; font-weight: bold; border: 1px solid #4d3305; }
+.d-anfuehrer.kirche .d-anfuehrer-wert { background: radial-gradient(circle, #f6d0c4, #8a2a1a); color: #fff; }
+.d-anfuehrer.bereit { animation: puls 1.6s ease-in-out infinite; }
+@keyframes puls { 50% { box-shadow: 0 0 18px rgba(243, 210, 122, 1); transform: translateY(-2px); } }
+.bk.ist-anfuehrer { box-shadow: inset 0 0 0 2px #f3d27a, 0 0 12px rgba(243, 210, 122, 0.8); }
+
+/* ---------- Übung: Erklärkasten und Leuchtziel ---------- */
+.tut-box { position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -62%); width: min(560px, 92%);
+  display: grid; grid-template-columns: auto 1fr; gap: var(--ab-3); align-items: start; padding: var(--ab-3) var(--ab-4);
+  background: linear-gradient(#fbf4e2, #efe0bd); color: var(--tinte); border: 3px solid #1a130e; border-radius: 12px;
+  box-shadow: inset 0 0 0 2px #e7c56f, 0 10px 24px rgba(0, 0, 0, 0.6); animation: einblenden 0.3s ease-out; }
+.tut-box.aufgabe { top: auto; bottom: 30%; transform: translate(-50%, 0); }
+.tut-box p { margin: 2px 0 var(--ab-2); }
+.tut-box strong { color: var(--rot-dunkel); }
+.tut-ziel { outline: 4px solid #f3d27a; outline-offset: 3px; animation: puls 1.4s ease-in-out infinite; position: relative; z-index: 3; }
+.d-reihe.tut-ziel { outline-offset: -2px; }
+
+/* ---------- Kampagne ---------- */
+.kamp { display: flex; flex-direction: column; gap: var(--ab-3); }
+.kamp-kopf { display: flex; justify-content: space-between; align-items: center; gap: var(--ab-4); padding: var(--ab-3) var(--ab-4);
+  background: linear-gradient(90deg, #3a2a20, #5a3d2b); color: var(--pergament); border: 3px double var(--ocker); border-radius: 10px; }
+.kamp-kopf p { margin: 0; }
+.kamp-kopf .kicker { color: var(--ocker-hell); font-size: 1.1rem; }
+.kamp-summe { font-size: 1.5rem; font-weight: bold; color: #ffe08a; white-space: nowrap; }
+.kamp-anfuehrer { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--ab-3); }
+.kamp-fuehrer { position: relative; display: grid; grid-template-rows: 90px auto auto; gap: 2px; width: 100%; padding: 0 0 6px; overflow: hidden; cursor: pointer; text-align: center;
+  background: linear-gradient(#fbf4e2, #efe0bd); border: 3px solid #1a130e; border-radius: 10px; box-shadow: inset 0 0 0 2px #b48a5c; font: inherit; color: var(--tinte); }
+.kamp-fuehrer .bk-bild { position: relative; overflow: hidden; }
+.kamp-fuehrer .bk-bild img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+.kamp-fuehrer strong { font-size: 0.9375rem; font-variant: small-caps; padding: 0 4px; }
+.kamp-fuehrer em { font-size: 0.875rem; color: var(--tinte-weich); }
+.kamp-fuehrer.gewaehlt { box-shadow: inset 0 0 0 2px #f3d27a, 0 0 0 3px var(--gruen); }
+.kamp-fuehrer:disabled { filter: grayscale(0.9); opacity: 0.6; cursor: default; }
+.kamp-kapitel h3 { margin: var(--ab-3) 0 var(--ab-2); font-variant: small-caps; }
+.kamp-kapitel h3 em { font-weight: normal; color: var(--tinte-weich); font-variant: normal; font-size: var(--text-klein); }
+.kamp-gegner { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ab-3); }
+.kamp-tafel { display: grid; justify-items: center; gap: 4px; padding: var(--ab-3); cursor: pointer; text-align: center; font: inherit; color: var(--pergament);
+  background: radial-gradient(ellipse at 50% 30%, #6b4a30, #3a2a20); border: 3px solid #1a130e; border-radius: 12px; box-shadow: inset 0 0 0 2px #b48a5c, 0 4px 10px rgba(0, 0, 0, 0.35); transition: transform 0.15s; }
+.kamp-tafel:hover:not(:disabled) { transform: translateY(-3px); }
+.kamp-tafel strong { color: #fff; }
+.kamp-tafel .klein { color: var(--ocker-hell); }
+.kamp-tafel.zu { filter: grayscale(1) brightness(0.7); cursor: default; }
+.kamp-tafel.besiegt { box-shadow: inset 0 0 0 2px #f3d27a, 0 4px 10px rgba(0, 0, 0, 0.35); }
+.k-sterne { font-size: 1.4rem; letter-spacing: 2px; color: #6b5a4a; }
+.k-sterne .an { color: #ffd34d; text-shadow: 0 0 6px rgba(255, 211, 77, 0.8); }
+.kamp-ergebnis { text-align: center; }
+.kamp-ergebnis .k-sterne { font-size: 2.6rem; }
+.kamp-ergebnis ul { display: inline-block; text-align: left; margin: 0; }
+.kamp-neu { font-weight: bold; color: var(--gruen); }
+.kamp-wahl { display: grid; grid-template-columns: repeat(3, minmax(0, 190px)); gap: var(--ab-4); }
+@media (max-width: 700px) { .kamp-gegner, .kamp-wahl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

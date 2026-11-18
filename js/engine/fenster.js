@@ -6,6 +6,9 @@ import { oeffneRaetsel } from './raetsel.js';
 import { bonus } from '../../data/bonus.js';
 import { disputation } from '../../data/disputation.js';
 import { kirchenGesehen } from '../puzzles/duell-regeln.js';
+import { ladeStand } from '../puzzles/kampagne.js';
+import { kampagne } from '../../data/kampagne.js';
+import { kirchenKarten } from '../../data/kartei.js';
 import { kodiere, lies } from './code.js';
 import { zeigeSzene } from './szenen.js';
 import { bildHtml, bildUrl } from './bilder.js';
@@ -28,8 +31,11 @@ export function zeigeKarte() {
   });
   const duellListe = disputation.liste.map((id) => disputation.raetsel[id]).map((d) => {
     const offen = s.done.includes(d.nach);
-    const gegner = d.schritte.find((x) => x.art === 'duell').gegner;
-    const gewonnen = s.siege.includes(gegner) || (gegner === 'worms' && s.stufen.verhoer === 3);
+    const gegner = d.schritte[0].gegner;
+    const sieger = disputation.gegner[gegner]?.siegAls || gegner;
+    // Erledigt: Sieg gegen den Gegner, Stufe 3 in Worms, die Übung im Kloster oder alle zwölf Gegner der Kampagne
+    const gewonnen = s.siege.includes(sieger) || (gegner === 'worms' && s.stufen.verhoer === 3) || (gegner === 'uebung' && s.done.includes('s2'))
+      || (d.id === 'kampagne' && Object.keys(ladeStand().sterne).length === kampagne.kapitel.flatMap((k) => k.gegner).length);
     return h('button', { type: 'button', class: `ort bonus disputation${gewonnen ? ' fertig' : offen ? ' offen' : ' zu'}`, disabled: !offen,
       onclick: () => { dlg.close(); if (d.szene) zeigeSzene(d.szene); else oeffneRaetsel(d.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); } },
       h('span', { class: 'nr' }, gewonnen ? '★' : '⚔'), h('strong', {}, d.titel), h('span', {}, d.kurz),
@@ -57,15 +63,23 @@ export function zeigeBeutel() {
     h('span', { class: 'k-frage', 'aria-hidden': 'true' }, '?'),
     h('span', { class: 'k-typ' }, kirche ? t.albumKircheFehlt : k.duell ? fuelle(t.albumDuell, { name: disputation.gegner[k.duell].name }) : fuelle(t.albumWo, { nr: station(k.station).nr })));
   const gesehen = kirchenGesehen(s.flags);
+  // Kampagne: gewonnene Karten und Kirchenkarten der Gegner, gegen die man schon gespielt hat
+  const kamp = ladeStand();
+  for (const id of kamp.gesehen) kampagne.gegner[id]?.deck.forEach((k) => gesehen.add(k));
+  const kampOffen = s.done.includes('f') || kamp.karten.length > 0;
   fenster(t.beutel, h('div', { class: 'album' },
     h('h3', {}, t.albumLuther),
     h('p', { class: 'rar-legende' }, Object.entries(t.seltenheit).map(([k, v]) => h('span', { class: k }, v))),
     h('p', { class: 'kicker' }, fuelle(t.albumStand, { n, von: cards.length })),
     n ? null : h('p', {}, t.beutelLeer),
     h('div', { class: 'hand album-karten' }, cards.map((k) => (hat(k) ? kartenChip(k, { onclick: () => zeigeKartenDetail(k) }) : leer(k)))),
+    kampOffen ? [h('h3', { class: 'zwischen' }, t.albumKampagne),
+      h('p', { class: 'kicker' }, fuelle(t.albumKampagneText, { n: kamp.karten.length, von: kampagne.karten.length })),
+      h('div', { class: 'hand album-karten' }, kampagne.karten.map((k) => (kamp.karten.includes(k.id) ? kartenChip(k, { onclick: () => zeigeKartenDetail(k) })
+        : h('div', { class: 'karte sammel leer', 'aria-label': t.albumKampagneFehlt }, h('span', { class: 'k-frage', 'aria-hidden': 'true' }, '?'), h('span', { class: 'k-typ' }, t.albumKampagneFehlt)))))] : null,
     h('h3', { class: 'zwischen' }, t.albumKirche),
-    h('p', { class: 'kicker' }, fuelle(t.albumKircheText, { n: gesehen.size, von: disputation.kirche.length })),
-    h('div', { class: 'hand album-karten' }, disputation.kirche.map((k) => (gesehen.has(k.id) ? kartenChip(k, { onclick: () => zeigeKartenDetail(k) }) : leer(k, true))))), { breit: true });
+    h('p', { class: 'kicker' }, fuelle(t.albumKircheText, { n: gesehen.size, von: kirchenKarten.length })),
+    h('div', { class: 'hand album-karten' }, kirchenKarten.map((k) => (gesehen.has(k.id) ? kartenChip(k, { onclick: () => zeigeKartenDetail(k) }) : leer(k, true))))), { breit: true });
 }
 
 export function zeigeNotizbuch() {

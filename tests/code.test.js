@@ -5,7 +5,7 @@ import { kodiere, lies } from '../js/engine/code.js';
 import { neuerStand, kartenAusStand } from '../js/engine/state.js';
 import { game } from '../data/game.js';
 
-const reihenfolgen = [['p', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 'f'], ['p', 's2', 's1', 's3', 's4', 's5', 's6', 's7', 'f']];
+const reihenfolgen = [['p', 's1', 's2', 's3', 's4', 's5', 'sl', 's6', 's7', 'f'], ['p', 's2', 's1', 's3', 's4', 's5', 'sl', 's6', 's7', 'f']];
 const paare = [['t27', 't32'], ['t36', 't86'], ['t43', 't86'], ['t27', 't43']];
 
 function staende() {

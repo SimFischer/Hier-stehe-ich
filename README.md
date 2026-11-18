@@ -1,8 +1,8 @@
 # Hier stehe ich
 
-Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an sieben Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
+Lernspiel zu Martin Luther (1505–1522) für den evangelischen Religionsunterricht in Klasse 7. Die Spielenden sind Lehrling in einer Wittenberger Druckerei, rekonstruieren an acht Stationen Luthers Weg und setzen am Ende eine eigene Flugschrift.
 
-**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Dazu Überarbeitung 1 nach dem ersten Durchspielen (`docs/UEBERARBEITUNG-1.md`): neue Startseite, Sammelkarten mit Kartenduell, neue Minispiele. Eine Erprobung am iPad und mit einer Klasse steht noch aus.
+**Stand:** Alle vier Phasen sind umgesetzt: Kernpfad, Lehrkraftmodus, Lehrkräftekompendium, fünf Bonusspiele, Nachdenk-Fragen, fertige Bilder und die Abschlussprüfung (`docs/FACHPRUEFUNG.md`). Dazu Überarbeitung 1 nach dem ersten Durchspielen (`docs/UEBERARBEITUNG-1.md`): neue Startseite, Sammelkarten mit Kartenduell, neue Minispiele. Überarbeitung 2 (`docs/UEBERARBEITUNG-2.md`): das Kartenspiel „Disputation“ nach dem Vorbild von Gwent mit Tutorial, Leipzig als Station und einer Kampagne als Spiel im Spiel. Eine Erprobung am iPad und mit einer Klasse steht noch aus.
 
 ## Spielen
 
@@ -25,7 +25,8 @@ Danach `http://localhost:4173` öffnen. Es gibt keine Abhängigkeiten und keinen
 - **Hilfen:** Jedes Rätsel hat drei gestufte Hilfen. Das Menü zeigt, wie viele genutzt wurden.
 - **Lehrkraftmodus:** Titel fünf Sekunden halten oder Umschalt + Enter. Dort lassen sich Stationen anspringen oder als gelöst markieren, und von dort geht es zum Kompendium (`lehrkraefte.html`) mit Schnellstart, Leitfaden, Lösungen, Fragen und Fachhinweisen.
 - **Bonusspiele:** Silbenrätsel, Druckerpresse (Taktspiel), Entführung (Steuerspiel mit Spitzeln), Lutherrose (zusammensetzen), Gottesdienst und zwei Fragen zum Nachdenken. Sie stehen unten auf der Karte und öffnen sich nach der passenden Station.
-- **Karten:** Erkenntnisse werden Sammelkarten mit Bild, Stärke und „Stark gegen“. Im Duell in Worms gewinnt nur die passende Karte.
+- **Kartenspiel „Disputation“:** Erkenntnisse werden Sammelkarten. In Disputationen gegen Tetzel, Eck und den Sprecher des Kaisers entkräften sie die starken Karten der Kirche. Bruder Johannes erklärt das Spiel in einer Übung (Station 2).
+- **Das Spiel im Spiel:** Nach dem Finale eine Kampagne mit zwölf Gegnern, Sternen, neuen Karten und Anführern. Der Fortschritt bleibt auf dem Gerät.
 - **Datenschutz:** keine Namen, keine Konten, kein Server, keine externen Abrufe.
 - **Flugschrift:** „Drucken / PDF“ öffnet den Druckdialog, „Als Bild teilen“ das Teilen-Menü des iPads.
 
@@ -65,7 +66,7 @@ In 1024 × 768, 1180 × 820, 1366 × 1024 und 820 × 1180 gibt es derzeit keine 
 
 ## Offene Punkte
 
-- **Spielzeit:** Die Schätzung liegt seit Überarbeitung 1 bei 46 statt 40 Minuten (der Test erlaubt bis 48). Ob gekürzt werden muss, zeigt erst eine Erprobung mit einer Klasse.
+- **Spielzeit:** Mit dem Kartenspiel schätzt der Test rund 70 Minuten für den Kernpfad (Grenze 75). Das passt zu einer Doppelstunde. Ob gekürzt werden muss, zeigt erst eine Erprobung mit einer Klasse.
 - **Bilder:** Für den Kaplan in Jüterbog gibt es noch kein eigenes Bild; dort steht vorläufig der Mönch. Nicht verwendet werden bisher: Kaiser, Bote, Sprecher und Luther-Figuren außer Professor und Junker als Szenenfiguren, die Karte der Erinnerung, die Einzelteile der Waage, Kartenvorder- und -rückseite, Flugblatt- und Stadtzeichen, Münze, Geldweg Albrecht und Rom sowie Wald, Wagen und Reiter der Entführung.
 - **Druck, Teilen und die Steuerung per Finger** sind am iPad selbst noch nicht erprobt, nur im Desktop-Browser.
 - **Lehrkraftmodus:** Das Öffnen über Umschalt + Enter ist geprüft, das Halten des Titels am Touchscreen noch nicht.

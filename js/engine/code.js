@@ -5,12 +5,12 @@ import { game } from '../../data/game.js';
 import { neuerStand, kartenAusStand, station, stationOffen } from './state.js';
 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-const VERSION = 2;
+const VERSION = 3;
 const THESEN = ['t27', 't32', 't36', 't43', 't86'];
 const PAARE = [];
 for (let a = 0; a < THESEN.length; a++) for (let b = a + 1; b < THESEN.length; b++) PAARE.push([THESEN[a], THESEN[b]]);
 const RAT = ['', 'behalten', 'armen', 'kaufen'];
-const BONUS = ['entfuehrung', 'presse', 'lutherrose', 'gottesdienst', 'silben', 'leipzig', 'frei'];
+const BONUS = ['entfuehrung', 'presse', 'lutherrose', 'gottesdienst', 'silben', 'kampagne', 'frei'];
 const SIEGE = ['tetzel', 'eck'];
 
 // Alle Mengen erledigter Stationen, die man im Spiel erreichen kann, in fester Reihenfolge.
@@ -79,7 +79,7 @@ export function lies(eingabe) {
   s.cards = kartenAusStand(s);
   s.flags = s.done.map((id) => station(id).raetsel).filter(Boolean).map((r) => `r:${r}`);
   // Gespielte Disputationen: Daraus ergibt sich, welche Kirchenkarten man schon kennt.
-  const gespielt = { tetzel: s.done.includes('s4'), worms: s.done.includes('s6'), eck: s.bonus.includes('leipzig') || s.siege.includes('eck'), frei: s.bonus.includes('frei') };
+  const gespielt = { uebung: s.done.includes('s2'), tetzel: s.done.includes('s4'), tetzel2: s.done.includes('s5'), eck: s.done.includes('sl'), worms: s.done.includes('s6') };
   for (const [g, ja] of Object.entries(gespielt)) if (ja) s.flags.push(`duell:${g}`);
   s.szene = game.start;
   return { stand: s };

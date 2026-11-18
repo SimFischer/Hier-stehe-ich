@@ -82,6 +82,7 @@ export const puzzles = {
           'Jedes Mal, wenn die Waage fast ausgeglichen ist, fällt eine neue Sünde in die linke Schale. Mach weiter, bis keine mehr kommt.',
           'Die Waage kann nicht kippen. Genau das ist die Erkenntnis: Aus eigener Kraft findet Luther keinen Frieden mit Gott.'
         ] },
+      { art: 'duell', gegner: 'uebung', titel: 'Übung: So geht die Disputation', szene: 'kloster' },
       { art: 'wahl', begruendung: true, wer: 'mitbruder', frage: 'Du hast es gesehen. Was bedeutet das für Bruder Martin?',
         optionen: [
           { text: 'Er muss sich einfach noch mehr anstrengen.', rueck: 'Das versucht er seit Jahren. Du hast die Waage gesehen.' },
@@ -200,11 +201,41 @@ export const puzzles = {
           'Die eckigen Städte sind Knotenpunkte. Ein deutsches Blatt verbreitet sich von dort in alle Richtungen.',
           'Schicke das erste deutsche Blatt nach Leipzig. Bringe mit Latein einen Boten nach Erfurt und dann ein deutsches Blatt nach Nürnberg. Danach sind Frankfurt, Köln und Straßburg an der Reihe.'
         ] },
+      { art: 'duell', gegner: 'tetzel2', titel: 'Revanche: Die Thesen gegen Tetzel', szene: 'jueterbog',
+        hilfen: [
+          'Die Thesen sind jetzt deine stärksten Karten. Nimm sie ins Deck und dazu die Karten gegen den Ablass.',
+          'Tetzel hat einen Anführer: seine eigene Karte. Er spielt sie meist erst in Runde 2 oder 3. Heb dir eine Antwort auf.',
+          'Ablassprediger: These 27 oder These 43. Ablasshandel: „Gnade ist ein Geschenk“. Predigt und Brief: „Ohne Reue kein Erlass“. Richter: „Wie der Vater“.'
+        ] },
       { art: 'wahl', begruendung: true, frage: 'Warum verbreiteten sich Luthers Thesen so schnell?',
         optionen: [
           { text: 'Sie wurden gedruckt und ins Deutsche übersetzt.', richtig: true, rueck: 'Genau. Ohne Druckerpresse und ohne Deutsch wären sie ein Streit unter Gelehrten geblieben.' },
           { text: 'Luther ritt selbst von Stadt zu Stadt.', rueck: 'Luther blieb in Wittenberg. Unterwegs waren die gedruckten Blätter.' },
           { text: 'Der Papst ließ sie überall vorlesen.', rueck: 'Der Papst hatte daran kein Interesse. Die Thesen kritisierten ja seine Kirche.' }
+        ] }
+    ]
+  },
+
+  leipzig: {
+    id: 'leipzig', station: 'sl', titel: 'Die Leipziger Disputation', lernziel: [5],
+    schritte: [
+      { art: 'duell', gegner: 'eck', titel: 'Luther gegen Eck', szene: 'leipzig',
+        hilfen: [
+          'Eck spielt die Karten der Gelehrten: Konzilien, Papst und Tradition. Und er hat sich selbst als Anführer.',
+          'Gegen „Die Konzilien“ und „Wie Jan Hus“ hast du noch keine Antwort. Versuch, die anderen Runden zu gewinnen.',
+          '„Maßstab Bibel“ entkräftet Papst und Tradition. „Gewissen“ fehlt dir noch. Verlieren ist hier nicht schlimm: Die Geschichte geht weiter.'
+        ] },
+      { art: 'text', titel: 'Was in Leipzig geschah',
+        absaetze: [
+          { text: 'Die Disputation dauerte fast drei Wochen. Eck trieb Luther in die Enge.' },
+          { text: 'Am Ende sagte Luther: Auch ein Konzil kann irren. Manche Sätze von Jan Hus seien gut christlich.' },
+          { text: 'Damit war der Bruch mit Rom kaum noch aufzuhalten. Ein Jahr später drohte der Papst Luther mit dem Bann.' }
+        ] },
+      { art: 'wahl', begruendung: true, frage: 'Was war das Neue, das Luther in Leipzig sagte?',
+        optionen: [
+          { text: 'Auch ein Konzil der Kirche kann sich irren.', richtig: true, rueck: 'Genau. Damit stellte Luther die Bibel über Papst und Konzilien.' },
+          { text: 'Der Ablass ist eine gute Sache.', rueck: 'Das sagte Luther nicht. Er kritisierte den Ablass schon seit 1517.' },
+          { text: 'Er will zurück ins Kloster gehen.', rueck: 'Davon war keine Rede. In Leipzig ging es darum, wer im Glauben entscheidet.' }
         ] }
     ]
   },

@@ -1,10 +1,9 @@
 // Regeln des Kartenspiels „Disputation“ und die Züge der Kirche. Rein und in Node testbar.
 // Jeder Zug gibt einen neuen Stand zurück. Zufall kommt aus einem Startwert im Stand: Gleicher Startwert, gleiches Spiel.
-import { cards } from '../../data/cards.js';
 import { disputation } from '../../data/disputation.js';
+import { karte, lutherKarten } from '../../data/kartei.js';
 
-const ALLE = new Map([...cards, ...disputation.kirche].map((k) => [k.id, k]));
-export const K = (id) => ALLE.get(id);
+export const K = karte;
 export const anders = (seite) => (seite === 'luther' ? 'kirche' : 'luther');
 
 function zufall(n) {
@@ -42,7 +41,7 @@ export function wert(z, seite, inst) {
     if (o.uid === inst.uid || entkraeftet(z, seite, o)) continue;
     const ok = K(o.id);
     if (ok.staerkt && trifft(ok.staerkt.gruppe, k)) v += ok.staerkt.plus;
-    if (k.bund && ok.typ === k.typ) v += 1;
+    if (k.bund && !ok.anfuehrer && gruppe(ok) === gruppe(k)) v += 1;
   }
   if (!k.standhaft) for (const o of z.seiten[anders(seite)].reihe) {
     const ok = K(o.id);
@@ -52,17 +51,19 @@ export function wert(z, seite, inst) {
 }
 export const summe = (z, seite) => z.seiten[seite].reihe.reduce((n, inst) => n + wert(z, seite, inst), 0);
 
-function neueSeite(n, ids) {
+function neueSeite(n, ids, anfuehrer, mischen = true) {
   const deck = ids.map((id) => ({ uid: (n.uid += 1), id }));
-  mische(n, deck);
-  return { deck, hand: [], reihe: [], ablage: [], gepasst: false, siege: 0 };
+  if (mischen) mische(n, deck);
+  return { deck, hand: [], reihe: [], ablage: [], gepasst: false, siege: 0, anfuehrer: anfuehrer ? { uid: (n.uid += 1), id: anfuehrer } : null };
 }
 
 /** Lege eine Karte probeweise: nur Reihe und Bann, ohne Nachziehen und Zugwechsel. */
 function lege(n, seite, uid) {
   const s = n.seiten[seite];
-  const i = s.hand.findIndex((x) => x.uid === uid);
-  const [inst] = s.hand.splice(i, 1);
+  let inst;
+  // Der Anführer liegt neben dem Deck und wird einmal gespielt.
+  if (s.anfuehrer?.uid === uid) { inst = s.anfuehrer; s.anfuehrer = null; }
+  else { const i = s.hand.findIndex((x) => x.uid === uid); [inst] = s.hand.splice(i, 1); }
   s.reihe.push(inst);
   const ereignis = { seite, id: inst.id, uid, art: 'spiel', runde: n.runde };
   if (K(inst.id).bann) {
@@ -101,10 +102,14 @@ function passeIntern(n, seite) {
 function pruefeLeer(n) { if (n.phase === 'spiel' && !n.seiten[n.am].hand.length && !n.seiten[n.am].gepasst) passeIntern(n, n.am); }
 
 export const rules = {
-  start(gegner, deckLuther, seed = 1, regeln = disputation.regeln) {
-    const n = { phase: 'tausch', runde: 1, am: 'luther', seed: seed >>> 0, uid: 0, tausch: regeln.tausch, regeln, gegner: gegner.id, log: [], runden: [], sieger: null };
-    n.seiten = { luther: neueSeite(n, deckLuther), kirche: neueSeite(n, gegner.deck) };
-    ziehe(n, 'luther', regeln.handStart); ziehe(n, 'kirche', regeln.handStart);
+  /** Neue Disputation. anfuehrer: Luthers Anführer (Kampagne). Die Übung läuft ohne Mischen und nach Skript. */
+  start(gegner, deckLuther, seed = 1, grund = disputation.regeln, { anfuehrer = null } = {}) {
+    const regeln = { ...grund, ...(gegner.regeln || {}) };
+    const fest = Boolean(gegner.skript);
+    const n = { phase: 'tausch', runde: 1, am: 'luther', seed: seed >>> 0, uid: 0, tausch: regeln.tausch, regeln, gegner: gegner.id, log: [], runden: [], sieger: null, skript: gegner.skript || null, skriptPos: 0 };
+    n.seiten = { luther: neueSeite(n, fest ? gegner.deckLuther : deckLuther, anfuehrer, !fest), kirche: neueSeite(n, gegner.deck, gegner.anfuehrer, !fest) };
+    // handKirche: Späte Gegner der Kampagne beginnen mit mehr Karten als Luther.
+    ziehe(n, 'luther', regeln.handStart); ziehe(n, 'kirche', regeln.handKirche || regeln.handStart);
     return n;
   },
   /** Vor dem Spiel: eine Handkarte zurück ins Deck, dafür eine neue ziehen. */
@@ -121,9 +126,11 @@ export const rules = {
     return n;
   },
   beginne(z) { if (z.phase !== 'tausch') return z; const n = structuredClone(z); n.phase = 'spiel'; n.am = 'luther'; return n; },
+  /** Luther spielt seinen Anführer (Kampagne). */
+  anfuehrerFrei: (z, seite) => Boolean(z.seiten[seite].anfuehrer),
   kann: (z, seite) => z.phase === 'spiel' && z.am === seite && !z.seiten[seite].gepasst,
   spiele(z, seite, uid) {
-    if (!rules.kann(z, seite) || !z.seiten[seite].hand.some((x) => x.uid === uid)) return z;
+    if (!rules.kann(z, seite) || !(z.seiten[seite].hand.some((x) => x.uid === uid) || z.seiten[seite].anfuehrer?.uid === uid)) return z;
     const n = structuredClone(z);
     const vorher = seite === 'luther' ? n.seiten.kirche.reihe.filter((c) => !entkraeftet(n, 'kirche', c)).map((c) => c.uid) : [];
     const ereignis = lege(n, seite, uid);
@@ -153,15 +160,25 @@ export const rules = {
   /** Der Zug der Kirche. Sie kennt Luthers Hand nicht, nur was auf dem Tisch liegt. */
   kiZug(z) {
     const k = z.seiten.kirche; const l = z.seiten.luther;
-    if (!k.hand.length) return { art: 'passe' };
+    if (z.skript) {
+      const naechster = z.skript[z.skriptPos];
+      const inst = k.hand.find((x) => x.id === naechster);
+      return inst ? { art: 'spiele', uid: inst.uid } : { art: 'passe' };
+    }
+    const fuehrer = k.anfuehrer ? { uid: k.anfuehrer.uid, basis: K(k.anfuehrer.id).staerke, nach: rules.vorsprungNach(z, 'kirche', k.anfuehrer.uid) } : null;
+    if (!k.hand.length) return fuehrer && fuehrer.nach > 0 ? { art: 'spiele', uid: fuehrer.uid } : { art: 'passe' };
     const vorne = summe(z, 'kirche') - summe(z, 'luther');
     const optionen = k.hand.map((x) => ({ uid: x.uid, basis: K(x.id).staerke, nach: rules.vorsprungNach(z, 'kirche', x.uid) }));
     const fuehrend = optionen.filter((o) => o.nach > 0).sort((a, b) => a.basis - b.basis || b.nach - a.nach);
     const mussGewinnen = l.siege > k.siege || (l.siege === 1 && k.siege === 1);
+    // Den Anführer spart die Kirche für eine Runde, die sie gewinnen muss, oder für Runde 2 und 3.
+    const fuehrerJetzt = fuehrer && fuehrer.nach > 0 && (mussGewinnen || z.runde >= 2);
     if (l.gepasst) {
       if (vorne > 0) return { art: 'passe' };
-      return fuehrend.length ? { art: 'spiele', uid: fuehrend[0].uid } : { art: 'passe' };
+      if (fuehrend.length) return { art: 'spiele', uid: fuehrend[0].uid };
+      return fuehrerJetzt ? { art: 'spiele', uid: fuehrer.uid } : { art: 'passe' };
     }
+    if (mussGewinnen && fuehrer && !fuehrend.length && fuehrer.nach > vorne) return { art: 'spiele', uid: fuehrer.uid };
     // Die Kirche spart Karten, wenn sie klar vorne liegt und Luther mehr Karten hat.
     if (!mussGewinnen && vorne >= 4 && k.reihe.length >= 2 && k.hand.length <= l.hand.length) return { art: 'passe' };
     if (fuehrend.length) return { art: 'spiele', uid: fuehrend[0].uid };
@@ -170,7 +187,11 @@ export const rules = {
     const beste = optionen.reduce((a, b) => (b.nach > a.nach ? b : a));
     return { art: 'spiele', uid: beste.uid };
   },
-  fuehreAus: (z, zug, seite = 'kirche') => (zug.art === 'passe' ? rules.passe(z, seite) : rules.spiele(z, seite, zug.uid)),
+  fuehreAus(z, zug, seite = 'kirche') {
+    const n = zug.art === 'passe' ? rules.passe(z, seite) : rules.spiele(z, seite, zug.uid);
+    if (n !== z && seite === 'kirche' && n.skript) n.skriptPos += 1;
+    return n;
+  },
   /** Ergebnisstufe für Worms: Sieg 3, eine gewonnene Runde 2, sonst 1. */
   stufe: (z) => (z.sieger === 'luther' ? 3 : z.seiten.luther.siege >= 1 ? 2 : 1),
   /** Welche Karten hätten geholfen? Starke Kirchenkarten aus diesem Spiel, die nicht entkräftet wurden. */
@@ -184,7 +205,7 @@ export const rules = {
     const ort = (id) => (luther.some((l) => l.id === id) ? 'runde' : hand.has(id) ? 'hand' : deck.includes(id) ? 'deck' : besitz.includes(id) ? 'besitz' : 'fehlt');
     const rang = { runde: 0, hand: 1, deck: 2, besitz: 3, fehlt: 4 };
     return [...new Set(offen.map((e) => e.id))].map((id) => {
-      const konter = cards.filter((c) => (c.entkraeftet || []).includes(id));
+      const konter = lutherKarten.filter((c) => (c.entkraeftet || []).includes(id));
       if (!konter.length) return null;
       const beste = konter.map((c) => ({ karte: c.id, ort: ort(c.id) })).sort((a, b) => rang[a.ort] - rang[b.ort])[0];
       return { kirche: id, ...beste };
@@ -201,6 +222,6 @@ export function deckVorschlag(besitz, regeln = disputation.regeln) {
 /** Kirchenkarten, die man schon kennt: aus allen Disputationen, die gespielt wurden. */
 export function kirchenGesehen(flags) {
   const ids = new Set();
-  for (const g of Object.values(disputation.gegner)) if (flags.includes(`duell:${g.id}`)) g.deck.forEach((id) => ids.add(id));
+  for (const g of Object.values(disputation.gegner)) if (flags.includes(`duell:${g.id}`)) [...g.deck, g.anfuehrer].filter(Boolean).forEach((id) => ids.add(id));
   return ids;
 }
