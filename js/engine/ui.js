@@ -2,8 +2,7 @@
 import { glossary } from '../../data/glossary.js';
 import { t } from '../../data/ui.js';
 import { bildHtml, kartenBild, symbolHtml } from './bilder.js';
-import { cards } from '../../data/cards.js';
-import { disputation } from '../../data/disputation.js';
+import { alleKarten } from '../../data/kartei.js';
 
 /** Baut ein Element: h('button', { class: 'x', onclick: fn }, 'Text', kind) */
 export function h(tag, attrs = {}, ...kinder) {
@@ -74,7 +73,8 @@ export function fenster(titel, inhalt, { breit = false } = {}) {
   return dlg;
 }
 
-const KARTEN = new Map([...cards, ...disputation.kirche].map((k) => [k.id, k]));
+// Alle Karten (Geschichte, Kampagne, Kirche, Anführer), damit Fähigkeiten immer Kartennamen zeigen
+const KARTEN = alleKarten;
 const gruppen = (liste) => liste.map((g) => t.gruppen[g] || g).join(t.und);
 
 /** Fähigkeiten einer Karte als kurze Sätze, aus den Daten erzeugt. */

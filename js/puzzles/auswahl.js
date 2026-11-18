@@ -1,5 +1,5 @@
 // Karten auswählen: zwei Thesen für den Beutel (Station 5) oder fünf Karten für das Verhör (Station 6).
-import { h, setzeInhalt, knopf, rich, kartenChip, fuelle } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, rich, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
 import { wahlRules } from './schritte.js';
 
 export const rules = {
@@ -24,6 +24,15 @@ export function view(el, schritt, ctx, fertig) {
   let erinnere = null; // These, deren Frage gerade gestellt wird
   let rueck = '';
 
+  // Antippen zeigt die Karte groß mit allen Fähigkeiten. Darunter: mitnehmen oder zurücklegen.
+  const zeigeAuswahl = (k) => {
+    const drin = wahl.includes(k.id);
+    const voll = !drin && wahl.length >= schritt.anzahl;
+    zeigeKartenDetail(k, {
+      zusatz: [voll ? fuelle(t.auswahlVoll, { n: schritt.anzahl }) : null],
+      knoepfe: voll ? [] : [knopf(drin ? t.auswahlZuruecklegen : t.auswahlMitnehmen, () => { wahl = rules.umschalten(wahl, k.id, schritt.anzahl); rueck = ''; zeichne(); }, 'haupt')]
+    });
+  };
   const zeichne = () => {
     const beutel = ctx.karten();
     const vorrat = rules.vorrat(schritt, ctx.alleKarten, beutel);
@@ -40,7 +49,7 @@ export function view(el, schritt, ctx, fertig) {
     setzeInhalt(el, 
       h('p', { class: 'anweisung' }, rich(schritt.anweisung || d.deckEinleitung)),
       h('div', { class: `hand wahl${vorrat.length > 8 ? ' viele' : ''}` }, vorrat.map((k) => kartenChip(k,
-        { klein: vorrat.length > 8, text: schritt.quelle === 'thesen', gewaehlt: wahl.includes(k.id), onclick: () => { wahl = rules.umschalten(wahl, k.id, schritt.anzahl); rueck = ''; zeichne(); } }))),
+        { klein: vorrat.length > 8, text: schritt.quelle === 'thesen', gewaehlt: wahl.includes(k.id), onclick: () => zeigeAuswahl(k) }))),
       fehlend.length ? h('div', { class: 'erinnerung' }, h('span', { class: 'klein' }, d.erinnerung),
         fehlend.map((k) => knopf(k.titel, () => { erinnere = k; rueck = ''; zeichne(); }, 'still klein'))) : null,
       h('div', { class: 'reihe fuss' },
