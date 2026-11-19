@@ -1,0 +1,179 @@
+/* Spielmodus des Kartenspiels („Hammer & Siegel“ und alle Disputationen).
+   Die Partie liegt in einem eigenen Container direkt an <body> (js/puzzles/duell.js, spielmodus()) und füllt die
+   sichtbare Fläche. Alle Größen kommen aus der tatsächlich verfügbaren Breite UND Höhe:
+   - Die Fläche ist position: fixed mit inset: 0, folgt also dem sichtbaren Bereich, auch wenn Browserleisten ein- und ausfahren.
+   - Reihen und Hand sind Größencontainer (container-type: size). Die Karten rechnen ihre Breite aus der Höhe der Reihe
+     (Seitenverhältnis 63 : 88) und überlappen sich nur, wenn die Breite für alle nicht reicht (--n = Zahl der Karten).
+   Diese Datei kommt als letzte und überschreibt die älteren Tischregeln aus duell.css und karten.css. */
+
+html.im-spielmodus, html.im-spielmodus body { overflow: hidden; overscroll-behavior: none; }
+
+.spielmodus {
+  --rail: clamp(88px, 9.5vw, 132px);   /* rechte Leiste: Summen, Rundensiege, Passen */
+  --hand-h: clamp(118px, 27vh, 270px);  /* Höhe der Hand */
+  --luecke: 8px;
+  position: fixed; inset: 0; z-index: 30; display: flex;
+  width: 100vw; height: 100vh;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  background: #1d140e; color: var(--pergament); touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+/* Moderne Einheiten: dvh folgt den ein- und ausfahrenden Browserleisten; inset: 0 bleibt der Rückfall. */
+@supports (height: 100dvh) {
+  .spielmodus { width: 100dvw; height: 100dvh; --hand-h: clamp(118px, 27dvh, 270px); }
+}
+
+/* ---------- Der Tisch: ein Raster, alle Teile haben feste Plätze ---------- */
+.spielmodus .d-tisch {
+  flex: 1; min-width: 0; min-height: 0; height: auto; margin: 0; padding: 6px 8px 4px; gap: 6px var(--luecke);
+  border: 0; border-radius: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--rail);
+  grid-template-rows: auto minmax(0, 1fr) auto minmax(0, 1fr) var(--hand-h);
+  grid-template-areas:
+    "kopf  kopf"
+    "rk    sk"
+    "mitte passen"
+    "rl    sl"
+    "hand  du";
+}
+.spielmodus .d-tisch > .d-kopf { grid-area: kopf; }
+.spielmodus .d-tisch > .d-reihe.kirche { grid-area: rk; }
+.spielmodus .d-tisch > .d-stand.kirche { grid-area: sk; }
+.spielmodus .d-tisch > .d-mitte { grid-area: mitte; }
+.spielmodus .d-tisch > .d-passen { grid-area: passen; }
+.spielmodus .d-tisch > .d-reihe.luther { grid-area: rl; }
+.spielmodus .d-tisch > .d-stand.luther { grid-area: sl; }
+.spielmodus .d-tisch > .d-hand { grid-area: hand; }
+.spielmodus .d-tisch > .d-du { grid-area: du; }
+
+/* Runde Knöpfe in der Kopfzeile (Verlassen, Vollbild): mindestens 44 × 44 */
+.d-icon { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border-radius: 50%; cursor: pointer;
+  background: rgba(20, 14, 10, 0.55); color: #f3e6c8; border: 2px solid #b48a5c; font: inherit; font-size: 1.15rem; font-weight: bold; }
+.d-icon svg { width: 22px; height: 22px; }
+.d-icon:hover, .d-icon:focus-visible { border-color: #f3d27a; color: #fff3c4; }
+
+/* Oben: Gegner kompakt in einer Zeile */
+.spielmodus .d-kopf { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 2px; border-radius: 10px; }
+.spielmodus .d-kopf .d-portrait.klein { width: 44px; height: 44px; }
+.spielmodus .d-kopf .d-name { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.spielmodus .d-kopf .d-name strong { font-size: var(--text); white-space: nowrap; }
+.spielmodus .d-runde { margin: 0; font-size: var(--text-klein); color: var(--ocker-hell); white-space: nowrap; }
+.spielmodus .d-kopf .d-anfuehrer { width: 44px; height: 48px; }
+.spielmodus .d-handzahl { margin-left: auto; }
+.spielmodus .d-kopf .d-vollbild { margin-left: 4px; }
+
+/* ---------- Argumentreihen: je Seite genau eine ---------- */
+.spielmodus .d-reihe { display: block; min-height: 0; padding: 4px 6px; overflow: hidden; border-radius: 12px; border: 1px dashed rgba(240, 217, 166, 0.28); }
+.spielmodus .d-reihe.kirche { background: rgba(110, 31, 20, 0.22); }
+.spielmodus .d-reihe.luther { background: rgba(62, 91, 69, 0.26); }
+.spielmodus .d-karten {
+  container-type: size; height: 100%; display: flex; align-items: center; justify-content: center; gap: var(--luecke);
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+}
+.spielmodus .d-karten::-webkit-scrollbar { display: none; }
+
+/* Kartenbreite aus der Reihenhöhe; reicht die Breite nicht, rücken die Karten übereinander (Wert links oben bleibt sichtbar). */
+.spielmodus .d-karten > .bk, .spielmodus .d-hand > .karte.sammel.gwent {
+  --kw: min(var(--kw-max), (100cqh - var(--kh-abzug)) * 63 / 88);
+  --ueber: max(0px, (var(--n) * var(--kw) + (var(--n) - 1) * var(--luecke) - 100cqw + 4px) / max(1, var(--n) - 1));
+  flex: none; width: var(--kw); height: auto; aspect-ratio: 63 / 88; max-height: none; min-height: 0;
+}
+.spielmodus .d-karten > .bk { --kw-max: 230px; --kh-abzug: 8px; }
+.spielmodus .d-karten > .bk + .bk, .spielmodus .d-hand > .karte.sammel.gwent + .karte.sammel.gwent { margin-left: calc(-1 * var(--ueber)); }
+
+/* Karte auf dem Tisch: Werte wachsen mit der Karte */
+.spielmodus .bk { container: bk / inline-size; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
+.spielmodus .bk-wert { top: 4%; left: 5%; min-width: max(30px, 27cqw); height: max(30px, 27cqw); border-radius: 999px; font-size: max(1.05rem, 16cqw); padding: 0 3px; }
+.spielmodus .bk-faehig { position: absolute; z-index: 2; top: 4%; right: 5%; display: grid; place-items: center; width: max(20px, 17cqw); height: max(20px, 17cqw); border-radius: 50%;
+  background: rgba(31, 26, 23, 0.82); color: #f3d27a; font-size: max(0.75rem, 10cqw); line-height: 1; }
+.spielmodus .bk-name {
+  position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; width: auto; height: auto; clip: auto; overflow: hidden;
+  padding: 3px 4px 4px; background: linear-gradient(#f8efd8, #e7d6ae); border-top: 2px solid var(--rahmen-licht);
+  color: var(--tinte); font-size: max(0.75rem, 9.5cqw); line-height: 1.1; font-weight: bold; font-variant: small-caps; text-align: center;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; hyphens: auto;
+}
+@container bk (max-width: 86px) { .spielmodus .bk-name { display: none; } }
+.spielmodus .bk.entkraeftet .bk-name { text-decoration: line-through; }
+
+/* ---------- Rechte Leiste: Summe, Rundensiege, Passen ---------- */
+.spielmodus .d-stand { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 0;
+  padding: 6px 4px; border-radius: 14px; background: rgba(20, 14, 10, 0.42); border: 1px solid rgba(201, 163, 92, 0.35); }
+.spielmodus .d-stand.kirche { justify-content: flex-end; }
+.spielmodus .d-stand.luther { justify-content: flex-start; }
+.spielmodus .d-summe { width: clamp(48px, 6vw, 64px); height: clamp(48px, 6vw, 64px); font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
+.spielmodus .d-stand.kirche .d-summe { background: radial-gradient(circle at 35% 35%, #fbe3da, #d39a86); }
+.spielmodus .d-stand.kirche .d-summe.vorne { background: radial-gradient(circle at 35% 35%, #ffd9cc, #c0533a); color: #fff8e6; box-shadow: 0 0 14px rgba(230, 90, 60, 0.8); }
+.spielmodus .d-stand .d-pass { font-size: 0.875rem; }
+.spielmodus .d-passen { align-self: center; justify-self: stretch; min-width: 0; min-height: 56px; padding: 6px 4px; border-radius: 999px; font-size: var(--text); font-weight: bold; }
+.spielmodus .d-passen:disabled { opacity: 0.5; }
+
+/* Mitte: letzter Zug und Konter, schmal */
+.spielmodus .d-mitte { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 10px; min-height: 44px; margin: 0; padding: 2px 10px;
+  text-align: center; font-size: var(--text-klein); line-height: 1.25; color: var(--pergament-hell); text-shadow: 0 1px 2px #000;
+  background: linear-gradient(90deg, transparent, rgba(20, 14, 10, 0.6) 12%, rgba(20, 14, 10, 0.6) 88%, transparent);
+  border-top: 1px solid rgba(201, 163, 92, 0.45); border-bottom: 1px solid rgba(201, 163, 92, 0.45); }
+.spielmodus .d-mitte .d-status { display: inline; min-height: 0; padding: 0; }
+.spielmodus .d-mitte.bann .d-status { color: #ffc2b5; font-weight: bold; }
+.d-konter { padding: 2px 12px; border-radius: 14px; background: #2f5a37; border: 1px solid #9fd09a; color: #eaffe5; font-weight: bold; text-shadow: none; animation: einblenden 0.4s ease-out; }
+
+/* ---------- Unten: die Hand ---------- */
+.spielmodus .d-hand {
+  container-type: size; display: flex; align-items: flex-end; justify-content: center; gap: var(--luecke);
+  min-height: 0; padding: 12px 2px 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+}
+.spielmodus .d-hand::-webkit-scrollbar { display: none; }
+.spielmodus .d-hand > .karte.sammel.gwent { --kw-max: 210px; --kh-abzug: 14px; max-width: none; transition: transform 0.15s; overflow: hidden; }
+.spielmodus .d-hand > .karte.sammel.gwent:hover, .spielmodus .d-hand > .karte.sammel.gwent:focus-visible { transform: translateY(-10px); z-index: 3; }
+.spielmodus .d-hand > .karte.sammel.gwent.wartet { filter: saturate(0.75) brightness(0.88); }
+.spielmodus .d-hand > .karte.sammel.gwent.wartet:hover { transform: none; }
+.spielmodus .d-du { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 0; border-radius: 14px; padding: 4px; }
+.spielmodus .d-du strong { color: #fff; }
+.spielmodus .d-du.dran { background: rgba(240, 217, 166, 0.14); box-shadow: inset 0 0 0 2px rgba(240, 217, 166, 0.45); }
+.spielmodus .d-du .d-anfuehrer { width: clamp(48px, 6vw, 64px); height: auto; aspect-ratio: 63 / 88; }
+
+/* Übung und Rundenbanner bleiben über dem Tisch, die Aufgabe liegt über der Gegnerreihe, damit die Hand frei bleibt */
+.spielmodus .tut-box.aufgabe { top: 10%; bottom: auto; transform: translate(-50%, 0); }
+.spielmodus .d-banner { border-radius: 0; }
+
+/* ---------- Kartentausch vor dem Start ---------- */
+.spielmodus .d-tisch.d-tausch { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-areas: none; }
+.spielmodus .d-tisch.d-tausch > * { grid-area: auto; }
+.d-tausch-kopf { text-align: center; text-shadow: 0 1px 2px #000; }
+.d-tausch-kopf h2 { margin: 0; color: #fff3c4; font-size: clamp(1.25rem, 2.6vw, 1.9rem); font-variant: small-caps; letter-spacing: 0.03em; }
+.d-tausch-kopf p { margin: 4px 0 0; }
+.d-tausch-rest { display: inline-block; padding: 2px 14px; border-radius: 14px; background: rgba(20, 14, 10, 0.6); border: 1px solid #c9a35c; color: #f3d27a; font-weight: bold; }
+.d-tausch-hand { container-type: size; display: flex; align-items: center; justify-content: center; gap: 16px; min-height: 0; overflow: hidden; }
+.d-tausch-karte {
+  --kw: min(240px, (100cqh - 34px) * 63 / 88, (100cqw - (var(--n) - 1) * 16px - 8px) / var(--n));
+  position: relative; flex: none; width: var(--kw); transition: transform 0.18s;
+}
+.d-tausch-karte .karte.sammel.gwent { width: 100%; }
+.d-tausch-karte .karte.sammel.gwent:disabled { cursor: default; filter: brightness(0.75); }
+.d-tausch-karte.gewaehlt { transform: translateY(-14px); }
+.d-tausch-karte.gewaehlt .karte.sammel.gwent { box-shadow: 0 0 0 4px #f3c84a, 0 0 22px rgba(243, 200, 74, 0.85); }
+.d-tausch-marke { position: absolute; z-index: 3; left: 50%; top: 42%; transform: translateX(-50%); padding: 4px 12px; border-radius: 14px; white-space: nowrap;
+  background: #f3c84a; color: var(--tinte); font-weight: bold; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); pointer-events: none; }
+.d-tausch-marke.neu { background: #2f5a37; color: #eaffe5; border: 1px solid #9fd09a; }
+.d-tausch-karte .karte-info { position: absolute; z-index: 4; top: -10px; right: -10px; width: 44px; height: 44px; font-size: 1.1rem; }
+.d-tausch-fuss { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; padding-bottom: 4px; }
+.d-tausch-fuss .knopf { min-height: 52px; min-width: 12rem; font-size: var(--text); }
+
+/* Partie läuft noch: Hinweis in der Vorbereitung */
+.d-fortsetzen { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--ab-3); padding: var(--ab-3); border: 2px solid var(--ocker); border-radius: var(--rund); background: var(--ocker-hell); }
+.d-fortsetzen p { margin: 0; font-weight: bold; }
+
+/* ---------- Hochformat und kleine Höhen ---------- */
+@media (orientation: portrait) {
+  .spielmodus { --rail: 84px; --hand-h: clamp(130px, 22vh, 300px); }
+  @supports (height: 100dvh) { .spielmodus { --hand-h: clamp(130px, 22dvh, 300px); } }
+  .spielmodus .d-kopf .d-runde { display: none; }
+}
+@media (max-height: 560px) {
+  .spielmodus { --hand-h: clamp(96px, 28vh, 160px); }
+  @supports (height: 100dvh) { .spielmodus { --hand-h: clamp(96px, 28dvh, 160px); } }
+  .spielmodus .d-tisch { padding-top: 4px; gap: 4px var(--luecke); }
+  .spielmodus .d-kopf { min-height: 44px; }
+  .spielmodus .d-mitte { min-height: 36px; font-size: 0.875rem; }
+  .spielmodus .d-passen { min-height: 46px; }
+}
+@media (prefers-reduced-motion: reduce) { .d-konter, .d-tausch-karte, .spielmodus .d-hand > .karte.sammel.gwent { animation: none; transition: none; } }

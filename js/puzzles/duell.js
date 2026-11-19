@@ -47,12 +47,57 @@ export function view(el, schritt, ctx, fertig) {
   const url = (n) => (bildUrl(n) ? `url("${bildUrl(n)}")` : 'none');
   const tischStil = `--tisch: ${url('tisch-disputation')}; --ruecken: ${url('ruecken-kirche')}`;
 
+  // ---------- Spielmodus: Die Partie bekommt eine eigene Fläche über der ganzen Seite ----------
+  // Der Container hängt direkt an <body> (außerhalb von Rätselblatt und Leiste), damit nichts ihn in der Höhe begrenzt.
+  // Leiste, Zielzeile und Blattkopf liegen darunter und sind solange inert. Der Spielstand z bleibt beim Verlassen erhalten.
+  let buehne = null;
+  const vollbildElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+  const vollbildMoeglich = () => Boolean(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  function vollbildUmschalten() {
+    try {
+      const p = vollbildElement() ? (document.exitFullscreen || document.webkitExitFullscreen)?.call(document)
+        : (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)?.call(document.documentElement);
+      p?.catch?.(() => { /* abgelehnt oder nicht erlaubt: Der Spielmodus läuft ohne Vollbild weiter. */ });
+    } catch { /* nicht unterstützt */ }
+  }
+  const VOLLBILD_AN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  const VOLLBILD_AUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
+  function vollbildKnopf() {
+    if (!vollbildMoeglich()) return null;
+    const an = Boolean(vollbildElement());
+    return h('button', { type: 'button', class: 'd-icon d-vollbild', 'aria-pressed': String(an), 'aria-label': an ? t.spielVollbildAus : t.spielVollbild,
+      title: an ? t.spielVollbildAus : t.spielVollbild, onclick: vollbildUmschalten, html: an ? VOLLBILD_AUS : VOLLBILD_AN });
+  }
+  const vollbildGeaendert = () => buehne?.querySelector('.d-vollbild')?.replaceWith(vollbildKnopf());
+  const verlassenKnopf = () => h('button', { type: 'button', class: 'd-icon d-verlassen', 'aria-label': t.spielVerlassen, title: t.spielVerlassen,
+    onclick: () => { clearTimeout(timer); vorbereitung(); } }, h('span', { 'aria-hidden': 'true' }, '✕'));
+  function spielmodus(an) {
+    const app = document.getElementById('app');
+    if (an && !buehne) {
+      buehne = h('div', { class: 'spielmodus', role: 'region', 'aria-label': t.spielFlaeche });
+      document.body.append(buehne);
+      document.documentElement.classList.add('im-spielmodus');
+      if (app) app.inert = true;
+      document.addEventListener('fullscreenchange', vollbildGeaendert); document.addEventListener('webkitfullscreenchange', vollbildGeaendert);
+    } else if (!an && buehne) {
+      buehne.remove(); buehne = null;
+      document.documentElement.classList.remove('im-spielmodus');
+      if (app) app.inert = false;
+      document.removeEventListener('fullscreenchange', vollbildGeaendert); document.removeEventListener('webkitfullscreenchange', vollbildGeaendert);
+      if (vollbildElement()) vollbildUmschalten();
+    }
+  }
+  const laeuft = () => z && (z.phase !== 'ende' || banner);
+  const fortsetzen = () => (laeuft() ? h('div', { class: 'd-fortsetzen' }, h('p', {}, t.duellLaeuft), knopf(t.duellFortsetzen, zeichne, 'haupt')) : null);
+
   // ---------- Vorbereitung: Gegner, Regeln, Deck ----------
   function vorbereitung() {
+    spielmodus(false);
     if (tutorial) {
       setzeInhalt(el, h('div', { class: 'd-vor' },
         h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
           h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', {}, fuelle(t.duellGegen, { name: wen })), h('p', {}, g.einleitung))),
+        fortsetzen(),
         h('p', {}, t.tutorialStart),
         h('div', { class: 'reihe fuss' }, h('span', {}), knopf(t.duellLos, starte, 'haupt'))));
       return;
@@ -66,6 +111,7 @@ export function view(el, schritt, ctx, fertig) {
         h('div', { class: 'd-gegner-kopf' },
           h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
           h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', {}, fuelle(t.duellGegen, { name: wen })), h('p', {}, g.einleitung))),
+        fortsetzen(),
         h('details', { class: 'd-regeln', open: ersterKampf && versuch === 0 }, h('summary', {}, t.duellRegeln),
           h('ol', {}, disputation.regelText.map((r) => h('li', {}, r)))),
         h('h3', { class: 'zwischen' }, fuelle(t.duellSeinDeck, { name: wer })),
@@ -89,7 +135,7 @@ export function view(el, schritt, ctx, fertig) {
     versuch += 1; tutSchritt = 0;
     z = rules.start(g, deck, (Date.now() ^ (versuch * 2654435761)) >>> 0, disputation.regeln, { anfuehrer: kamp?.anfuehrer || g.lutherAnfuehrer || null });
     if (!z.tausch) z = rules.beginne(z);
-    gezeigteRunden = 0; banner = null; werteVorher = new Map();
+    gezeigteRunden = 0; banner = null; werteVorher = new Map(); konter = null; handVorher = new Set(); tauschWahl = new Set(); tauschNeu = new Set();
     zeichne();
   }
 
@@ -101,6 +147,15 @@ export function view(el, schritt, ctx, fertig) {
   const tutWeiter = () => { if (tutorial) tutSchritt += 1; };
 
   // ---------- Spieltisch ----------
+  // Aufbau wie bei einem Tablet-Kartenspiel: oben der Gegner, darunter seine Argumentreihe, in der Mitte der letzte Zug,
+  // darunter deine Reihe, unten deine Hand. Rechts eine schmale Leiste mit Summen, Rundensiegen und „Passen“.
+  // Die Kartengrößen rechnet das CSS aus Breite und Höhe der Reihe (--n = Zahl der Karten), siehe css/spielmodus.css.
+  const FAEHIG = ['staerkt', 'schwaecht', 'bann', 'zieht', 'standhaft', 'bund', 'entkraeftet'];
+  let konter = null; // Erklärung des letzten Konters: { nr: Länge des Logs, zeilen }
+  let handVorher = new Set();
+  let tauschWahl = new Set();
+  let tauschNeu = new Set();
+
   function brettKarte(seite, inst, letzte) {
     const k = K(inst.id);
     const w = wert(z, seite, inst);
@@ -115,17 +170,18 @@ export function view(el, schritt, ctx, fertig) {
       h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }),
       h('span', { class: 'bk-name' }, k.titel),
       h('span', { class: 'bk-wert', 'aria-hidden': 'true' }, w !== k.staerke ? h('s', {}, String(k.staerke)) : null, String(w)),
+      FAEHIG.some((x) => k[x]) ? h('span', { class: 'bk-faehig', 'aria-hidden': 'true', title: t.duellFaehig }, '✦') : null,
       ent ? h('span', { class: 'bk-riss', 'aria-hidden': 'true' }) : null);
   }
 
-  /** Anführer neben dem Namen: Antippen zeigt ihn groß, Luther kann ihn dort ausspielen. */
+  /** Anführer: Antippen zeigt ihn groß, Luther kann ihn dort ausspielen. */
   function anfuehrerKnopf(seite, amZug) {
     const a = z.seiten[seite].anfuehrer;
     if (!a) return null;
     const k = K(a.id);
     const bild = kartenBild(k);
     return h('button', { type: 'button', class: `d-anfuehrer ${seite}${amZug ? ' bereit' : ''}`, 'aria-label': fuelle(t.duellAnfuehrerName, { name: k.titel }),
-      onclick: () => gross({ id: a.id, seite, uid: a.uid, anfuehrer: seite === 'luther' && amZug }) },
+      onclick: () => gross({ id: a.id, seite, uid: a.uid, anfuehrer: seite === 'luther' }) },
       h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }),
       h('span', { class: 'd-anfuehrer-wert', 'aria-hidden': 'true' }, String(k.staerke)));
   }
@@ -134,56 +190,85 @@ export function view(el, schritt, ctx, fertig) {
     Array.from({ length: R.siegeNoetig }, (_, i) => h('span', { class: `stein${i < n ? ' an' : ''}` })));
 
   function ereignisText(e) {
-    if (!e) return z.phase === 'tausch' ? fuelle(t.duellTausch, { n: z.tausch }) : '';
+    if (!e) return '';
     const wer = e.seite === 'kirche' ? Wer : t.duellDu;
     if (e.art === 'passe') return fuelle(t.duellPasst, { wer });
     let s = fuelle(e.seite === 'kirche' ? t.duellSpieltEr : t.duellSpieltDu, { wer, karte: name(e.id) });
     if (K(e.id).anfuehrer) s += ' ' + t.duellAnfuehrerGespielt;
-    if (e.treffer) s += ' ' + fuelle(t.duellTreffer, { karte: e.treffer.map(name).join(', ') });
+    if (e.treffer) s += ' ' + t.duellTrefferKurz;
     if (e.bann) s += ' ' + fuelle(t.duellBann, { karte: name(e.bann) });
     if (e.gezogen) s += ' ' + fuelle(e.seite === 'kirche' ? t.duellZiehtEr : t.duellZiehtDu, { n: e.gezogen });
     return s;
   }
 
+  /** Was hat der letzte Zug entkräftet, und wie ändert sich die Stärke? Wird einmal pro Zug aus den Werten davor berechnet. */
+  function konterZeilen(letzte) {
+    if (konter?.nr === z.log.length) return konter.zeilen;
+    const zeilen = [];
+    const kr = z.seiten.kirche.reihe;
+    if (letzte?.art === 'spiel' && letzte.treffer) for (const id of letzte.treffer) {
+      const inst = kr.find((x) => x.id === id);
+      zeilen.push(fuelle(t.duellKonter, { karte: name(letzte.id), gegen: name(id), vorher: (inst && werteVorher.get(inst.uid)) ?? K(id).staerke, jetzt: inst ? wert(z, 'kirche', inst) : 1 }));
+    }
+    if (letzte?.art === 'spiel' && letzte.seite === 'kirche') {
+      const inst = kr.find((x) => x.uid === letzte.uid);
+      const durch = inst && entkraeftet(z, 'kirche', inst);
+      if (durch) zeilen.push(fuelle(t.duellSofort, { gegen: name(letzte.id), karte: name(durch), vorher: K(letzte.id).staerke }));
+    }
+    konter = { nr: z.log.length, zeilen };
+    return zeilen;
+  }
+
   function zeichne() {
-    if (!lebt()) return;
+    if (!lebt()) { spielmodus(false); return; }
     clearTimeout(timer);
+    spielmodus(true);
+    setzeInhalt(el, h('p', { class: 'klein' }, t.duellImSpiel));
+    if (z.phase === 'tausch') { tauschAnsicht(); return; }
     const l = z.seiten.luther; const k = z.seiten.kirche;
     const letzte = z.log.at(-1);
     const letzteUid = letzte?.art === 'spiel' ? letzte.uid : null;
     const amZug = z.phase === 'spiel' && z.am === 'luther' && !banner && !tutErklaert();
-    const tausch = z.phase === 'tausch';
     const sl = summe(z, 'luther'); const sk = summe(z, 'kirche');
     const ziel = tutorial && !banner && z.am === 'luther' ? tut()?.ziel : null;
-    const leuchtet = (name) => (ziel === name ? ' tut-ziel' : '');
+    const leuchtet = (n) => (ziel === n ? ' tut-ziel' : '');
+    const pass = (s) => (s.gepasst ? h('span', { class: 'd-pass' }, t.duellGepasst) : null);
 
-    const kopfKirche = h('div', { class: `d-kopf kirche${z.am === 'kirche' && z.phase === 'spiel' ? ' dran' : ''}` },
+    // Oben: der Gegner, kompakt in einer Zeile
+    const kopf = h('div', { class: `d-kopf kirche${z.am === 'kirche' && z.phase === 'spiel' ? ' dran' : ''}` },
+      verlassenKnopf(),
       h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
-      h('div', { class: 'd-name' }, h('strong', {}, g.name), edelsteine(k.siege)),
+      h('div', { class: 'd-name' }, h('strong', {}, g.name), h('span', { class: 'd-runde' }, fuelle(t.duellRunde, { n: z.runde }))),
       anfuehrerKnopf('kirche', false),
       h('span', { class: 'd-handzahl', 'aria-label': fuelle(t.duellHandZahl, { n: k.hand.length }) },
         Array.from({ length: Math.min(k.hand.length, 10) }, () => h('span', { class: 'ruecken', 'aria-hidden': 'true' })), h('em', {}, String(k.hand.length))),
-      k.gepasst ? h('span', { class: 'd-pass' }, t.duellGepasst) : null,
-      h('span', { class: `d-summe${sk > sl ? ' vorne' : ''}${leuchtet('summen')}`, 'aria-label': fuelle(t.duellSumme, { n: sk }) }, String(sk)));
-    const kopfLuther = h('div', { class: `d-kopf luther${amZug ? ' dran' : ''}` },
-      h('div', { class: 'd-name' }, h('strong', {}, t.duellDuName), edelsteine(l.siege)),
-      anfuehrerKnopf('luther', amZug),
-      h('span', { class: 'd-runde' }, fuelle(t.duellRunde, { n: z.runde })),
-      l.gepasst ? h('span', { class: 'd-pass' }, t.duellGepasst) : null,
-      h('span', { class: `d-summe${sl > sk ? ' vorne' : ''}${leuchtet('summen')}`, 'aria-label': fuelle(t.duellSumme, { n: sl }) }, String(sl)),
-      tausch ? knopf(t.duellTauschFertig, () => { z = rules.beginne(z); zeichne(); }, 'haupt')
-        : knopf(t.duellPassen, () => { if (!tutErlaubt('passe')) return; z = rules.passe(z, 'luther'); tutWeiter(); weiter(); }, `warn${leuchtet('passen')}`, { disabled: !amZug || !tutErlaubt('passe') }));
+      pass(k), vollbildKnopf());
 
-    const status = h('p', { class: `d-status${letzte?.treffer ? ' treffer' : letzte?.bann ? ' bann' : ''}`, role: 'status' },
-      tausch ? fuelle(t.duellTausch, { n: z.tausch }) : banner ? '' : z.am === 'kirche' && z.phase === 'spiel' ? `${ereignisText(letzte)} ${fuelle(t.duellUeberlegt, { name: Wer })}`.trim()
-        : `${ereignisText(letzte)} ${amZug ? t.duellDeinZug : ''}`.trim());
+    const reihe = (seite, liste, beschriftung) => h('div', { class: `d-reihe ${seite}${leuchtet(`reihe-${seite}`)}`, 'aria-label': fuelle(t.duellReihe, { name: beschriftung }) },
+      h('div', { class: 'd-karten', style: `--n: ${Math.max(1, liste.length)}` }, liste.map((inst) => brettKarte(seite, inst, letzteUid))));
 
-    const hand = h('div', { class: 'd-hand' }, l.hand.map((inst) => {
-      const kk = K(inst.id);
-      const neu = tausch && !werteVorher.has(`h${inst.uid}`) && werteVorher.size > 0;
-      return kartenChip(kk, { klein: true, extra: `d-handkarte${neu ? ' neu' : ''}${leuchtet(inst.id)}`, aus: !(amZug || tausch) || (tutorial && !tutErlaubt(inst.id)),
-        onclick: () => { if (tausch) { if (z.tausch > 0) { z = rules.tausche(z, inst.uid); zeichne(); } } else gross({ id: inst.id, seite: 'luther', uid: inst.uid, hand: true }); } });
+    // Rechte Leiste: Summe und Rundensiege je Seite, dazwischen „Passen“
+    const stand = (seite, wert, vorne, siege, gepasst) => h('div', { class: `d-stand ${seite}` },
+      h('span', { class: `d-summe${vorne ? ' vorne' : ''}${leuchtet('summen')}`, 'aria-label': fuelle(t.duellSumme, { n: wert }) }, String(wert)),
+      edelsteine(siege), gepasst);
+    const passen = knopf(t.duellPassen, () => { if (!tutErlaubt('passe')) return; z = rules.passe(z, 'luther'); tutWeiter(); weiter(); },
+      `warn d-passen${leuchtet('passen')}`, { disabled: !amZug || !tutErlaubt('passe') });
+
+    // Mitte: letzter Zug und, falls es einen Konter gab, was er bewirkt
+    const zeilen = konterZeilen(letzte);
+    const text = banner ? '' : z.am === 'kirche' && z.phase === 'spiel' ? `${ereignisText(letzte)} ${fuelle(t.duellUeberlegt, { name: Wer })}`.trim()
+      : `${ereignisText(letzte)} ${amZug ? t.duellDeinZug : ''}`.trim();
+    const mitte = h('div', { class: `d-mitte${letzte?.treffer ? ' treffer' : letzte?.bann ? ' bann' : ''}`, role: 'status' },
+      h('span', { class: 'd-status' }, text), zeilen.map((x) => h('span', { class: 'd-konter' }, x)));
+
+    // Unten: deine Hand. Antippen öffnet immer die Großansicht, dort steht „Ausspielen“.
+    const hand = h('div', { class: 'd-hand', style: `--n: ${Math.max(1, l.hand.length)}` }, l.hand.map((inst) => {
+      const neu = handVorher.size > 0 && !handVorher.has(inst.uid);
+      const gesperrt = !amZug || (tutorial && !tutErlaubt(inst.id));
+      return kartenChip(K(inst.id), { klein: true, extra: `d-handkarte${neu ? ' neu' : ''}${gesperrt ? ' wartet' : ''}${leuchtet(inst.id)}`,
+        onclick: () => gross({ id: inst.id, seite: 'luther', uid: inst.uid, hand: true }) });
     }));
+    const du = h('div', { class: `d-du${amZug ? ' dran' : ''}` }, h('strong', {}, t.duellDu), anfuehrerKnopf('luther', amZug));
 
     // Erklärkasten der Übung
     const schritt = tutorial && !banner && z.am === 'luther' && z.phase === 'spiel' ? tut() : null;
@@ -192,21 +277,60 @@ export function view(el, schritt, ctx, fertig) {
       h('div', {}, h('strong', {}, g.name), h('p', {}, schritt.text),
         schritt.erwartet ? null : knopf(t.weiter, () => { tutWeiter(); zeichne(); }, 'haupt klein'))) : null;
 
-    setzeInhalt(el, h('div', { class: `d-tisch${banner ? ' mit-banner' : ''}${tutorial ? ' mit-tutorial' : ''}`, style: tischStil },
-      kopfKirche,
-      h('div', { class: `d-reihe kirche${leuchtet('reihe-kirche')}`, 'aria-label': fuelle(t.duellReihe, { name: g.name }) }, k.reihe.map((inst) => brettKarte('kirche', inst, letzteUid))),
-      status,
-      h('div', { class: `d-reihe luther${leuchtet('reihe-luther')}`, 'aria-label': fuelle(t.duellReihe, { name: t.duellDuName }) }, l.reihe.map((inst) => brettKarte('luther', inst, letzteUid))),
-      kopfLuther, hand,
+    setzeInhalt(buehne, h('div', { class: `d-tisch${banner ? ' mit-banner' : ''}${tutorial ? ' mit-tutorial' : ''}`, style: tischStil },
+      kopf,
+      reihe('kirche', k.reihe, g.name),
+      stand('kirche', sk, sk > sl, k.siege, null),
+      mitte, passen,
+      reihe('luther', l.reihe, t.duellDuName),
+      stand('luther', sl, sl > sk, l.siege, pass(l)),
+      hand, du,
       coach,
       banner ? bannerEl() : null));
 
     // Werte merken, damit Änderungen beim nächsten Zeichnen aufleuchten.
     werteVorher = new Map();
     for (const s of ['luther', 'kirche']) for (const inst of z.seiten[s].reihe) werteVorher.set(inst.uid, wert(z, s, inst));
-    for (const inst of l.hand) werteVorher.set(`h${inst.uid}`, 1);
+    handVorher = new Set(l.hand.map((x) => x.uid));
 
     if (!banner && z.phase === 'spiel' && z.am === 'kirche') timer = setTimeout(kiZug, PAUSE_KI);
+  }
+
+  // ---------- Kartentausch vor dem Start ----------
+  // Regel unverändert (rules.tausche): Jede getauschte Karte geht ins Deck, an ihre Stelle kommt eine neue.
+  // Hier wählt man zuerst aus und tauscht dann alle gewählten auf einmal.
+  function tauschAnsicht() {
+    const l = z.seiten.luther;
+    const moeglich = Math.min(z.tausch, l.deck.length);
+    tauschWahl = new Set([...tauschWahl].filter((uid) => l.hand.some((x) => x.uid === uid)));
+    const waehle = (uid) => { if (tauschWahl.has(uid)) tauschWahl.delete(uid); else if (tauschWahl.size < moeglich) tauschWahl.add(uid); tauschAnsicht(); };
+    const tauschen = () => {
+      const vorher = new Set(l.hand.map((x) => x.uid));
+      for (const uid of tauschWahl) z = rules.tausche(z, uid);
+      tauschWahl = new Set();
+      tauschNeu = new Set(z.seiten.luther.hand.map((x) => x.uid).filter((u) => !vorher.has(u)));
+      tauschAnsicht();
+    };
+    const los = () => { tauschWahl = new Set(); tauschNeu = new Set(); handVorher = new Set(); z = rules.beginne(z); zeichne(); };
+    const karten = l.hand.map((inst) => {
+      const kk = K(inst.id); const an = tauschWahl.has(inst.uid); const neu = tauschNeu.has(inst.uid);
+      return h('div', { class: `d-tausch-karte${an ? ' gewaehlt' : ''}${neu ? ' neu' : ''}` },
+        kartenChip(kk, { gewaehlt: an, extra: 'd-handkarte', aus: !an && tauschWahl.size >= moeglich, onclick: () => waehle(inst.uid) }),
+        an ? h('span', { class: 'd-tausch-marke', 'aria-hidden': 'true' }, `↻ ${t.tauschMarke}`) : neu ? h('span', { class: 'd-tausch-marke neu', 'aria-hidden': 'true' }, t.tauschNeu) : null,
+        h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: kk.titel }), onclick: () => gross({ id: inst.id }) }, 'i'));
+    });
+    setzeInhalt(buehne, h('div', { class: 'd-tisch d-tausch', style: tischStil },
+      h('div', { class: 'd-kopf kirche' }, verlassenKnopf(),
+        h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
+        h('div', { class: 'd-name' }, h('strong', {}, fuelle(t.duellGegen, { name: wen })), h('span', { class: 'd-runde' }, g.ort)), vollbildKnopf()),
+      h('div', { class: 'd-tausch-kopf' },
+        h('h2', {}, moeglich ? fuelle(t.tauschTitel, { n: tauschWahl.size, max: moeglich }) : t.tauschStarthand),
+        h('p', {}, t.tauschText),
+        h('p', { class: 'd-tausch-rest' }, moeglich ? fuelle(t.tauschRest, { n: z.tausch }) : t.tauschKeiner)),
+      h('div', { class: 'd-tausch-hand', style: `--n: ${Math.max(1, l.hand.length)}` }, karten),
+      h('div', { class: 'd-tausch-fuss' },
+        moeglich ? knopf(`${t.tauschAusfuehren} (${tauschWahl.size})`, tauschen, 'still', { disabled: !tauschWahl.size }) : null,
+        knopf(t.tauschLos, los, 'haupt'))));
   }
 
   function kiZug() {
@@ -241,12 +365,15 @@ export function view(el, schritt, ctx, fertig) {
     const k = K(id);
     const inst = seite && uid ? z?.seiten[seite].reihe.find((x) => x.uid === uid) : null;
     const jetzt = inst ? wert(z, seite, inst) : null;
-    const spielbar = (hand || anfuehrer) && z && tutErlaubt(id);
+    const darf = Boolean(z) && rules.kann(z, 'luther') && !banner && !tutErklaert();
+    const spielbar = (hand || anfuehrer) && darf && tutErlaubt(id);
+    const durch = inst ? entkraeftet(z, seite, inst) : null;
     const vorsprung = spielbar ? rules.vorsprungNach(z, 'luther', uid) : null;
     zeigeKartenDetail(k, {
       zusatz: [k.anfuehrer ? t.duellAnfuehrerRegel : null, jetzt != null && jetzt !== k.staerke ? fuelle(t.duellJetzt, { n: jetzt }) : null,
         spielbar ? fuelle(vorsprung > 0 ? t.duellDannVorne : t.duellDannHinten, { n: Math.abs(vorsprung) }) : null,
-        (hand || anfuehrer) && !spielbar ? t.tutorialAndereKarte : null],
+        durch ? fuelle(t.duellEntkraeftetDurch, { karte: name(durch) }) : null,
+        (hand || anfuehrer) && !spielbar ? (darf ? t.tutorialAndereKarte : t.duellWarte) : null],
       knoepfe: spielbar ? [knopf(t.duellAusspielen, () => { z = rules.spiele(z, 'luther', uid); tutWeiter(); weiter(); }, 'haupt')] : []
     });
   }
@@ -254,6 +381,7 @@ export function view(el, schritt, ctx, fertig) {
   // ---------- Ergebnis ----------
   function ergebnis() {
     const sieg = z.sieger === 'luther';
+    spielmodus(false);
     if (kamp) { kamp.ergebnis(z, deck, () => { vorbereitung(); }); return; }
     const r = ctx.duellEnde(g.id, sieg);
     if (r?.neu) neueKarte = r.neu;
