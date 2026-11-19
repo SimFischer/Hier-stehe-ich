@@ -192,6 +192,12 @@ export const assets = {
   'rose-5': { datei: 'rose-5.png', w: 300, h: 300 },
   'ruecken-kirche': { datei: 'ruecken-kirche.jpg', w: 400, h: 560 },
   'ruecken-luther': { datei: 'ruecken-luther.jpg', w: 400, h: 560 },
+  // Siegelbriefe („Hammer & Siegel“): Ebenen für die Öffnungsanimation (docs/ASSET-PROMPTS-5.md). Briefe teilen dieselbe Fläche, die Siegelhälften denselben Mittelpunkt.
+  'siegelbrief-zu': { datei: 'siegelbrief-zu.png', w: 800, h: 600 }, 'siegelbrief-auf': { datei: 'siegelbrief-auf.png', w: 800, h: 600 },
+  'siegelbrief-gross-zu': { datei: 'siegelbrief-gross-zu.png', w: 800, h: 600 }, 'siegelbrief-gross-auf': { datei: 'siegelbrief-gross-auf.png', w: 800, h: 600 },
+  'siegel-ganz': { datei: 'siegel-ganz.png', w: 300, h: 300 }, 'siegel-bruch-links': { datei: 'siegel-bruch-links.png', w: 300, h: 300 }, 'siegel-bruch-rechts': { datei: 'siegel-bruch-rechts.png', w: 300, h: 300 },
+  'siegel-licht': { datei: 'siegel-licht.png', w: 500, h: 500 },
+  'ruecken-selten': { datei: 'ruecken-selten.jpg', w: 400, h: 559 }, 'ruecken-episch': { datei: 'ruecken-episch.jpg', w: 400, h: 559 }, 'ruecken-legendaer': { datei: 'ruecken-legendaer.jpg', w: 400, h: 559 },
   'septembertestament': { datei: 'septembertestament.png', w: 250, h: 350 },
   'stadt-klein': { datei: 'stadt-klein.png', w: 200, h: 200 },
   'stadt-knoten': { datei: 'stadt-knoten.png', w: 200, h: 200 },

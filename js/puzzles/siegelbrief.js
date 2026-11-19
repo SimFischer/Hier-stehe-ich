@@ -6,10 +6,10 @@ import { kampagne } from '../../data/kampagne.js';
 import { K } from './duell-regeln.js';
 
 const PAUSE = (ms) => new Promise((r) => setTimeout(r, ms));
-const SIEGEL = '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="sbw" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#e2735a"/><stop offset="0.6" stop-color="#a6301c"/><stop offset="1" stop-color="#5c1409"/></radialGradient></defs>'
-  + '<path d="M50 4c7 0 9 6 15 8s12-1 15 5-2 11 0 17 8 9 6 16-8 7-10 13 1 12-5 16-11-1-17 2-8 8-15 8-9-6-15-8-12 1-15-5 2-11 0-17-8-9-6-16 8-7 10-13-1-12 5-16 11 1 17-2 8-8 15-8z" fill="url(#sbw)"/>'
-  + '<circle cx="50" cy="50" r="29" fill="none" stroke="#f0b49f" stroke-opacity="0.45" stroke-width="2"/>'
-  + '<path d="M36 64l18-18M50 40l10-10 8 8-10 10zM58 58l-6 6" stroke="#f6cdbf" stroke-opacity="0.75" stroke-width="5" stroke-linecap="round" fill="none"/></svg>';
+// Ebenen aus docs/ASSET-PROMPTS-5.md: Brief zu und auf auf derselben Fläche, darüber das Siegel (ganz, dann zwei Hälften
+// mit demselben Mittelpunkt), dahinter der Lichtschein. Lage des Siegels: siehe .sb-siegel-ebene in css/siegelbrief.css.
+const RUECKEN = { gewoehnlich: 'ruecken-luther', selten: 'ruecken-selten', episch: 'ruecken-episch', legendaer: 'ruecken-legendaer' };
+const vorladen = (namen) => namen.forEach((n) => { const d = document.createElement('div'); d.innerHTML = bildHtml(n); d.querySelector('img')?.decode?.().catch(() => {}); });
 
 /**
  * Öffnet die Briefe in stand.briefe nacheinander.
@@ -27,10 +27,16 @@ export function zeigeSiegelbriefe({ t, oeffne, anzahl, wachs, fertig }) {
     const { brief, karten, ausWachs, stand } = ergebnis;
     const g = kampagne.gegner[brief.gegner];
     const gross = brief.art === 'gross';
+    const brief_ = gross ? 'siegelbrief-gross' : 'siegelbrief';
+    vorladen([`${brief_}-auf`, 'siegel-bruch-links', 'siegel-bruch-rechts', 'siegel-licht', ...karten.map((k) => RUECKEN[K(k.id).seltenheit])]);
     const umschlag = h('button', { type: 'button', class: `sb-umschlag${gross ? ' gross' : ''}`, 'aria-label': t.kampBriefTippen },
-      h('span', { class: 'sb-klappe', 'aria-hidden': 'true' }),
-      h('span', { class: 'sb-siegel links', 'aria-hidden': 'true', html: SIEGEL }),
-      h('span', { class: 'sb-siegel rechts', 'aria-hidden': 'true', html: SIEGEL }));
+      h('span', { class: 'sb-licht', 'aria-hidden': 'true', html: bildHtml('siegel-licht') }),
+      h('span', { class: 'sb-ebene zu', 'aria-hidden': 'true', html: bildHtml(`${brief_}-zu`) }),
+      h('span', { class: 'sb-ebene auf', 'aria-hidden': 'true', html: bildHtml(`${brief_}-auf`) }),
+      h('span', { class: 'sb-siegel-ebene', 'aria-hidden': 'true' },
+        h('span', { class: 'sb-siegel ganz', html: bildHtml('siegel-ganz') }),
+        h('span', { class: 'sb-siegel links', html: bildHtml('siegel-bruch-links') }),
+        h('span', { class: 'sb-siegel rechts', html: bildHtml('siegel-bruch-rechts') })));
     setzeInhalt(buehne,
       h('div', { class: 'sb-kopf' },
         h('p', { class: 'kicker' }, gross ? t.kampBriefGross : t.kampBrief),
@@ -42,7 +48,7 @@ export function zeigeSiegelbriefe({ t, oeffne, anzahl, wachs, fertig }) {
       if (umschlag.classList.contains('auf')) return;
       umschlag.classList.add('auf');
       const ruhig = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!ruhig) await PAUSE(900);
+      if (!ruhig) await PAUSE(1500);
       kartenZeigen(brief, karten, ausWachs, stand);
     });
   }
@@ -52,8 +58,9 @@ export function zeigeSiegelbriefe({ t, oeffne, anzahl, wachs, fertig }) {
     const plaetze = karten.map((k, i) => {
       const karte = K(k.id);
       const platz = h('button', { type: 'button', class: `sb-karte rar-${karte.seltenheit}`, style: `--i:${i}`, 'aria-label': `${t.kampKarteVerdeckt} ${t.seltenheit[karte.seltenheit]}` },
+        ['episch', 'legendaer'].includes(karte.seltenheit) ? h('span', { class: 'sb-karten-licht', 'aria-hidden': 'true', html: bildHtml('siegel-licht') }) : null,
         h('span', { class: 'sb-innen' },
-          h('span', { class: 'sb-ruecken', 'aria-hidden': 'true', html: bildHtml('ruecken-luther') }),
+          h('span', { class: 'sb-ruecken', 'aria-hidden': 'true', html: bildHtml(RUECKEN[karte.seltenheit] || 'ruecken-luther') }),
           h('span', { class: 'sb-vorne' }, kartenChip(karte, {}),
             h('span', { class: `sb-marke${k.neu ? ' neu' : ''}` }, k.neu ? t.kampNeu : t.kampDoppelt))));
       platz.addEventListener('click', () => {

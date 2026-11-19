@@ -9,27 +9,38 @@
 .sb-hinweis { margin: 4px 0 0; color: var(--pergament); font-size: var(--text); }
 .sb-mitte { display: grid; place-items: center; min-height: 0; }
 
-/* Der Brief */
-.sb-umschlag { position: relative; width: min(64vw, 520px); aspect-ratio: 3 / 2; padding: 0; border: 0; cursor: pointer; border-radius: 6px;
-  background: radial-gradient(ellipse at 30% 25%, #fdf7e6, #efdfb8 70%, #d9c08a); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(120, 80, 30, 0.3);
-  animation: briefSchweben 2.4s ease-in-out infinite; }
-.sb-umschlag.gross { background: radial-gradient(ellipse at 30% 25%, #fff6d8, #f0d58a 70%, #c99a3a); box-shadow: 0 0 0 4px #f3d27a, 0 0 40px rgba(243, 200, 74, 0.6), 0 18px 40px rgba(0, 0, 0, 0.7); }
-@keyframes briefSchweben { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
-.sb-klappe { position: absolute; left: 0; right: 0; top: 0; height: 58%; transform-origin: top center; clip-path: polygon(0 0, 100% 0, 50% 100%);
-  background: linear-gradient(#efe0b8, #d9c08a); filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25)); transition: transform 0.6s ease-in 0.25s; }
-.sb-siegel { position: absolute; left: 50%; top: 58%; width: 32%; aspect-ratio: 1; transform: translate(-50%, -50%); transition: transform 0.6s cubic-bezier(0.3, 0, 0.6, 1), opacity 0.6s; }
-.sb-siegel svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
-.sb-siegel.links { clip-path: polygon(0 0, 52% 0, 44% 35%, 56% 60%, 46% 100%, 0 100%); }
-.sb-siegel.rechts { clip-path: polygon(52% 0, 100% 0, 100% 100%, 46% 100%, 56% 60%, 44% 35%); }
-.sb-umschlag:not(.auf) .sb-siegel { animation: siegelPuls 1.4s ease-in-out infinite; }
-@keyframes siegelPuls { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
-.sb-umschlag.auf { animation: none; }
-.sb-umschlag.auf .sb-siegel.links { transform: translate(-95%, -20%) rotate(-35deg); opacity: 0; }
-.sb-umschlag.auf .sb-siegel.rechts { transform: translate(-5%, -20%) rotate(35deg); opacity: 0; }
-.sb-umschlag.auf .sb-klappe { transform: rotateX(180deg); }
-.sb-umschlag.auf::after { content: ""; position: absolute; inset: -40%; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 240, 190, 0.9), rgba(255, 220, 120, 0) 60%); animation: lichtBlitz 0.9s ease-out forwards; }
-@keyframes lichtBlitz { from { opacity: 0; transform: scale(0.3); } 40% { opacity: 1; } to { opacity: 0; transform: scale(1.2); } }
+/* Der Brief: Ebenen übereinander (Fläche 4:3 wie die Bilder). Das Siegel liegt dort, wo es im geschlossenen Brief gemalt ist
+   (Mittelpunkt 49,6 % / 65,3 %, Breite der Siegelfläche 26,25 % der Briefbreite, aus Ebenenlayout.json). */
+.sb-umschlag { position: relative; width: min(72vw, 640px, calc((100vh - 260px) * 4 / 3)); aspect-ratio: 4 / 3; padding: 0; border: 0; background: none; cursor: pointer;
+  animation: briefSchweben 2.6s ease-in-out infinite; -webkit-tap-highlight-color: transparent; }
+@keyframes briefSchweben { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+.sb-ebene, .sb-licht { position: absolute; inset: 0; pointer-events: none; }
+.sb-ebene img, .sb-siegel img, .sb-licht img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.sb-ebene.zu { filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.6)); }
+.sb-ebene.auf { opacity: 0; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.6)); }
+.sb-siegel-ebene { position: absolute; left: 49.58%; top: 65.33%; width: 26.25%; aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; }
+.sb-siegel { position: absolute; inset: 0; }
+.sb-siegel.ganz { animation: siegelPuls 1.4s ease-in-out infinite; }
+@keyframes siegelPuls { 0%, 100% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 0 rgba(255, 120, 80, 0)); } 50% { transform: scale(1.07); filter: brightness(1.15) drop-shadow(0 0 14px rgba(255, 140, 90, 0.8)); } }
+.sb-siegel.links, .sb-siegel.rechts { opacity: 0; }
+.sb-licht { inset: -25% -10%; opacity: 0; transform: scale(0.3); }
+.sb-umschlag.gross .sb-siegel.ganz { animation-duration: 1.1s; }
+.sb-umschlag:hover .sb-siegel.ganz, .sb-umschlag:focus-visible .sb-siegel.ganz { filter: brightness(1.2); }
+
+/* Aufbrechen: Siegel teilt sich, Hälften fallen weg, der Brief geht auf, Licht strömt heraus */
+.sb-umschlag.auf { animation: briefRuck 0.5s ease-out forwards; }
+@keyframes briefRuck { 0% { transform: scale(1); } 25% { transform: scale(0.96) rotate(-1.5deg); } 60% { transform: scale(1.04) rotate(0.5deg); } 100% { transform: scale(1.02); } }
+.sb-umschlag.auf .sb-siegel.ganz { animation: none; opacity: 0; }
+.sb-umschlag.auf .sb-siegel.links { opacity: 1; animation: haelfteLinks 0.9s cubic-bezier(0.3, 0, 0.7, 1) forwards; }
+.sb-umschlag.auf .sb-siegel.rechts { opacity: 1; animation: haelfteRechts 0.9s cubic-bezier(0.3, 0, 0.7, 1) forwards; }
+@keyframes haelfteLinks { 0% { transform: none; } 20% { transform: translate(-6%, -2%) rotate(-6deg); } 100% { transform: translate(-90%, 140%) rotate(-55deg); opacity: 0; } }
+@keyframes haelfteRechts { 0% { transform: none; } 20% { transform: translate(6%, -2%) rotate(6deg); } 100% { transform: translate(90%, 140%) rotate(55deg); opacity: 0; } }
+.sb-umschlag.auf .sb-ebene.zu { animation: ausblenden 0.35s ease-in 0.25s forwards; }
+.sb-umschlag.auf .sb-ebene.auf { animation: einblendenAuf 0.35s ease-out 0.25s forwards; }
+@keyframes ausblenden { to { opacity: 0; } }
+@keyframes einblendenAuf { to { opacity: 1; } }
+.sb-umschlag.auf .sb-licht { animation: lichtAuf 1.4s cubic-bezier(0.2, 0.8, 0.3, 1) 0.35s forwards; }
+@keyframes lichtAuf { 0% { opacity: 0; transform: scale(0.3) rotate(0); } 40% { opacity: 1; } 100% { opacity: 0.85; transform: scale(1.15) rotate(40deg); } }
 
 /* Die Karten */
 .sb-karten { container-type: size; width: 100%; display: flex; align-items: center; justify-content: center; gap: clamp(10px, 2vw, 24px); min-height: 0; perspective: 1400px; }
@@ -76,6 +87,21 @@
 .mini-brief.gross { background: linear-gradient(#fff6d8, #f0d58a); box-shadow: 0 0 0 2px #f3d27a; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sb-umschlag, .sb-karte, .sb-umschlag:not(.auf) .sb-siegel, .sb-karte .sb-ruecken, .kamp-brief-knopf, .sb-marke.neu { animation: none !important; }
-  .sb-innen, .sb-siegel, .sb-klappe { transition: none; }
+  .sb-umschlag, .sb-karte, .sb-siegel, .sb-karte .sb-ruecken, .kamp-brief-knopf, .sb-marke.neu, .sb-licht, .sb-karten-licht img { animation: none !important; }
+  .sb-innen { transition: none; }
 }
+
+/* Lichtschein hinter epischen und legendären Karten, sobald sie aufgedeckt sind */
+.sb-karten-licht { position: absolute; inset: -35%; z-index: -1; opacity: 0; transform: scale(0.4); pointer-events: none; transition: opacity 0.4s 0.3s, transform 0.6s 0.3s; }
+.sb-karten-licht img { width: 100%; height: 100%; display: block; animation: lichtDreh 9s linear infinite; }
+@keyframes lichtDreh { to { transform: rotate(360deg); } }
+.sb-karte.offen .sb-karten-licht { opacity: 0.75; transform: scale(1); }
+.sb-karte.rar-legendaer.offen .sb-karten-licht { opacity: 1; }
+.sb-karte.rar-episch .sb-karten-licht img { filter: hue-rotate(230deg) saturate(1.2); }
+.sb-karte { isolation: isolate; }
+@media (prefers-reduced-motion: reduce) {
+  .sb-umschlag.auf .sb-siegel, .sb-umschlag.auf .sb-ebene.zu { opacity: 0; }
+  .sb-umschlag.auf .sb-ebene.auf, .sb-umschlag.auf .sb-licht { opacity: 1; transform: none; }
+}
+/* Großer Brief: das gemalte Siegel ist etwas kleiner und dunkler (gemessen: 158 statt 170 Pixel bei 800 Breite) */
+.sb-umschlag.gross .sb-siegel-ebene { left: 49.75%; width: 24.4%; filter: brightness(0.8) saturate(1.1); }
