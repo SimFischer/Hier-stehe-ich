@@ -62,7 +62,7 @@ export const t = {
   waageBild: 'Eine Waage. Links die Last der Sünden, rechts die guten Werke.', waageLast: 'Last der Sünden', waageLeer: 'noch leer', waageWerke: 'Gute Werke', waageNeueLast: 'Neue Last:', waageStart: 'Tippe auf ein Werk, um es in die rechte Schale zu legen.',
   standStrophe: 'Strophe {n}:', standPruefen: 'So stelle ich es', standNaechste: 'Nächste Strophe',
   auswahlStand: '{n} von {von} gewählt', auswahlMitnehmen: 'Mitnehmen', auswahlZuruecklegen: 'Zurücklegen', auswahlVoll: 'Du hast schon {n} gewählt. Leg erst eine andere Karte zurück.', erinnertJa: 'Richtig erinnert. „{titel}“ liegt jetzt im Beutel.', erinnertNein: 'Das war es nicht. Überlege noch einmal.',
-  versNr: 'Vers {n} von {von}', ratFragen: 'Frag mindestens {n} Leute, wie das für sie klingt.', uebWaehle: 'Welche Fassung versteht jeder?', uebGut: 'Das versteht jeder und bleibt genau.',
+  versNr: 'Vers {n} von {von}', ratFragen: 'Frag mindestens {n} Leute, wie das für sie klingt.', uebWaehle: 'Welche Fassung versteht jeder?', uebNochFragen: 'Frag erst noch {n}.', uebGut: 'Das versteht jeder und bleibt genau.',
   // Marktplatz
   marktRunde: 'Runde {n} von {von}', marktGespraeche: 'Gespräche übrig: {n}', marktMuenzen: 'Münzen im Kasten: {n}', marktNachd: 'Nachdenklich: {n} von {von}',
   marktKasten: 'Ablasskasten', marktNachdenklich: 'ist nachdenklich', marktGekauft: 'hat gekauft',

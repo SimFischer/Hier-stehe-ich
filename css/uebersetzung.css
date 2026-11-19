@@ -1,0 +1,53 @@
+/* Übersetzungswerkstatt (Station 8, Wartburg): links das alte Blatt, rechts Leute fragen und Fassung wählen.
+   Die Werkstatt ist ein Größencontainer: Schrift und Figuren wachsen mit der Fläche (iPad bis großer Bildschirm). */
+.art-uebersetzung { gap: var(--ab-2); }
+.ue-werkstatt { container-type: size; flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(12px, 2.4cqw, 32px); }
+
+/* Links: das alte Blatt auf Pergament, darunter Luthers Fassung */
+.ue-links { display: flex; flex-direction: column; justify-content: center; gap: clamp(10px, 2.5cqh, 24px); min-height: 0; }
+.ue-blatt { position: relative; margin: 0; padding: clamp(14px, 3cqh, 32px) clamp(16px, 2.6cqw, 36px); border-radius: 6px;
+  background: radial-gradient(ellipse at 30% 20%, #fdf7e6, #f1e2bd 70%, #e3cd98); border: 3px solid #3a2717;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 0 22px rgba(120, 80, 30, 0.25); }
+.ue-blatt cite { display: block; margin-bottom: 6px; font-style: normal; font-variant: small-caps; font-weight: bold; color: var(--rot-dunkel); font-size: clamp(0.9375rem, min(2.6cqh, 1.3cqw), 1.3rem); }
+.ue-blatt p { margin: 0; font-size: clamp(1.25rem, min(5cqh, 2.4cqw), 2.4rem); line-height: 1.3; }
+.ue-blatt.alt { transform: rotate(-0.6deg); }
+.ue-blatt.alt p { font-style: italic; }
+.ue-blatt.luther { border-color: var(--gruen); background: radial-gradient(ellipse at 30% 20%, #f4faef, #dbe7d6); animation: einblenden 0.5s ease-out; }
+.ue-blatt.luther p { font-weight: bold; color: #24402c; }
+
+/* Rechts: zwei Schritte */
+.ue-rechts { display: flex; flex-direction: column; gap: clamp(6px, 1.6cqh, 14px); min-height: 0; }
+.ue-schritt { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin: 0; font-weight: bold; font-size: clamp(1rem, min(3.2cqh, 1.6cqw), 1.5rem); color: var(--tinte-weich); }
+.ue-schritt.jetzt { color: var(--tinte); }
+.ue-schritt em { font-weight: normal; font-size: 0.85em; color: var(--rot-dunkel); }
+.ue-nr { display: grid; place-items: center; flex: none; width: 1.7em; height: 1.7em; border-radius: 50%; background: #c9b48a; color: #fff; font-size: 0.9em; }
+.ue-schritt.jetzt .ue-nr { background: var(--rot); box-shadow: 0 0 0 3px rgba(166, 67, 46, 0.25); }
+.ue-schritt.erledigt .ue-nr { background: var(--gruen); }
+
+/* Ratgeber: große Figuren mit Namen */
+.ue-rechts .ratgeber { justify-content: flex-start; gap: clamp(8px, 1.6cqw, 20px); }
+.ue-rechts .ratgeber-knopf { flex: 1; flex-direction: column; justify-content: flex-end; gap: 4px; padding: 6px 8px; min-height: 0; border-radius: 10px; }
+.ue-rechts .ratgeber-knopf .figur, .ue-rechts .ratgeber-knopf .figur:has(.figurbild) { width: auto; height: clamp(64px, 20cqh, 190px); aspect-ratio: auto; }
+.ue-rechts .ratgeber-knopf .figur img, .ue-rechts .ratgeber-knopf .figur svg { height: 100%; width: auto; }
+.ue-name { font-weight: bold; font-size: clamp(0.9375rem, min(2.8cqh, 1.4cqw), 1.3rem); }
+.ue-rechts .ratgeber-knopf.gefragt { background: var(--gruen-hell); }
+.ue-rechts .ratgeber-knopf.gefragt .ue-name::before { content: "✓ "; color: var(--gruen); }
+
+/* Sprechblase */
+.ue-rechts .stimme { position: relative; min-height: 2.6em; margin: 0; padding: 8px 14px; border-radius: 12px; text-align: left; font-size: clamp(1rem, min(3.2cqh, 1.6cqw), 1.5rem); line-height: 1.3; }
+.ue-rechts .stimme.spricht { background: #fffaf0; border: 2px solid #3a2717; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); animation: einblenden 0.3s ease-out; }
+.ue-rechts .stimme.spricht::before { content: ""; position: absolute; top: -10px; left: 15%; width: 16px; height: 16px; background: #fffaf0; border-left: 2px solid #3a2717; border-top: 2px solid #3a2717; transform: rotate(45deg); }
+
+/* Fassungen zum Wählen */
+.ue-rechts .optionen { gap: clamp(6px, 1.4cqh, 12px); }
+.ue-rechts .option { padding: clamp(8px, 2cqh, 16px) clamp(12px, 1.6cqw, 20px); font-size: clamp(1.0625rem, min(3.4cqh, 1.7cqw), 1.6rem); line-height: 1.25; }
+.ue-rechts .optionen.wartet .option:disabled { opacity: 0.55; }
+
+/* Große Bildschirme (Werkstatt ab 600 px hoch): Figuren und Text noch größer. Das iPad bleibt darunter. */
+@container (min-height: 600px) {
+  .ue-rechts .ratgeber-knopf .figur, .ue-rechts .ratgeber-knopf .figur:has(.figurbild) { height: clamp(64px, 26cqh, 240px); }
+  .ue-rechts .option { font-size: clamp(1.0625rem, min(4cqh, 1.9cqw), 1.9rem); padding: 2.2cqh 1.8cqw; }
+  .ue-rechts .stimme { font-size: clamp(1rem, min(3.8cqh, 1.8cqw), 1.75rem); }
+  .ue-schritt { font-size: clamp(1rem, min(3.6cqh, 1.8cqw), 1.7rem); }
+  .ue-blatt p { font-size: clamp(1.25rem, min(5.6cqh, 2.6cqw), 2.8rem); }
+}
