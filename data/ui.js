@@ -28,7 +28,8 @@ export const t = {
   karteNochNicht: 'Die Karte bekommst du vom Meister. Sprich mit ihm und sieh dir den Setzkasten an.',
   ortFertig: 'erledigt', ortOffen: 'jetzt offen', ortZu: 'noch verschlossen',
   platteTitel: 'Druckplatte {n} von {von}', zurKarte: 'Zur Karte', zurDruckerei: 'Zur Druckerei',
-  endeTitel: 'Geschafft!', endeText: 'Du hast Luthers Weg von 1505 bis 1522 nachgezeichnet. Zeigt euch eure Flugschriften und vergleicht: Welche Gründe habt ihr gewählt?',
+  endeTitel: 'Geschafft!', endeGlueckwunsch: 'Herzlichen Glückwunsch!', endeFrei: 'Neu freigeschaltet', endeJetztSpielen: 'Jetzt spielen', endeAnsehen: 'Ansehen',
+  endeBonusText: 'Jetzt sind alle offen: {titel}.', endeText: 'Du hast Luthers Weg von 1505 bis 1522 nachgezeichnet. Zeigt euch eure Flugschriften und vergleicht: Welche Gründe habt ihr gewählt?',
   beutelLeer: 'Dein Beutel ist noch leer. Karten bekommst du an den Stationen.',
   albumStand: '{n} von {von} Karten gesammelt', albumFehlt: 'Noch nicht gefunden', albumWo: 'Station {nr}',
   kartenStaerke: 'Stärke {n}', kartenInfo: '{titel} groß ansehen', und: ' und ', zurueck: 'Zurück',
@@ -125,5 +126,5 @@ export const t = {
   duellSiegKurz: 'gewonnen', duellNeueKarte: 'Neue Karte: {titel}',
   // Flugschrift
   flugSchlagzeile: 'Schlagzeile', flugKarten: 'Kernaussagen ({n} von {von})', flugBild: 'Bild',
-  flugDrucken: 'Drucken / PDF', flugTeilen: 'Als Bild teilen', flugFertig: 'Fertig', flugDatei: 'flugschrift.png', flugGespeichert: 'Das Bild wurde gespeichert.'
+  flugFertig: 'In die Presse!', flugGedrucktKicker: 'Neue Zeitung aus Wittenberg', flugGedruckt: 'Deine Flugschrift ist gedruckt!', flugGedrucktText: 'Hunderte Abzüge gehen heute noch auf die Märkte. Morgen redet die ganze Stadt davon.'
 };

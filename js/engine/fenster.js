@@ -187,6 +187,7 @@ export function zeigeAbschluss(ids) {
   const st = station(ids[ids.length - 1]);
   const neu = cards.filter((k) => (st.karten || []).includes(k.id));
   const ende = st.id === 'f';
+  if (ende) { zeigeEnde(st); return; }
   const dlg = fenster(ende ? t.endeTitel : st.platte ? fuelle(t.platteTitel, { n: platten(store.state).filter((p) => p.da).length, von: platten(store.state).length }) : st.name,
     h('div', { class: 'abschluss' },
       st.platte ? h('div', { class: 'platte-gross', html: bildHtml(st.bild) }, h('strong', {}, st.platte)) : null,
@@ -195,6 +196,24 @@ export function zeigeAbschluss(ids) {
       ende ? h('p', {}, t.endeText) : null,
       h('div', { class: 'reihe' }, ende ? knopf(t.schliessen, () => dlg.close(), 'haupt')
         : knopf(st.id === 's7' ? t.zurDruckerei : t.zurKarte, () => { dlg.close(); if (st.id === 's7') zeigeSzene(game.start); else zeigeKarte(); }, 'haupt'))));
+}
+
+/** Ende des Spiels: Glückwunsch, alle Platten, und was jetzt neu offen ist (Kartenspiel und Bonusspiele) zum direkten Antippen. */
+function zeigeEnde(st) {
+  const s = store.state;
+  const kamp = disputation.raetsel.kampagne;
+  const offeneBonus = Object.values(bonus).filter((b) => s.done.includes(b.nach));
+  const dlg = fenster(t.endeTitel, h('div', { class: 'ende-fest' },
+    h('h2', { class: 'ende-titel' }, t.endeGlueckwunsch),
+    h('div', { class: 'ende-platten', 'aria-label': t.platten }, platten(s).map((p) => h('span', { class: 'platte da mit-bild', title: p.platte, html: bildHtml(p.bild) }))),
+    h('p', {}, rich(st.abschluss), ' ', t.endeText),
+    h('div', { class: 'ende-frei' },
+      h('h3', {}, t.endeFrei),
+      h('div', { class: 'kacheln' },
+        kachel({ bild: kamp.bild, bildGegner: kamp.bildGegner, titel: t.dispSpielImSpiel, kurz: kamp.kurz, offen: true, status: t.endeJetztSpielen,
+          onclick: () => { dlg.close(); oeffneRaetsel(kamp.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); } }),
+        kachel({ bild: bonus.gottesdienst.bild, titel: t.bonusTitel, kurz: fuelle(t.endeBonusText, { titel: offeneBonus.map((b) => b.titel).join(', ') }), offen: true, status: t.endeAnsehen,
+          onclick: () => { dlg.close(); zeigeBonus(); } })))), { breit: true });
 }
 
 export function zeigeStart() {

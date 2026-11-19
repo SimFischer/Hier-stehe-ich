@@ -1,0 +1,78 @@
+/* Finale: Die Flugschrift läuft durch die Presse (js/puzzles/flugschrift.js, druckeAus) und das Ende des Spiels
+   mit Glückwunsch und Freischaltungen (js/engine/fenster.js, zeigeAbschluss). Alles groß, für das iPad gedacht. */
+
+/* ---------- Die Presse ---------- */
+.pr-buehne { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 45%, #5a3d2b 0%, #2a1c14 60%, #140d09 100%); color: var(--pergament); animation: einblenden 0.35s ease-out; }
+.pr-presse { position: relative; width: min(62vw, 560px); height: min(84vh, 640px); transition: opacity 0.5s, transform 0.5s; }
+.pr-presse > span { position: absolute; display: block; }
+.holz, .pr-balken, .pr-pfosten, .pr-tiegel { background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.12) 0 3px, transparent 3px 14px), linear-gradient(#7a5134, #4a2f1c); border: 3px solid #1f140c; border-radius: 6px; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6); }
+.pr-balken { top: 0; left: 0; right: 0; height: 12%; }
+.pr-pfosten { top: 0; bottom: 0; width: 11%; }
+.pr-pfosten.links { left: 0; } .pr-pfosten.rechts { right: 0; }
+.pr-spindel { top: 11%; left: 50%; width: 7%; height: 20%; transform: translateX(-50%); border-radius: 4px;
+  background: repeating-linear-gradient(180deg, #b9b2a6 0 6px, #6d6760 6px 10px); border: 2px solid #2b2826; }
+.pr-hebel { top: 20%; left: 50%; width: 46%; height: 2.4%; margin-left: -2%; border-radius: 6px; background: linear-gradient(#9a948c, #4d4842); border: 2px solid #2b2826;
+  transform-origin: 4% 50%; transition: transform 0.6s cubic-bezier(0.5, 0, 0.7, 1); }
+.pr-tiegel { top: 28%; left: 15%; right: 15%; height: 9%; transition: top 0.6s cubic-bezier(0.6, 0, 0.9, 0.6); z-index: 2; }
+.pr-bett { left: 13%; right: 13%; bottom: 5%; height: 56%; display: grid; place-items: center; border-radius: 6px;
+  background: linear-gradient(#3a2717, #24180f); border: 3px solid #1f140c; box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8); }
+.pr-bogen { height: 94%; aspect-ratio: 5 / 7; container-type: inline-size; }
+.pr-bogen .flugblatt { height: 100%; max-height: none; background: #fbf6e8; }
+.pr-bogen .flugblatt > * { opacity: 0; transition: opacity 0.35s; }
+.pr-buehne.runter .pr-tiegel { top: 39%; }
+.pr-buehne.runter .pr-hebel { transform: rotate(28deg); }
+.pr-buehne.gedruckt .pr-bogen .flugblatt > * { opacity: 1; }
+.pr-buehne.gedruckt .pr-presse { animation: rumms 0.35s ease-out; }
+@keyframes rumms { 0% { transform: translateY(0); } 30% { transform: translateY(6px); } 60% { transform: translateY(-3px); } 100% { transform: none; } }
+
+/* Abzüge fliegen hinaus */
+.pr-abzuege { position: absolute; inset: 0; pointer-events: none; }
+.pr-abzug { position: absolute; left: 50%; top: 55%; width: 70px; aspect-ratio: 5 / 7; margin: -50px 0 0 -35px; border-radius: 3px;
+  background: repeating-linear-gradient(180deg, transparent 0 10px, rgba(31, 26, 23, 0.35) 10px 12px) 10px 22px / 50px 70px no-repeat, #fbf6e8;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); animation: abzug 1.1s cubic-bezier(0.2, 0.7, 0.3, 1) var(--v) both; }
+@keyframes abzug { from { transform: translate(0, 0) rotate(0) scale(0.6); opacity: 1; } 80% { opacity: 1; } to { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1); opacity: 0; } }
+
+/* Ergebnis: die eigene Flugschrift groß in der Mitte */
+.pr-buehne.ende .pr-presse { opacity: 0; transform: scale(0.85) translateY(10%); }
+.pr-ergebnis { position: absolute; inset: 0; display: grid; grid-template-columns: auto minmax(0, 26em); align-items: center; justify-content: center; gap: clamp(16px, 4vw, 56px);
+  padding: max(16px, env(safe-area-inset-top)) 24px max(16px, env(safe-area-inset-bottom)); }
+.pr-gross { height: min(86vh, 900px); aspect-ratio: 5 / 7; container-type: inline-size; animation: herauf 0.7s cubic-bezier(0.2, 0.8, 0.3, 1.15) both; }
+@keyframes herauf { from { transform: translateY(30%) scale(0.6) rotate(-6deg); opacity: 0; } to { transform: rotate(-1.5deg); opacity: 1; } }
+.pr-gross .flugblatt { height: 100%; max-height: none; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7); }
+.pr-text { display: grid; gap: var(--ab-3); justify-items: start; animation: einblenden 0.6s 0.4s both; }
+.pr-text h2 { margin: 0; color: #ffe08a; font-size: clamp(1.8rem, 3.6vw, 2.8rem); line-height: 1.1; text-shadow: 0 2px 0 #000; }
+.pr-text .kicker { color: var(--ocker-hell); margin: 0; }
+.pr-text p { margin: 0; font-size: var(--text); }
+
+/* Schrift der Flugschrift wächst mit dem Blatt (Presse und große Ansicht) */
+.pr-bogen .flugblatt, .pr-gross .flugblatt { gap: 2cqw; padding: 6cqw; color: var(--tinte); }
+.pr-bogen .flugblatt h3, .pr-gross .flugblatt h3 { font-size: 8.5cqw; }
+.pr-bogen .flugblatt ul, .pr-gross .flugblatt ul { font-size: 4.4cqw; gap: 1.4cqw; }
+.pr-bogen .flugblatt .fb-kopf, .pr-bogen .flugblatt .fb-fuss, .pr-gross .flugblatt .fb-kopf, .pr-gross .flugblatt .fb-fuss { font-size: 3.4cqw; }
+.pr-bogen .fb-bild, .pr-gross .fb-bild { width: 42%; }
+
+/* ---------- Ende des Spiels: Glückwunsch und Freischaltungen ---------- */
+.ende-fest { display: grid; gap: var(--ab-3); text-align: center; }
+.ende-fest h2.ende-titel { margin: 0; font-size: clamp(2.2rem, 5vw, 3.4rem); color: var(--rot-dunkel); font-variant: small-caps; animation: zoom 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.ende-platten { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.ende-platten .platte { width: 54px; height: 54px; animation: plattePop 0.5s ease-out both; }
+@keyframes plattePop { from { transform: scale(1.8); opacity: 0; } to { transform: none; opacity: 1; } }
+.ende-platten .platte:nth-child(2) { animation-delay: 0.1s; } .ende-platten .platte:nth-child(3) { animation-delay: 0.2s; } .ende-platten .platte:nth-child(4) { animation-delay: 0.3s; }
+.ende-platten .platte:nth-child(5) { animation-delay: 0.4s; } .ende-platten .platte:nth-child(6) { animation-delay: 0.5s; } .ende-platten .platte:nth-child(7) { animation-delay: 0.6s; }
+.ende-frei { display: grid; gap: var(--ab-2); text-align: left; padding: var(--ab-3); border-radius: 10px; background: linear-gradient(#3b2a1d, #2a1c14); color: var(--pergament); border: 2px solid var(--ocker); }
+.ende-frei h3 { margin: 0; color: #ffe08a; font-variant: small-caps; text-align: center; font-size: var(--text-gross); }
+.ende-frei .kacheln { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ende-frei .kachel .kachel-text { color: var(--tinte); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pr-buehne, .pr-gross, .pr-text, .pr-abzug, .ende-fest h2.ende-titel, .ende-platten .platte { animation: none; }
+  .pr-tiegel, .pr-hebel, .pr-presse { transition: none; }
+}
+/* Auf dem iPad ohne Scrollen: kompaktere Abstände, flachere Kacheln */
+.ende-fest { gap: var(--ab-2); }
+.ende-fest h2.ende-titel { font-size: clamp(1.9rem, 4vw, 2.8rem); }
+.ende-platten .platte { width: 46px; height: 46px; }
+.ende-fest > p { margin: 0; }
+.ende-frei .kachel-bild, .ende-frei .kachel.gross .duell-bild, .ende-frei .kachel-bild.duell-bild { min-height: 0; height: clamp(80px, 15vh, 140px); }
+.ende-frei .kachel-text span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
