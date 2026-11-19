@@ -219,17 +219,49 @@ export const puzzles = {
   leipzig: {
     id: 'leipzig', station: 'sl', titel: 'Die Leipziger Disputation', lernziel: [5],
     schritte: [
-      { art: 'duell', gegner: 'eck', titel: 'Luther gegen Eck', szene: 'leipzig',
+      // „Ecks Falle“: Eck treibt Luther mit Fangfragen vom Papst über die Konzilien bis zu Jan Hus.
+      // Jede ehrliche Antwort bringt Luther einen Schritt tiefer in die Falle. Ausweichen lässt Eck nicht gelten,
+      // Nachgeben hieße, die eigene Lehre aufzugeben. Die Fragen sind für das Spiel zusammengefasst, keine Zitate.
+      { art: 'falle', titel: 'Ecks Falle', szene: 'leipzig',
+        anweisung: 'Leipzig, Sommer 1519. Johann Eck will Luther vor allen Zuhörern als Ketzer entlarven. Dafür stellt er Fangfragen. Wähle Luthers Antwort und schau, wohin sie ihn führt.',
+        stationen: ['Ablass', 'Papst', 'Konzil', 'Jan Hus'],
+        saal: { links: 'Leipziger Zuhörer', rechts: 'Studenten aus Wittenberg' },
+        fragen: [
+          { thema: 'Papst', kurz: 'Seine Macht kommt von Menschen, nicht aus der Bibel.', frage: 'Hat der Papst seine Macht von Gott selbst bekommen? Sag ja oder nein!',
+            antworten: [
+              { art: 'stand', text: 'In der Bibel steht das nicht. Die Macht des Papstes ist mit der Zeit von Menschen gewachsen.', rueck: 'So antwortete Luther. Eck ist zufrieden: Luther stellt den Papst infrage.' },
+              { art: 'aus', text: 'Darüber sollten wir ein andermal in Ruhe sprechen.', rueck: 'Eck lässt nicht locker. Der Saal lacht: Weicht der Wittenberger etwa aus?' },
+              { art: 'nach', text: 'Ja. Der Papst hat seine Macht direkt von Gott.', rueck: 'Das hätte Luther nie gesagt. Er wollte nur gelten lassen, was in der Bibel steht. Wähle noch einmal.' }
+            ] },
+          { thema: 'Konzil', kurz: 'Auch ein Konzil kann irren.', frage: 'Ein Konzil ist eine große Versammlung der ganzen Kirche. Das Konzil von Konstanz hat 1415 entschieden. Kann sich ein Konzil irren?',
+            antworten: [
+              { art: 'stand', text: 'Ja. Auch ein Konzil kann irren, wenn es gegen die Bibel entscheidet.', rueck: 'Das war neu und unerhört. Eck lächelt: Jetzt fehlt nur noch ein Schritt.' },
+              { art: 'aus', text: 'Konzilien sind eine schwierige Sache. Darüber gibt es viele Meinungen.', rueck: 'Eck hakt nach. Die Leipziger Zuhörer tuscheln.' },
+              { art: 'nach', text: 'Nein. Was ein Konzil beschließt, ist immer richtig.', rueck: 'Dann hätte Luther seine eigenen Thesen zurücknehmen müssen. Wähle noch einmal.' }
+            ] },
+          { thema: 'Jan Hus', kurz: 'Manches, was Hus lehrte, war christlich.', frage: 'Dasselbe Konzil hat Jan Hus als Ketzer verbrennen lassen. War alles falsch, was Hus lehrte?',
+            antworten: [
+              { art: 'stand', text: 'Nicht alles. Manches, was Hus lehrte, war gut christlich.', rueck: 'Das ist der Satz, auf den Eck gewartet hat.' },
+              { art: 'aus', text: 'Hus ist lange tot. Lassen wir ihn ruhen.', rueck: 'Eck lässt nicht locker. Er will eine klare Antwort hören.' },
+              { art: 'nach', text: 'Ja. Hus war in allem ein Ketzer.', rueck: 'Luther hatte Hus gelesen und fand darin viel Gutes. Lügen wollte er nicht. Wähle noch einmal.' }
+            ] }
+        ],
+        zuschnapp: { titel: 'Die Falle schnappt zu', text: 'Jetzt hat Eck, was er wollte: Vor allen Zuhörern hat Luther Jan Hus verteidigt. Für Eck ist Luther damit ein Ketzer wie Hus.' },
+        kette: 'So hat Eck Luther Schritt für Schritt in die Enge getrieben:',
+        danach: [
+          'Eck erklärt sich zum Sieger und reist nach Rom.',
+          'Ein Jahr später droht der Papst Luther mit dem Bann.',
+          'Luthers Antworten werden gedruckt. Viele lesen jetzt selbst, was er in Leipzig gesagt hat.'
+        ],
+        auswertung: {
+          1: 'Luther wirkte unsicher. Die Leipziger Zuhörer sind auf Ecks Seite.',
+          2: 'Luther blieb meist bei seiner Sache. Der Saal ist gespalten.',
+          3: 'Luther wich keinen Schritt aus. Die Studenten aus Wittenberg sind stolz auf ihn, auch wenn er in die Falle gegangen ist.'
+        },
         hilfen: [
-          'Eck spielt die Karten der Gelehrten: Konzilien, Papst und Tradition. Und er hat sich selbst als Anführer.',
-          'Gegen „Die Konzilien“ und „Wie Jan Hus“ hast du noch keine Antwort. Versuch, die anderen Runden zu gewinnen.',
-          '„Maßstab Bibel“ entkräftet Papst und Tradition. „Gewissen“ fehlt dir noch. Verlieren ist hier nicht schlimm: Die Geschichte geht weiter.'
-        ] },
-      { art: 'text', titel: 'Was in Leipzig geschah',
-        absaetze: [
-          { text: 'Die Disputation dauerte fast drei Wochen. Eck trieb Luther in die Enge.' },
-          { text: 'Am Ende sagte Luther: Auch ein Konzil kann irren. Manche Sätze von Jan Hus seien gut christlich.' },
-          { text: 'Damit war der Bruch mit Rom kaum noch aufzuhalten. Ein Jahr später drohte der Papst Luther mit dem Bann.' }
+          'Lies jede Antwort genau: Welche passt zu dem, was Luther glaubt? Er will nur gelten lassen, was in der Bibel steht.',
+          'Ausweichen hilft nicht: Eck fragt einfach noch einmal. Nachgeben würde bedeuten, Luthers eigene Lehre aufzugeben.',
+          'Luthers Antworten: Der Papst hat seine Macht von Menschen. Auch ein Konzil kann irren. Manches bei Hus war christlich.'
         ] },
       { art: 'wahl', begruendung: true, frage: 'Was war das Neue, das Luther in Leipzig sagte?',
         optionen: [

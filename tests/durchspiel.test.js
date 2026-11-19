@@ -8,6 +8,7 @@ import { rules as waage } from '../js/puzzles/waage.js';
 import { rules as standbild } from '../js/puzzles/standbild.js';
 import { rules as markt } from '../js/puzzles/marktplatz.js';
 import { rules as druck } from '../js/puzzles/druckwelle.js';
+import { rules as falle } from '../js/puzzles/falle.js';
 import { rules as duell } from '../js/puzzles/duell-regeln.js';
 import { spieleDuell, deckFuer } from './duell-bot.js';
 import { disputation } from '../data/disputation.js';
@@ -111,6 +112,16 @@ function loeseSchritt(s, schritt, sammel, gut) {
       return {};
     }
     case 'text': return {};
+    case 'falle': {
+      // Wer sorgfältig spielt, bleibt bei der Bibel; wer schwach spielt, weicht erst aus und gibt einmal nach.
+      let z = falle.start();
+      for (const f of schritt.fragen) {
+        if (!gut) { for (const art of ['aus', 'nach']) z = falle.antworte(z, schritt, f.antworten.findIndex((a) => a.art === art)); }
+        z = falle.antworte(z, schritt, f.antworten.findIndex((a) => a.art === 'stand'));
+      }
+      assert.ok(z.ende && z.stufe === schritt.fragen.length);
+      return {};
+    }
     case 'uebersetzung': {
       let z = ueb.start();
       for (let v = 0; v < schritt.verse.length; v++) {

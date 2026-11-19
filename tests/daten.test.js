@@ -18,7 +18,7 @@ import { existsSync } from 'node:fs';
 import { systeme, texte, woerter, zeitJeStation } from './inhalt.js';
 
 const wurzel = join(fileURLToPath(new URL('.', import.meta.url)), '..');
-const ARTEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'auswahl', 'duell', 'wahl', 'text', 'gespraech', 'uebersetzung', 'flugschrift'];
+const ARTEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'auswahl', 'duell', 'wahl', 'text', 'gespraech', 'uebersetzung', 'flugschrift', 'falle'];
 const MIT_HILFEN = ['zuordnen', 'waage', 'standbild', 'markt', 'druck', 'duell', 'uebersetzung'];
 const karte = (id) => cards.find((k) => k.id === id);
 const szene = (id) => scenes.find((s) => s.id === id);

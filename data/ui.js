@@ -107,6 +107,9 @@ export const t = {
   tauschTitel: 'Wähle Karten zum Tauschen ({n} von {max})', tauschText: 'Tippe Karten an, die zurück ins Deck sollen. Du ziehst dafür neue. Mit i siehst du eine Karte groß.',
   tauschRest: 'Noch {n} Tausch möglich', tauschStarthand: 'Deine Starthand', tauschKeiner: 'Kein Tausch mehr möglich.', tauschMarke: 'tauschen', tauschNeu: 'neu',
   tauschAusfuehren: 'Ausgewählte tauschen', tauschLos: 'Fertig, los geht’s',
+  // Ecks Falle (Leipzig)
+  falleWeg: 'Luther ist {n} von {von} Schritten in Ecks Falle', falleLuther: 'Luther', falleSaal: 'Stimmung im Saal: {n}', falleGewissen: 'Gewissen',
+  falleGewissenStand: 'Gewissen: {n} von 3', falleWas: 'Was antwortet Luther?', falleNachhaken: 'Eck hakt nach:', falleFrage: 'Fangfrage {n} von {von}', falleDanach: 'Was danach geschah',
   tutorialAndereKarte: 'In der Übung sagt dir Bruder Johannes, welche Karte jetzt dran ist.',
   duellAnfuehrerGegner: 'Anführer: {name}. Diese Karte kann der Gegner einmal in der ganzen Disputation spielen.',
   duellAnfuehrerDu: 'Dein Anführer: {name}. Tippe im Spiel auf ihn, um ihn einmal auszuspielen.',

@@ -229,3 +229,22 @@ test('Disputation: Ohne Karten endet die Runde von selbst, ein Anführer darf no
   a = duell.fuehreAus(a, duell.kiZug(a), 'kirche');
   assert.ok(!a.seiten.kirche.gepasst || a.seiten.kirche.anfuehrer === null || a.log.some((e) => e.id === 'a-tetzel') || a.runden.length > 0);
 });
+
+test('Ecks Falle: Ausweichen einmal je Frage, Nachgeben kostet Gewissen, jede ehrliche Antwort führt tiefer hinein', async () => {
+  const { rules: falle } = await import('../js/puzzles/falle.js');
+  const { puzzles } = await import('../data/puzzles.js');
+  const s = puzzles.leipzig.schritte.find((x) => x.art === 'falle');
+  const idx = (f, art) => f.antworten.findIndex((a) => a.art === art);
+  for (const f of s.fragen) assert.deepEqual(f.antworten.map((a) => a.art).sort(), ['aus', 'nach', 'stand'], `${f.thema}: je eine Antwort jeder Art`);
+  let z = falle.start();
+  z = falle.antworte(z, s, idx(s.fragen[0], 'aus'));
+  assert.equal(z.nr, 0, 'Ausweichen: Eck fragt noch einmal');
+  assert.equal(falle.antworte(z, s, idx(s.fragen[0], 'aus')), z, 'zweimal ausweichen geht nicht');
+  z = falle.antworte(z, s, idx(s.fragen[0], 'nach'));
+  assert.equal(z.gewissen, 2); assert.equal(z.nr, 0, 'Nachgeben: noch einmal wählen');
+  for (const f of s.fragen) z = falle.antworte(z, s, idx(f, 'stand'));
+  assert.ok(z.ende); assert.equal(z.stufe, s.stationen.length - 1, 'am Ende steht Luther in der Falle');
+  assert.equal(falle.stufe(z), 2);
+  let g = falle.start(); for (const f of s.fragen) g = falle.antworte(g, s, idx(f, 'stand'));
+  assert.equal(falle.stufe(g), 3);
+});

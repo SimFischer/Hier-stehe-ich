@@ -1,0 +1,93 @@
+/* „Ecks Falle“ (Leipzig): oben der Weg in die Falle, in der Mitte Eck und Luther mit Frage und Antworten,
+   unten die Stimmung im Saal. Größen hängen an der Fläche des Rätselblatts (iPad zuerst). */
+.art-falle { gap: var(--ab-2); container-type: size; }
+
+/* Weg in die Falle */
+.ef-weg { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 6px 8px 2px; list-style: none; position: relative; }
+.ef-weg::before { content: ""; position: absolute; left: 12.5%; right: 12.5%; top: 26px; height: 6px; border-radius: 3px; background: repeating-linear-gradient(90deg, #8a6a34 0 10px, transparent 10px 16px); }
+.ef-station { position: relative; display: grid; justify-items: center; gap: 2px; }
+.ef-punkt { position: relative; z-index: 1; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-weight: bold;
+  background: #fbf4e2; border: 3px solid #3a2717; color: var(--tinte); transition: background 0.4s; }
+.ef-station.hinter .ef-punkt { background: #c9b48a; color: #fff; }
+.ef-station.hier .ef-punkt { background: #f3d27a; box-shadow: 0 0 0 5px rgba(243, 210, 122, 0.45); animation: zoom 0.4s ease-out; }
+.ef-station.falle .ef-punkt { background: #5c1f12; color: #f3d27a; border-color: #2a0f08; }
+.ef-falle-icon svg { width: 26px; height: 26px; display: block; }
+.ef-stationsname { font-weight: bold; font-size: var(--text-klein); font-variant: small-caps; }
+.ef-luther-marke { position: absolute; top: -14px; padding: 0 8px; border-radius: 10px; background: #1f1a17; color: #fff3c4; font-size: 0.8125rem; font-weight: bold; }
+
+/* Bühne: Eck links, Frage und Antworten in der Mitte, Luther rechts */
+.ef-buehne { flex: 1; min-height: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: clamp(10px, 2cqw, 28px); align-items: end; }
+.ef-seite { display: grid; justify-items: center; align-content: end; gap: 6px; min-height: 0; height: 100%; }
+.ef-figur { display: block; height: clamp(150px, 46cqh, 420px); aspect-ratio: 450 / 700; }
+.ef-figur img, .ef-figur svg { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+.ef-figur.luther { transform: scaleX(-1); }
+.ef-mitte { display: flex; flex-direction: column; gap: clamp(6px, 1.4cqh, 12px); min-height: 0; align-self: stretch; justify-content: center; }
+
+/* Ecks Frage als Sprechblase, Zeiger nach links zu Eck */
+.ef-blase { position: relative; padding: clamp(8px, 2cqh, 16px) clamp(12px, 2cqw, 22px); border-radius: 14px; background: #fbeee6; border: 3px solid #5b3a3a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); animation: einblenden 0.35s ease-out; }
+.ef-blase::before { content: ""; position: absolute; left: -13px; bottom: 22px; width: 20px; height: 20px; background: #fbeee6; border-left: 3px solid #5b3a3a; border-bottom: 3px solid #5b3a3a; transform: rotate(45deg); }
+.ef-blase strong { font-variant: small-caps; color: #5b3a3a; font-size: var(--text-klein); }
+.ef-blase p { margin: 2px 0 0; font-weight: bold; font-size: clamp(1.125rem, min(4cqh, 1.9cqw), 1.9rem); line-height: 1.25; }
+.ef-nachhaken { margin-left: 8px; color: var(--rot); font-style: normal; font-weight: bold; }
+.ef-blase.nachhaken { animation: wackeln 0.4s ease-in-out; }
+
+/* Antworten: große Karten, nach dem Tippen markiert */
+.ef-antworten { display: grid; gap: clamp(6px, 1.2cqh, 10px); }
+.ef-antwort { min-height: 48px; padding: clamp(8px, 1.8cqh, 14px) clamp(12px, 1.6cqw, 18px); text-align: left; cursor: pointer; font: inherit;
+  font-size: clamp(1rem, min(3.3cqh, 1.6cqw), 1.6rem); line-height: 1.25; color: var(--tinte);
+  background: linear-gradient(#fffaf0, #f3e6c8); border: 2px solid #3a2717; border-radius: 10px; box-shadow: 0 3px 0 #3a2717; transition: transform 0.12s; }
+.ef-antwort:hover:not(:disabled) { transform: translateY(-2px); border-color: #b8860b; }
+.ef-antwort:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #3a2717; }
+.ef-antwort.weg { opacity: 0.35; text-decoration: line-through; cursor: default; }
+.ef-antwort.war-nach { background: #f3d6cc; border-color: var(--rot); animation: bricht 0.45s ease-in-out; }
+.ef-rueck { margin: 0; min-height: 1.4em; font-size: clamp(0.9375rem, min(2.8cqh, 1.4cqw), 1.3rem); font-style: italic; color: var(--tinte-weich); }
+.ef-rueck.stand { color: var(--gruen); font-style: normal; font-weight: bold; }
+.ef-rueck.nach { color: var(--rot-dunkel); font-style: normal; }
+
+/* Gewissen: drei Kerzen bei Luther */
+.ef-gewissen { display: grid; justify-items: center; gap: 2px; }
+.ef-gewissen-titel { font-size: 0.8125rem; font-weight: bold; font-variant: small-caps; }
+.ef-kerzen { display: flex; gap: 6px; }
+.ef-kerze { width: 18px; height: 36px; }
+.ef-kerze svg { width: 100%; height: 100%; display: block; }
+.ef-kerze .wachs { fill: #f3e6c8; stroke: #8a6a34; stroke-width: 1.5; }
+.ef-kerze .flamme { fill: #f3a83a; transform-origin: 10px 16px; animation: flackern 0.9s ease-in-out infinite alternate; }
+.ef-kerze.aus .flamme { fill: transparent; animation: none; }
+@keyframes flackern { from { transform: scale(1, 1); } to { transform: scale(0.9, 1.12); } }
+
+/* Stimmung im Saal */
+.ef-saal { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: var(--text-klein); font-weight: bold; }
+.ef-saal-balken { position: relative; height: 14px; border-radius: 7px; border: 2px solid #3a2717; background: linear-gradient(90deg, #a6432e, #e8d6ae 50%, #3e5b45); }
+.ef-saal-marke { position: absolute; top: 50%; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; transform: translateY(-50%);
+  background: #fbf4e2; border: 3px solid #1f1a17; transition: left 0.6s cubic-bezier(0.3, 1.4, 0.5, 1); }
+
+/* Ende: Die Falle schnappt zu */
+.art-falle { position: relative; }
+.ef-ende { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: var(--ab-3); background: rgba(31, 26, 23, 0); transition: background 0.5s; }
+.ef-ende.zu { background: rgba(31, 26, 23, 0.6); }
+.ef-ende-karte { position: relative; width: min(46em, 96%); max-height: 100%; overflow-y: auto; display: grid; gap: 8px; padding: var(--ab-4) var(--ab-5);
+  border-radius: 12px; background: radial-gradient(ellipse at 30% 20%, #fdf7e6, #efdfb8); border: 3px solid #5c1f12; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  transform: translateY(-40px) scale(0.9); opacity: 0; transition: transform 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) 0.2s, opacity 0.4s 0.2s; }
+.ef-ende.zu .ef-ende-karte { transform: none; opacity: 1; }
+.ef-ende-icon { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  background: #5c1f12; color: #f3d27a; border: 3px solid #f3d27a; }
+.ef-ende-icon svg { width: 34px; height: 34px; }
+.ef-ende-karte h3 { margin: 8px 0 0; text-align: center; font-size: var(--text-gross); font-variant: small-caps; color: #5c1f12; }
+.ef-ende-karte p { margin: 0; }
+.ef-kette-titel { font-weight: bold; }
+.ef-kette { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; counter-reset: kette; }
+.ef-kette li { display: grid; grid-template-columns: 7em 1fr; gap: 8px; padding: 4px 8px; border-left: 4px solid #8a6a34; background: rgba(255, 255, 255, 0.55); border-radius: 4px; }
+.ef-kette li strong { font-variant: small-caps; color: #5c1f12; }
+.ef-auswertung { padding: 6px 10px; border-left: 5px solid var(--gruen); background: #e3efdf; border-radius: 4px; font-weight: bold; }
+.ef-danach ul { margin: 4px 0 0; padding-left: 1.2em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ef-kerze .flamme, .ef-blase, .ef-antwort.war-nach, .ef-station.hier .ef-punkt { animation: none; }
+  .ef-ende, .ef-ende-karte, .ef-saal-marke { transition: none; }
+}
+/* Auf dem iPad ohne Scrollen: Endkarte etwas dichter */
+.ef-ende-karte { gap: 6px; padding: var(--ab-3) var(--ab-4); }
+.ef-kette li { padding: 2px 8px; }
+.ef-danach ul { margin-top: 2px; }
+.ef-danach li { line-height: 1.3; }
