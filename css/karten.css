@@ -377,3 +377,16 @@ button.karte.sammel.gwent:hover:not(:disabled), button.karte.sammel.gwent:focus-
 @media (max-width: 700px) { .kamp-gegner { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .d-portrait img.figur-buste { width: auto; max-width: none; height: 270%; transform: none; justify-self: center; margin-top: 4%; }
 .d-portrait { position: relative; } .d-portrait img.figur-buste { position: absolute; top: 4%; left: 50%; width: auto; height: 270%; margin: 0; transform: translateX(-50%); }
+
+/* ---------- Thesenwerkstatt: Schrift wächst mit der Fläche ----------
+   Die Werkstatt ist ein Größencontainer. Auf dem iPad (wenig Höhe) gelten die Mindestwerte wie bisher,
+   auf großen Bildschirmen werden Thesentext, Überschrift und Druckformen deutlich größer. */
+.th-werkstatt { container-type: size; }
+.th-nr { font-size: clamp(1.7rem, min(5.4cqh, 2.6cqw), 2.8rem); }
+.th-initiale { min-width: clamp(54px, 8.5cqh, 84px); height: clamp(54px, 8.5cqh, 84px); }
+.th-blatt .kicker { font-size: clamp(0.9375rem, min(2.5cqh, 1.2cqw), 1.3rem); }
+.th-alt { font-size: clamp(1.2rem, min(4cqh, 1.9cqw), 2rem); }
+.th-frage { font-size: clamp(1.125rem, min(3.5cqh, 1.7cqw), 1.8rem); }
+.th-form strong { font-size: clamp(1.0625rem, min(3.7cqh, 1.8cqw), 1.9rem); }
+.th-form.gedruckt em { font-size: clamp(0.875rem, min(2.4cqh, 1.1cqw), 1.2rem); }
+.th-lettern, .th-stempel { width: clamp(34px, 6cqh, 54px); height: clamp(34px, 6cqh, 54px); }
