@@ -1,0 +1,81 @@
+/* Siegelbriefe in „Hammer & Siegel“: Brief mit Wachssiegel, Siegel bricht, Karten fliegen verdeckt heraus,
+   leuchten in ihrer Seltenheit und drehen sich beim Antippen um. Zur Anzeige js/puzzles/siegelbrief.js. */
+.sb-buehne { position: fixed; inset: 0; z-index: 60; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; justify-items: center; gap: var(--ab-3);
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); overflow: hidden;
+  background: radial-gradient(ellipse at 50% 45%, #4a3122 0%, #24180f 65%, #100a06 100%); color: var(--pergament); animation: einblenden 0.3s ease-out; }
+.sb-kopf { text-align: center; }
+.sb-kopf .kicker { margin: 0; color: var(--ocker-hell); }
+.sb-kopf h2 { margin: 2px 0 0; color: #ffe08a; font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-variant: small-caps; text-shadow: 0 2px 0 #000; }
+.sb-hinweis { margin: 4px 0 0; color: var(--pergament); font-size: var(--text); }
+.sb-mitte { display: grid; place-items: center; min-height: 0; }
+
+/* Der Brief */
+.sb-umschlag { position: relative; width: min(64vw, 520px); aspect-ratio: 3 / 2; padding: 0; border: 0; cursor: pointer; border-radius: 6px;
+  background: radial-gradient(ellipse at 30% 25%, #fdf7e6, #efdfb8 70%, #d9c08a); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(120, 80, 30, 0.3);
+  animation: briefSchweben 2.4s ease-in-out infinite; }
+.sb-umschlag.gross { background: radial-gradient(ellipse at 30% 25%, #fff6d8, #f0d58a 70%, #c99a3a); box-shadow: 0 0 0 4px #f3d27a, 0 0 40px rgba(243, 200, 74, 0.6), 0 18px 40px rgba(0, 0, 0, 0.7); }
+@keyframes briefSchweben { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
+.sb-klappe { position: absolute; left: 0; right: 0; top: 0; height: 58%; transform-origin: top center; clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(#efe0b8, #d9c08a); filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25)); transition: transform 0.6s ease-in 0.25s; }
+.sb-siegel { position: absolute; left: 50%; top: 58%; width: 32%; aspect-ratio: 1; transform: translate(-50%, -50%); transition: transform 0.6s cubic-bezier(0.3, 0, 0.6, 1), opacity 0.6s; }
+.sb-siegel svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+.sb-siegel.links { clip-path: polygon(0 0, 52% 0, 44% 35%, 56% 60%, 46% 100%, 0 100%); }
+.sb-siegel.rechts { clip-path: polygon(52% 0, 100% 0, 100% 100%, 46% 100%, 56% 60%, 44% 35%); }
+.sb-umschlag:not(.auf) .sb-siegel { animation: siegelPuls 1.4s ease-in-out infinite; }
+@keyframes siegelPuls { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
+.sb-umschlag.auf { animation: none; }
+.sb-umschlag.auf .sb-siegel.links { transform: translate(-95%, -20%) rotate(-35deg); opacity: 0; }
+.sb-umschlag.auf .sb-siegel.rechts { transform: translate(-5%, -20%) rotate(35deg); opacity: 0; }
+.sb-umschlag.auf .sb-klappe { transform: rotateX(180deg); }
+.sb-umschlag.auf::after { content: ""; position: absolute; inset: -40%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 240, 190, 0.9), rgba(255, 220, 120, 0) 60%); animation: lichtBlitz 0.9s ease-out forwards; }
+@keyframes lichtBlitz { from { opacity: 0; transform: scale(0.3); } 40% { opacity: 1; } to { opacity: 0; transform: scale(1.2); } }
+
+/* Die Karten */
+.sb-karten { container-type: size; width: 100%; display: flex; align-items: center; justify-content: center; gap: clamp(10px, 2vw, 24px); min-height: 0; perspective: 1400px; }
+.sb-karte { --kw: min(230px, (100cqh - 30px) * 63 / 88, (100cqw - (var(--n) - 1) * 20px) / var(--n));
+  position: relative; flex: none; width: var(--kw); aspect-ratio: 63 / 88; padding: 0; border: 0; background: none; cursor: pointer;
+  animation: austeilen 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.2) calc(var(--i) * 0.18s) both; }
+@keyframes austeilen { from { transform: translateY(40vh) scale(0.4) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.sb-innen { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.4, 1); border-radius: 12px; }
+.sb-karte.offen .sb-innen { transform: rotateY(180deg); }
+.sb-ruecken, .sb-vorne { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 12px; }
+.sb-ruecken { overflow: hidden; border: 3px solid #1a130e; background: repeating-linear-gradient(45deg, #3e5b45 0 8px, #34503b 8px 16px); }
+.sb-ruecken img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-vorne { transform: rotateY(180deg); }
+.sb-vorne .karte.sammel.gwent { width: 100%; height: 100%; }
+/* Leuchten nach Seltenheit schon auf der Rückseite: Vorfreude */
+.sb-karte.rar-selten .sb-ruecken { box-shadow: 0 0 18px 4px rgba(127, 176, 224, 0.75); }
+.sb-karte.rar-episch .sb-ruecken { box-shadow: 0 0 22px 6px rgba(183, 123, 230, 0.85); animation: rarPuls 1.3s ease-in-out infinite; }
+.sb-karte.rar-legendaer .sb-ruecken { box-shadow: 0 0 30px 10px rgba(243, 200, 74, 0.95); animation: rarPuls 1s ease-in-out infinite; }
+.sb-karte.rar-legendaer .sb-ruecken::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 240, 190, 0.6) 45%, transparent 60%) no-repeat;
+  background-size: 250% 100%; animation: glanz 2.2s ease-in-out infinite; }
+@keyframes rarPuls { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+.sb-karte.offen.rar-legendaer .sb-vorne { box-shadow: 0 0 30px 8px rgba(243, 200, 74, 0.8); }
+.sb-karte.offen.rar-episch .sb-vorne { box-shadow: 0 0 22px 5px rgba(183, 123, 230, 0.7); }
+.sb-marke { position: absolute; z-index: 3; left: 50%; bottom: -14px; transform: translateX(-50%); padding: 3px 12px; border-radius: 12px; white-space: nowrap;
+  background: #5b5550; color: #fff; font-weight: bold; font-size: 0.875rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+.sb-marke.neu { background: #2f7a3e; font-size: 1rem; animation: zoom 0.4s ease-out 0.5s both; }
+
+/* Unten: Hinweis, Siegellack, weiter */
+.sb-fuss { display: grid; justify-items: center; gap: var(--ab-2); text-align: center; }
+.sb-wachs { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: bold; }
+.sb-wachs-balken { display: inline-block; width: 140px; height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.15); border: 1px solid #a6301c; overflow: hidden; }
+.sb-wachs-balken span { display: block; height: 100%; background: linear-gradient(90deg, #a6301c, #e2735a); }
+.sb-neuer-brief { margin: 0; color: #ffe08a; font-weight: bold; }
+
+/* Belohnungsknopf in Auswertung und Übersicht */
+.kamp-briefe { display: grid; justify-items: start; gap: var(--ab-2); }
+.kamp-brief-knopf { display: inline-flex; align-items: center; gap: 14px; min-height: 64px; padding: 8px 18px; cursor: pointer; font: inherit; font-size: var(--text);
+  border-radius: 12px; border: 3px solid #a6301c; background: linear-gradient(#fff6d8, #efdfb8); box-shadow: 0 0 0 3px rgba(243, 200, 74, 0.5), 0 4px 10px rgba(0, 0, 0, 0.3);
+  animation: briefSchweben 2.4s ease-in-out infinite; }
+.kamp-brief-knopf.oben { margin: var(--ab-2) 0; }
+.kamp-brief-bild { display: flex; }
+.mini-brief { position: relative; width: 44px; height: 30px; margin-right: -14px; border-radius: 3px; background: linear-gradient(#fdf7e6, #d9c08a); border: 1px solid #8a6a34; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
+.mini-brief::after { content: ""; position: absolute; left: 50%; top: 55%; width: 14px; height: 14px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e2735a, #8a2a1a); }
+.mini-brief.gross { background: linear-gradient(#fff6d8, #f0d58a); box-shadow: 0 0 0 2px #f3d27a; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-umschlag, .sb-karte, .sb-umschlag:not(.auf) .sb-siegel, .sb-karte .sb-ruecken, .kamp-brief-knopf, .sb-marke.neu { animation: none !important; }
+  .sb-innen, .sb-siegel, .sb-klappe { transition: none; }
+}

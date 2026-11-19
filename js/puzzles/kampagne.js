@@ -4,11 +4,65 @@ import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '..
 import { figurHtml, portraetHtml, bildHtml, kartenBild } from '../engine/bilder.js';
 import { kampagne } from '../../data/kampagne.js';
 import { K } from './duell-regeln.js';
+import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
+import { zeigeSiegelbriefe } from './siegelbrief.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [] });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0 });
+// Doppelte Karten werden zu Siegellack. So viel Siegellack ergibt einen neuen Siegelbrief.
+export const WACHS_JE_BRIEF = 5;
+
+// ---------- Siegelbriefe (Kartenpakete) ----------
+// Nach jedem Sieg ein Siegelbrief, beim ersten Mal mit drei Sternen dazu ein großer. Inhalt: Luthers Karten nach Seltenheit.
+// Immer Fortschritt: Karten, die man noch nicht hat, kommen zuerst. Der erste Sieg gegen einen Gegner bringt sicher eine seiner Belohnungskarten.
+const SELTEN = ['gewoehnlich', 'selten', 'episch', 'legendaer'];
+export const briefRules = {
+  /** Gewichte der Seltenheiten. kapitel 0–3 macht seltene Karten wahrscheinlicher, glanz heißt: mindestens „selten“ (groß: mindestens „episch“). */
+  gewichte(kapitel, platz) {
+    const g = { gewoehnlich: 55, selten: 30, episch: 12 + 3 * kapitel, legendaer: 3 + 2 * kapitel };
+    if (platz === 'glanz') g.gewoehnlich = 0;
+    if (platz === 'gross') { g.gewoehnlich = 0; g.selten = 0; g.episch = 70; g.legendaer = 20 + 5 * kapitel; }
+    return g;
+  },
+  ziehSeltenheit(gewichte, rnd) {
+    const summe = SELTEN.reduce((n, s) => n + gewichte[s], 0);
+    let r = rnd() * summe;
+    for (const s of SELTEN) { r -= gewichte[s]; if (r < 0) return s; }
+    return 'selten';
+  },
+  /** Öffnet einen Brief. besitz: Karten, die man schon hat. Gibt die Karten mit „neu“ zurück. rnd: Zufall (0–1), für Tests festlegbar. */
+  inhalt(brief, besitz, rnd = Math.random) {
+    const g = kampagne.gegner[brief.gegner];
+    const kapitel = Math.max(0, kampagne.kapitel.findIndex((k) => k.gegner.includes(brief.gegner)));
+    const pool = lutherKarten.filter((k) => k.seltenheit && SELTEN.includes(k.seltenheit));
+    const plaetze = brief.art === 'gross' ? ['frei', 'frei', 'glanz', 'gross'] : ['frei', 'frei', 'glanz'];
+    const gezogen = [];
+    const hat = (id) => besitz.includes(id) || gezogen.some((x) => x.id === id);
+    const aus = (liste) => liste[Math.floor(rnd() * liste.length)];
+    // Erster Sieg: eine Belohnungskarte des Gegners, die noch fehlt
+    if (brief.belohnung) { const fehlt = (g?.belohnungen || []).filter((id) => !hat(id)); if (fehlt.length) gezogen.push({ id: aus(fehlt), neu: true }); }
+    // Die Belohnungskarte ersetzt einen freien Platz. Freie Plätze ziehen nach Seltenheit aus allen Karten (Doppelte möglich),
+    // der Glanzplatz (und beim großen Brief der letzte) bringt eine neue Karte, solange es eine gibt.
+    const rest = gezogen.length ? plaetze.slice(1) : plaetze;
+    for (const platz of rest) {
+      const seltenheit = briefRules.ziehSeltenheit(briefRules.gewichte(kapitel, platz), rnd);
+      const mindest = platz === 'gross' ? 2 : platz === 'glanz' ? 1 : 0;
+      const nichtImBrief = (k) => !gezogen.some((y) => y.id === k.id);
+      const passend = pool.filter((k) => k.seltenheit === seltenheit && nichtImBrief(k));
+      let k;
+      if (platz === 'frei') k = aus(passend.length ? passend : pool.filter(nichtImBrief));
+      else {
+        const neuePassend = passend.filter((x) => !hat(x.id));
+        const neueHoeher = pool.filter((x) => SELTEN.indexOf(x.seltenheit) >= mindest && !hat(x.id));
+        k = neuePassend.length ? aus(neuePassend) : neueHoeher.length ? aus(neueHoeher) : aus(passend.length ? passend : pool.filter(nichtImBrief));
+      }
+      gezogen.push({ id: k.id, neu: !hat(k.id) });
+    }
+    return gezogen;
+  }
+};
 
 export const rules = {
   sterneSumme: (s) => Object.values(s.sterne).reduce((n, x) => n + x, 0),
@@ -28,11 +82,27 @@ export const rules = {
     n.sterne[gegnerId] = Math.max(vorher, jetzt);
     if (!n.gesehen.includes(gegnerId)) n.gesehen.push(gegnerId);
     const freiVorher = rules.anfuehrerFrei(s);
-    // Belohnung: beim ersten Sieg und beim ersten Mal mit 3 Sternen je eine Karte
-    const belohnt = (vorher === 0 && jetzt > 0) || (vorher < 3 && jetzt === 3);
-    return { stand: n, jetzt, ersterSieg: belohnt, neueAnfuehrer: rules.anfuehrerFrei(n).filter((a) => !freiVorher.includes(a)) };
+    // Siegelbriefe: nach jedem Sieg einer (beim ersten Sieg mit sicherer Belohnungskarte), beim ersten Mal mit 3 Sternen ein großer dazu
+    const briefe = [];
+    if (jetzt > 0) briefe.push({ art: 'klein', gegner: gegnerId, belohnung: vorher === 0 });
+    if (vorher < 3 && jetzt === 3) briefe.push({ art: 'gross', gegner: gegnerId });
+    n.briefe = [...(n.briefe || []), ...briefe];
+    return { stand: n, jetzt, briefe, ersterSieg: vorher === 0 && jetzt > 0, neueAnfuehrer: rules.anfuehrerFrei(n).filter((a) => !freiVorher.includes(a)) };
   },
-  waehle(s, kartenId) { const n = structuredClone(s); if (!n.karten.includes(kartenId)) n.karten.push(kartenId); return n; }
+  waehle(s, kartenId) { const n = structuredClone(s); if (!n.karten.includes(kartenId)) n.karten.push(kartenId); return n; },
+  /** Den ersten Brief öffnen: Karten in die Sammlung, Brief weg. */
+  oeffne(s, besitz, rnd = Math.random) {
+    const n = structuredClone(s);
+    const brief = n.briefe.shift();
+    if (!brief) return { stand: s, brief: null, karten: [] };
+    const karten = briefRules.inhalt(brief, besitz, rnd);
+    for (const k of karten) if (!n.karten.includes(k.id)) n.karten.push(k.id);
+    // Doppelte: Siegellack sammeln; genug davon ergibt einen neuen Brief
+    n.wachs = (n.wachs || 0) + karten.filter((k) => !k.neu).length;
+    let ausWachs = 0;
+    while (n.wachs >= WACHS_JE_BRIEF) { n.wachs -= WACHS_JE_BRIEF; n.briefe.push({ art: 'klein', gegner: brief.gegner, ausWachs: true }); ausWachs += 1; }
+    return { stand: n, brief, karten, ausWachs };
+  }
 };
 
 export function ladeStand() {
@@ -55,6 +125,9 @@ export function view(el, schritt, ctx, fertig) {
       h('div', { class: 'kamp-kopf' },
         h('div', {}, h('p', { class: 'kicker' }, t.kampKicker), h('p', {}, t.kampText)),
         h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 }))),
+      stand.briefe.length ? h('button', { type: 'button', class: 'kamp-brief-knopf oben', onclick: () => briefeOeffnen(uebersicht) },
+        h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
+        h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length }))) : null,
       h('h3', { class: 'zwischen' }, t.kampAnfuehrer),
       h('div', { class: 'kamp-anfuehrer' }, kampagne.anfuehrer.map((a) => {
         const offen = frei.includes(a.id);
@@ -92,8 +165,7 @@ export function view(el, schritt, ctx, fertig) {
     const r = rules.eintragen(stand, id, z, deck.length);
     neu(r.stand);
     const sieg = z.sieger === 'luther';
-    const wahl = r.ersterSieg ? rules.belohnungen(g, besitz()) : [];
-    const zeichne = (gewaehlt = null) => setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : 'niederlage'}` },
+    const zeichne = () => setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : 'niederlage'}` },
       h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
         h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', { class: 'd-ende-titel' }, sieg ? t.duellSieg : t.duellNiederlage), h('p', {}, sieg ? g.sieg : g.niederlage))),
       h('ul', { class: 'd-runden' }, z.runden.map((x) => h('li', { class: x.sieger }, fuelle(t.duellRundeZeile, { n: x.runde, du: x.luther, er: x.kirche }),
@@ -101,13 +173,23 @@ export function view(el, schritt, ctx, fertig) {
       sieg ? h('div', { class: 'kamp-ergebnis' }, sterneHtml(r.jetzt), h('p', {}, fuelle(t.kampSterneJetzt, { n: r.jetzt })),
         h('ul', { class: 'klein' }, h('li', {}, t.kampStern1), h('li', {}, t.kampStern2), h('li', {}, fuelle(t.kampStern3, { n: kampagne.sterne.kleinDeck })))) : h('p', {}, t.kampNiederlageTipp),
       r.neueAnfuehrer.length ? h('p', { class: 'kamp-neu' }, fuelle(t.kampNeuerAnfuehrer, { name: r.neueAnfuehrer.map((a) => K(a).titel).join(t.und) })) : null,
-      wahl.length ? h('div', { class: 'd-belohnung' }, h('p', { class: 'kicker' }, gewaehlt ? t.kampGewaehltKarte : t.kampWaehleKarte),
-        // Antippen zeigt die Karte groß. Erst „Übernehmen“ nimmt sie in die Sammlung.
-        h('div', { class: 'kamp-wahl' }, wahl.map((kid) => kartenChip(K(kid), { gewaehlt: gewaehlt === kid, aus: Boolean(gewaehlt) && gewaehlt !== kid,
-          onclick: () => zeigeKartenDetail(K(kid), { knoepfe: gewaehlt ? [] : [knopf(t.kampUebernehmen, () => { neu(rules.waehle(stand, kid)); zeichne(kid); }, 'haupt')] }) })))) : null,
+      // Belohnung: Siegelbriefe. Ein großer Brief mit Siegel, Antippen öffnet ihn.
+      stand.briefe.length ? h('div', { class: 'kamp-briefe' },
+        h('p', { class: 'kicker' }, r.briefe.length > 1 ? t.kampBriefGrossNeu : t.kampBriefNeu),
+        h('button', { type: 'button', class: 'kamp-brief-knopf', onclick: () => briefeOeffnen(zeichne) },
+          h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
+          h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length })))) : null,
       h('div', { class: 'reihe fuss' }, knopf(t.duellNochmal, () => spiel(id), 'still'),
-        knopf(t.kampZurUebersicht, uebersicht, 'haupt', { disabled: wahl.length > 0 && !gewaehlt }))));
+        knopf(t.kampZurUebersicht, uebersicht, 'haupt'))));
     zeichne();
+  }
+
+  /** Alle ungeöffneten Siegelbriefe nacheinander öffnen. */
+  function briefeOeffnen(danach) {
+    if (!stand.briefe.length) { danach(); return; }
+    zeigeSiegelbriefe({ t, wachs: WACHS_JE_BRIEF, anzahl: stand.briefe.length,
+      oeffne: () => { const r = rules.oeffne(stand, besitz()); neu(r.stand); return r; },
+      fertig: () => danach() });
   }
 
   uebersicht();

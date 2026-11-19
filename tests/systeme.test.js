@@ -177,11 +177,38 @@ test('Kampagne: Aufbau, Freischaltung, Sterne, Belohnungen', () => {
   assert.equal(kamp.sterneFuer(sieg20, 9), 3); assert.equal(kamp.sterneFuer(sieg21, 12), 1); assert.equal(kamp.sterneFuer({ sieger: 'kirche', runden: [] }, 8), 0);
   let r = kamp.eintragen(st, reihenfolge[0], sieg21, 12);
   assert.ok(r.ersterSieg && kamp.offen(r.stand, reihenfolge[1]));
+  assert.deepEqual(r.briefe, [{ art: 'klein', gegner: reihenfolge[0], belohnung: true }], 'Erster Sieg: ein Siegelbrief mit sicherer Belohnungskarte');
   r = kamp.eintragen(r.stand, reihenfolge[0], sieg20, 9);
-  assert.ok(r.ersterSieg, 'Drei Sterne zum ersten Mal: noch eine Belohnung');
-  assert.ok(!kamp.eintragen(r.stand, reihenfolge[0], sieg20, 9).ersterSieg, 'Danach keine weitere');
+  assert.deepEqual(r.briefe.map((b) => b.art), ['klein', 'gross'], 'Drei Sterne zum ersten Mal: dazu ein großer Brief');
+  assert.deepEqual(kamp.eintragen(r.stand, reihenfolge[0], sieg20, 9).briefe.map((b) => b.art), ['klein'], 'Danach je Sieg ein kleiner Brief');
+  assert.equal(kamp.eintragen(r.stand, reihenfolge[0], { sieger: 'kirche', runden: [] }, 9).briefe.length, 0, 'Niederlage: kein Brief');
+  assert.equal(r.stand.briefe.length, 3);
   st = { ...r.stand, sterne: Object.fromEntries(reihenfolge.map((id) => [id, 3])) };
   assert.equal(kamp.anfuehrerFrei(st).length, kampagne.anfuehrer.length, 'Mit allen Sternen sind alle Anführer frei');
+});
+
+test('Kampagne: Siegelbriefe bringen immer Fortschritt, Doppelte werden Siegellack', async () => {
+  const { briefRules, WACHS_JE_BRIEF } = await import('../js/puzzles/kampagne.js');
+  const { lutherKarten } = await import('../data/kartei.js');
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const rang = ['gewoehnlich', 'selten', 'episch', 'legendaer'];
+  const story = sammlung(9);
+  // Erster Sieg: eine Belohnungskarte des Gegners ist dabei, der Glanzplatz ist mindestens selten und neu
+  const g = kampagne.gegner[reihenfolge[0]];
+  const k = briefRules.inhalt({ art: 'klein', gegner: g.id, belohnung: true }, story, rnd);
+  assert.equal(k.length, 3); assert.ok(g.belohnungen.includes(k[0].id) && k[0].neu);
+  assert.ok(rang.indexOf(K(k[2].id).seltenheit) >= 1 && k[2].neu);
+  assert.equal(new Set(k.map((x) => x.id)).size, 3, 'keine Karte doppelt im selben Brief');
+  // Großer Brief: vier Karten, die letzte mindestens episch
+  const gr = briefRules.inhalt({ art: 'gross', gegner: reihenfolge.at(-1) }, story, rnd);
+  assert.equal(gr.length, 4); assert.ok(rang.indexOf(K(gr[3].id).seltenheit) >= 2);
+  // Viele Briefe: Am Ende ist alles gesammelt; Doppelte ergeben neue Briefe
+  let s = neuerKampagnenStand(); s.briefe = Array.from({ length: 40 }, () => ({ art: 'klein', gegner: reihenfolge[3] }));
+  let ausWachs = 0;
+  while (s.briefe.length) { const r = kamp.oeffne(s, [...story, ...s.karten], rnd); ausWachs += r.ausWachs; s = r.stand; }
+  const alle = lutherKarten.filter((x) => x.seltenheit).map((x) => x.id);
+  assert.ok(alle.every((id) => story.includes(id) || s.karten.includes(id)), 'alle Karten gesammelt');
+  assert.ok(ausWachs > 0 && s.wachs < WACHS_JE_BRIEF, 'Siegellack wird zu neuen Briefen');
 });
 
 test('Kampagne: Schwierigkeit steigt, jeder Gegner ist zu schlagen', () => {
