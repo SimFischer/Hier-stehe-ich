@@ -389,17 +389,24 @@ export function view(el, schritt, ctx, fertig) {
     const tipps = sieg || tutorial ? [] : rules.verpasst(z, besitz, deck);
     const wo = (id) => { const c = K(id); return c.duell ? fuelle(t.duellWoSieg, { name: disputation.gegner[c.duell].name }) : fuelle(t.duellWoStation, { nr: ctx.station(c.station).nr, name: ctx.station(c.station).name }); };
     const tippText = (x) => ({ runde: t.duellTippRunde, hand: t.duellTippHand, deck: t.duellTippDeck, besitz: t.duellTippBesitz, fehlt: fuelle(t.duellTippFehlt, { wo: wo(x.karte) }) })[x.ort];
-    setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : 'niederlage'}` },
+    // In der Geschichte (schritt.geschichte) ist eine Niederlage vorgesehen: Die Kirche war mächtiger.
+    // Dann erklärt das Ergebnis die Machtverhältnisse statt „Verloren“, und die Tipps liegen zugeklappt darunter.
+    const geschichte = Boolean(schritt.geschichte) && !sieg && !tutorial;
+    const tippListe = tipps.length ? h('ul', {}, tipps.map((x) => h('li', {},
+      h('span', { class: 'mini-paar' }, kartenChip(K(x.kirche), { mini: true }), h('span', { 'aria-hidden': 'true' }, '←'), kartenChip(K(x.karte), { mini: true })),
+      h('p', {}, fuelle(t.duellTippZeile, { karte: name(x.karte), gegen: name(x.kirche), n: K(x.kirche).staerke }), ' ', h('strong', {}, tippText(x))))))
+      : h('p', {}, t.duellTippAllgemein);
+    setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : geschichte ? 'geschichte' : 'niederlage'}` },
       h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
-        h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', { class: 'd-ende-titel' }, sieg ? t.duellSieg : t.duellNiederlage), h('p', {}, sieg ? g.sieg : g.niederlage))),
+        h('div', {}, h('p', { class: 'kicker' }, g.ort), h('h3', { class: 'd-ende-titel' }, sieg ? t.duellSieg : geschichte ? t.duellGeschichteTitel : t.duellNiederlage), h('p', {}, sieg ? g.sieg : g.niederlage))),
+      geschichte ? h('div', { class: 'd-geschichte' },
+        h('p', { class: 'd-macht' }, t.duellGeschichteMacht),
+        h('p', { class: 'd-mut' }, t.duellGeschichteMut)) : null,
       h('ul', { class: 'd-runden' }, z.runden.map((x) => h('li', { class: x.sieger }, fuelle(t.duellRundeZeile, { n: x.runde, du: x.luther, er: x.kirche }),
-        ' ', h('strong', {}, x.sieger === 'luther' ? t.duellGewonnen : t.duellVerloren)))),
+        ' ', h('strong', {}, x.sieger === 'luther' ? t.duellGewonnen : geschichte ? t.duellRundeKirche : t.duellVerloren)))),
       neueKarte ? h('div', { class: 'd-belohnung' }, h('p', { class: 'kicker' }, t.duellBelohnung), kartenChip(K(neueKarte), { extra: 'glanz', onclick: () => zeigeKartenDetail(K(neueKarte)) })) : null,
-      sieg || tutorial ? null : h('div', { class: 'd-tipps' }, h('h3', {}, t.duellWasHilft),
-        tipps.length ? h('ul', {}, tipps.map((x) => h('li', {},
-          h('span', { class: 'mini-paar' }, kartenChip(K(x.kirche), { mini: true }), h('span', { 'aria-hidden': 'true' }, '←'), kartenChip(K(x.karte), { mini: true })),
-          h('p', {}, fuelle(t.duellTippZeile, { karte: name(x.karte), gegen: name(x.kirche), n: K(x.kirche).staerke }), ' ', h('strong', {}, tippText(x))))))
-          : h('p', {}, t.duellTippAllgemein)),
+      sieg || tutorial ? null : geschichte ? h('details', { class: 'd-tipps zu' }, h('summary', {}, t.duellTippsNeuerVersuch), tippListe)
+        : h('div', { class: 'd-tipps' }, h('h3', {}, t.duellWasHilft), tippListe),
       h('div', { class: 'reihe fuss' }, knopf(t.duellNochmal, () => { neueKarte = null; vorbereitung(); }, 'still'),
         knopf(t.weiter, () => fertig(schritt.gegner === 'worms' ? { stufe: { verhoer: besteStufe } } : {}), 'haupt'))));
     neueKarte = null;

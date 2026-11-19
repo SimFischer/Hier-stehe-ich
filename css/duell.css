@@ -174,3 +174,15 @@
 /* Lange Kartenart und Seltenheit dürfen umbrechen, die Karte bleibt so breit wie ihre Spalte. */
 .karte.sammel { grid-template-columns: minmax(0, 1fr); }
 .k-typ { flex-wrap: wrap; max-width: 100%; row-gap: 0; }
+
+/* Niederlage in der Geschichte: Machtverhältnisse erklären statt „Verloren“ */
+.d-ende.geschichte .d-ende-titel { color: #f3d6cc !important; }
+.d-geschichte { display: grid; gap: var(--ab-2); }
+.d-geschichte p { margin: 0; padding: var(--ab-2) var(--ab-3); border-radius: var(--rund); font-size: var(--text); line-height: 1.4; }
+.d-macht { background: #f3e3da; border-left: 6px solid #7f2f1f; }
+.d-mut { background: var(--gruen-hell); border-left: 6px solid var(--gruen); font-weight: bold; }
+.d-ende.geschichte .d-runden li:not(.luther) { background: #f3e3da; }
+details.d-tipps.zu { background: var(--pergament); }
+details.d-tipps.zu summary { min-height: var(--tipp); display: flex; align-items: center; cursor: pointer; font-weight: bold; }
+details.d-tipps.zu summary::before { content: "▸"; margin-right: 10px; transition: transform 0.2s; }
+details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }

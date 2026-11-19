@@ -110,6 +110,11 @@ export const t = {
   // Ecks Falle (Leipzig)
   falleWeg: 'Luther ist {n} von {von} Schritten in Ecks Falle', falleLuther: 'Luther', falleSaal: 'Stimmung im Saal: {n}', falleGewissen: 'Gewissen',
   falleGewissenStand: 'Gewissen: {n} von 3', falleWas: 'Was antwortet Luther?', falleNachhaken: 'Eck hakt nach:', falleFrage: 'Fangfrage {n} von {von}', falleDanach: 'Was danach geschah',
+  // Niederlage in der Geschichte: Die Kirche war mächtiger, Luther gibt trotzdem nicht auf.
+  duellGeschichteTitel: 'Die Kirche behält die Oberhand', duellRundeKirche: 'an die Kirche',
+  duellGeschichteMacht: 'Das liegt nicht an dir. Die Kirche hatte die Macht, das Ansehen und die meisten Gelehrten auf ihrer Seite. Ihre Argumente galten seit Jahrhunderten. Luthers Gedanken waren neu, und viele kannten sie noch nicht.',
+  duellGeschichteMut: 'Doch Luther gibt nicht auf. Er bleibt bei dem, was er in der Bibel gefunden hat, und kämpft weiter. Mit jedem Streit hören mehr Menschen von ihm.',
+  duellTippsNeuerVersuch: 'Tipps für einen neuen Versuch',
   tutorialAndereKarte: 'In der Übung sagt dir Bruder Johannes, welche Karte jetzt dran ist.',
   duellAnfuehrerGegner: 'Anführer: {name}. Diese Karte kann der Gegner einmal in der ganzen Disputation spielen.',
   duellAnfuehrerDu: 'Dein Anführer: {name}. Tippe im Spiel auf ihn, um ihn einmal auszuspielen.',

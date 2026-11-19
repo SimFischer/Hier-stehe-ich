@@ -161,7 +161,7 @@ export const puzzles = {
           'Bäuerin: Gott entscheidet. Kaufmann: Weg des Geldes. Pilger: Gnade ist ein Geschenk. Junge: Ohne Reue kein Erlass. Geselle: Werke reichen nicht. Witwe: Gott braucht dein Geld nicht.'
         ] },
       { art: 'gespraech', dialog: 'tetzel-auswertung' },
-      { art: 'duell', gegner: 'tetzel', titel: 'Disputation mit Tetzel', szene: 'jueterbog',
+      { art: 'duell', gegner: 'tetzel', titel: 'Disputation mit Tetzel', szene: 'jueterbog', geschichte: true,
         hilfen: [
           'Tippe die Karten von Tetzel an und lies, wie stark sie sind. Dann such in deiner Hand eine Karte, die sie entkräftet.',
           'Warte mit deiner Konterkarte, bis die starke Karte liegt. Dann fällt sie auf 1, und du ziehst eine Karte nach.',
@@ -269,7 +269,7 @@ export const puzzles = {
   verhoer: {
     id: 'verhoer', station: 's6', titel: 'Das Verhör', lernziel: [5],
     schritte: [
-      { art: 'duell', gegner: 'worms', titel: 'Vor Kaiser und Reich', szene: 'saal',
+      { art: 'duell', gegner: 'worms', titel: 'Vor Kaiser und Reich', szene: 'saal', geschichte: true,
         hilfen: [
           'Sieh dir die Karten des Sprechers an, bevor du dein Deck baust. Nimm für jede starke Karte eine passende Antwort mit.',
           'Ein Deck mit zwölf Karten hält länger durch als ein kleines. Karten ohne passende Antwort kannst du zu Beginn tauschen.',
