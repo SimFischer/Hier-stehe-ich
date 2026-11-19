@@ -53,9 +53,9 @@ export const teacher = {
       'Luther gewinnt nur mit den passenden Erkenntnissen. Eine Karte wie „Wie der Vater“ entkräftet „Gott, der strenge Richter“: Solange sie liegt, zählt die Kirchenkarte nur 1.',
       'Gespielt wird wie bei bekannten Sammelkartenspielen: abwechselnd legen, passen, zwei Runden gewinnen. Vor Worms baut man ein Deck aus höchstens zwölf Karten und sieht dabei die Karten des Gegners.',
       'Nach einer Niederlage zeigt das Spiel, welche Karte geholfen hätte und wo es sie gibt. Gegen Eck (freiwillig unter „Disputation“) fehlt vor Leipzig bewusst die Antwort auf die Konzilien.',
-      'Station 2 enthält eine geführte Übung mit Bruder Johannes. Danach folgt der Bogen: Tetzel gewinnt meist (Station 4), mit den Thesen gelingt die Revanche (Station 5), in Leipzig treibt Eck Luther mit Fangfragen in die Enge (Station 6, ohne Karten), in Worms siegen Luthers Argumente (Station 7).',
+      'Station 2 enthält eine geführte Übung mit Bruder Johannes. Danach folgt der Bogen: Tetzel gewinnt meist (Station 4), mit den Thesen gelingt die Revanche (freiwillig unter „Disputation“, ab Station 5), in Leipzig treibt Eck Luther mit Fangfragen in die Enge (Station 6, ohne Karten), in Worms siegen Luthers Argumente (Station 7).',
       'Nach dem Finale öffnet sich „Hammer & Siegel“, das Kartenspiel als eigenes Spiel: zwölf Gegner, Sterne, neue Karten und Anführer. Gut als Belohnung für schnelle Gruppen oder zu Hause. Der Fortschritt bleibt auf dem Gerät.',
-      'Tetzel und Worms gehören zum Kernpfad. Auch nach einer Niederlage geht es weiter. In Worms bestimmt das Ergebnis nur die Auswertung, nicht das Urteil. Die Revanche gegen Eck und „Hammer & Siegel“ sind freiwillig.',
+      'Tetzel und Worms gehören zum Kernpfad. Auch nach einer Niederlage geht es weiter. In Worms bestimmt das Ergebnis nur die Auswertung, nicht das Urteil. Die Revanchen gegen Tetzel und Eck und „Hammer & Siegel“ sind freiwillig.',
       'Gesprächsimpuls danach: Warum reicht ein starkes, aber unpassendes Argument nicht? Welche Karte war für dich die wichtigste und warum?'
     ]
   },

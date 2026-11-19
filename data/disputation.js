@@ -104,7 +104,7 @@ export const disputation = {
       deck: ['c-predigt', 'c-ablassprediger', 'c-brief', 'c-ablass', 'c-fegefeuer', 'c-richter', 'c-petersdom', 'c-werke', 'c-ketzer'],
       einleitung: 'Tetzel will dich vor allen Leuten widerlegen. Die Menge glaubt ihm, und er spielt seine eigene Karte aus. Dieses Streitgespräch ist erfunden, die Argumente nicht.',
       sieg: 'Tetzel packt seinen Kasten zusammen. Die Leute haben genau zugehört.',
-      niederlage: 'Tetzel lacht. Die Menschen glauben ihm mehr als dir. Noch fehlen dir Karten. Bald hast du die Gelegenheit zur Revanche.'
+      niederlage: 'Tetzel lacht. Die Menschen glauben ihm mehr als dir. Noch fehlen dir Karten. Mit den Thesen kannst du später unter „Disputation“ Revanche nehmen.'
     },
     tetzel2: {
       id: 'tetzel2', siegAls: 'tetzel', figur: 'tetzel', name: 'Johann Tetzel', ort: 'Jüterbog, Ende 1517', belohnung: 'n1', anfuehrer: 'a-tetzel',
@@ -151,11 +151,11 @@ export const disputation = {
     uebung: { id: 'uebung', titel: 'Übung: So geht die Disputation', nach: 's2', minuten: 3, bild: 'kunst-a-novize',
       kurz: 'Bruder Johannes erklärt dir das Kartenspiel Schritt für Schritt.',
       schritte: [{ art: 'duell', gegner: 'uebung', titel: 'Übung mit Bruder Johannes', szene: 'kloster' }] },
-    'duell-tetzel': { id: 'duell-tetzel', titel: 'Revanche gegen Tetzel', nach: 's4', minuten: 5, bild: 'kunst-a-tetzel',
-      kurz: 'Fordere Tetzel mit deinen neuen Karten heraus.',
+    'duell-tetzel': { id: 'duell-tetzel', titel: 'Revanche gegen Tetzel', nach: 's5', minuten: 5, bild: 'kunst-a-tetzel',
+      kurz: 'Mit den Thesen hast du jetzt starke Karten. Fordere Tetzel noch einmal heraus.',
       schritte: [{ art: 'duell', gegner: 'tetzel2', titel: 'Revanche gegen Tetzel', szene: 'jueterbog' }] },
     'duell-eck': { id: 'duell-eck', titel: 'Revanche gegen Eck', nach: 'sl', minuten: 6, bild: 'kunst-a-eck',
-      kurz: 'Spiel die Leipziger Disputation noch einmal.',
+      kurz: 'Die Kartenpartie gegen Eck: Findest du eine Antwort auf die Konzilien?',
       schritte: [{ art: 'duell', gegner: 'eck', titel: 'Revanche gegen Eck', szene: 'leipzig' }] },
     'duell-worms': { id: 'duell-worms', titel: 'Noch einmal in Worms', nach: 's6', minuten: 6, bild: 'kunst-a-karl',
       kurz: 'Spiel die Disputation vor dem Reichstag noch einmal.',

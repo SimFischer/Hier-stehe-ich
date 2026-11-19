@@ -201,12 +201,6 @@ export const puzzles = {
           'Städte mit dem Pressezeichen sind Druckereien. Bringst du deutsche Blätter dorthin, drucken sie nach einer Woche nach und schicken sie von selbst weiter.',
           'Rote Schilder zeigen, wo ein Verbot droht. Schick zuerst dorthin einen Boten. Erfurt hat keine Druckerei: Von dort brauchen Nürnberg und Frankfurt deine Boten.'
         ] },
-      { art: 'duell', gegner: 'tetzel2', titel: 'Revanche: Die Thesen gegen Tetzel', szene: 'jueterbog',
-        hilfen: [
-          'Die Thesen sind jetzt deine stärksten Karten. Nimm sie ins Deck und dazu die Karten gegen den Ablass.',
-          'Tetzel hat einen Anführer: seine eigene Karte. Er spielt sie meist erst in Runde 2 oder 3. Heb dir eine Antwort auf.',
-          'Ablassprediger: These 27 oder These 43. Ablasshandel: „Gnade ist ein Geschenk“. Predigt und Brief: „Ohne Reue kein Erlass“. Richter: „Wie der Vater“.'
-        ] },
       { art: 'wahl', begruendung: true, frage: 'Warum verbreiteten sich Luthers Thesen so schnell?',
         optionen: [
           { text: 'Sie wurden gedruckt und ins Deutsche übersetzt.', richtig: true, rueck: 'Genau. Ohne Druckerpresse und ohne Deutsch wären sie ein Streit unter Gelehrten geblieben.' },

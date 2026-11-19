@@ -176,7 +176,7 @@ test('Zeit: Kernpfad liegt bei rund 40 Minuten', () => {
   const summe = Object.values(zeiten).reduce((a, b) => a + b, 0);
   console.log('Geschätzte Minuten je Station:', Object.entries(zeiten).map(([k, v]) => `${k} ${v.toFixed(1)}`).join(' · '), `· Summe ${summe.toFixed(1)}`);
   // Ziel laut Konzept: rund 40 Minuten. Überarbeitung 1 und 2 (Kartenspiel Disputation) machen das Spiel bewusst länger,
-  // siehe docs/UEBERARBEITUNG-2.md. Mit Übung, Tetzel-Revanche und Leipzig sind bis 75 Minuten erlaubt (Doppelstunde).
+  // siehe docs/UEBERARBEITUNG-2.md. Mit Übung und Leipzig sind bis 75 Minuten erlaubt (Doppelstunde). Die Tetzel-Revanche ist freiwillig.
   assert.ok(summe >= 34 && summe <= 75, `Kernpfad ${summe.toFixed(1)} Minuten`);
   for (const st of game.stationen) assert.ok(Math.abs(zeiten[st.id] - st.minuten) <= 2.5, `${st.id}: geplant ${st.minuten}, geschätzt ${zeiten[st.id].toFixed(1)} Minuten`);
 });

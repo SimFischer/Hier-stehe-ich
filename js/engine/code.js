@@ -79,7 +79,7 @@ export function lies(eingabe) {
   s.cards = kartenAusStand(s);
   s.flags = s.done.map((id) => station(id).raetsel).filter(Boolean).map((r) => `r:${r}`);
   // Gespielte Disputationen: Daraus ergibt sich, welche Kirchenkarten man schon kennt.
-  const gespielt = { uebung: s.done.includes('s2'), tetzel: s.done.includes('s4'), tetzel2: s.done.includes('s5'), eck: s.done.includes('sl'), worms: s.done.includes('s6') };
+  const gespielt = { uebung: s.done.includes('s2'), tetzel: s.done.includes('s4'), eck: s.done.includes('sl'), worms: s.done.includes('s6') };
   for (const [g, ja] of Object.entries(gespielt)) if (ja) s.flags.push(`duell:${g}`);
   s.szene = game.start;
   return { stand: s };
