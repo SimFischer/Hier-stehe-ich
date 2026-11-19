@@ -3,7 +3,7 @@
 import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
 import { figurHtml, portraetHtml, bildHtml, kartenBild } from '../engine/bilder.js';
 import { kampagne } from '../../data/kampagne.js';
-import { K } from './duell-regeln.js';
+import { K, maxKopien, anzahl } from './duell-regeln.js';
 import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
@@ -16,7 +16,8 @@ export const WACHS_JE_BRIEF = 5;
 
 // ---------- Siegelbriefe (Kartenpakete) ----------
 // Nach jedem Sieg ein Siegelbrief, beim ersten Mal mit drei Sternen dazu ein großer. Inhalt: Luthers Karten nach Seltenheit.
-// Immer Fortschritt: Karten, die man noch nicht hat, kommen zuerst. Der erste Sieg gegen einen Gegner bringt sicher eine seiner Belohnungskarten.
+// Immer Fortschritt: Karten, die man noch nicht (oft genug) hat, kommen zuerst. Der erste Sieg gegen einen Gegner bringt sicher eine seiner Belohnungskarten.
+// Kopien: gewöhnliche und seltene Karten darf man zweimal haben (und zweimal ins Deck nehmen), epische und legendäre einmal (maxKopien).
 const SELTEN = ['gewoehnlich', 'selten', 'episch', 'legendaer'];
 export const briefRules = {
   /** Gewichte der Seltenheiten. kapitel 0–3 macht seltene Karten wahrscheinlicher, glanz heißt: mindestens „selten“ (groß: mindestens „episch“). */
@@ -32,14 +33,16 @@ export const briefRules = {
     for (const s of SELTEN) { r -= gewichte[s]; if (r < 0) return s; }
     return 'selten';
   },
-  /** Öffnet einen Brief. besitz: Karten, die man schon hat. Gibt die Karten mit „neu“ zurück. rnd: Zufall (0–1), für Tests festlegbar. */
+  /** Öffnet einen Brief. besitz: Karten, die man schon hat (eine Karte kann zweimal darin stehen). Gibt die Karten mit „neu“ zurück
+   *  (neu heißt: eine weitere Kopie, die man noch haben darf). rnd: Zufall (0–1), für Tests festlegbar. */
   inhalt(brief, besitz, rnd = Math.random) {
     const g = kampagne.gegner[brief.gegner];
     const kapitel = Math.max(0, kampagne.kapitel.findIndex((k) => k.gegner.includes(brief.gegner)));
     const pool = lutherKarten.filter((k) => k.seltenheit && SELTEN.includes(k.seltenheit));
     const plaetze = brief.art === 'gross' ? ['frei', 'frei', 'glanz', 'gross'] : ['frei', 'frei', 'glanz'];
     const gezogen = [];
-    const hat = (id) => besitz.includes(id) || gezogen.some((x) => x.id === id);
+    // „hat“: so viele Kopien, wie man haben darf (mit dem, was schon in diesem Brief liegt)
+    const hat = (id) => anzahl(besitz, id) + gezogen.filter((x) => x.id === id).length >= maxKopien(id);
     const aus = (liste) => liste[Math.floor(rnd() * liste.length)];
     // Erster Sieg: eine Belohnungskarte des Gegners, die noch fehlt
     if (brief.belohnung) { const fehlt = (g?.belohnungen || []).filter((id) => !hat(id)); if (fehlt.length) gezogen.push({ id: aus(fehlt), neu: true }); }
@@ -71,8 +74,6 @@ export const rules = {
   /** Sterne für eine Partie: Sieg, Sieg ohne verlorene Runde, Sieg mit kleinem Deck. */
   sterneFuer: (z, deckGroesse) => (z.sieger !== 'luther' ? 0
     : 1 + (z.runden.every((r) => r.sieger === 'luther') ? 1 : 0) + (deckGroesse <= kampagne.sterne.kleinDeck ? 1 : 0)),
-  /** Zur Wahl stehen bis zu drei Karten des Gegners, die man noch nicht hat. */
-  belohnungen: (gegner, besitz) => gegner.belohnungen.filter((id) => !besitz.includes(id)).slice(0, 3),
   anfuehrerFrei: (s) => kampagne.anfuehrer.filter((a) => rules.sterneSumme(s) >= a.ab).map((a) => a.id),
   /** Ergebnis einer Partie eintragen. Gibt zurück, was neu ist. */
   eintragen(s, gegnerId, z, deckGroesse) {
@@ -89,14 +90,13 @@ export const rules = {
     n.briefe = [...(n.briefe || []), ...briefe];
     return { stand: n, jetzt, briefe, ersterSieg: vorher === 0 && jetzt > 0, neueAnfuehrer: rules.anfuehrerFrei(n).filter((a) => !freiVorher.includes(a)) };
   },
-  waehle(s, kartenId) { const n = structuredClone(s); if (!n.karten.includes(kartenId)) n.karten.push(kartenId); return n; },
   /** Den ersten Brief öffnen: Karten in die Sammlung, Brief weg. */
   oeffne(s, besitz, rnd = Math.random) {
     const n = structuredClone(s);
     const brief = n.briefe.shift();
     if (!brief) return { stand: s, brief: null, karten: [] };
     const karten = briefRules.inhalt(brief, besitz, rnd);
-    for (const k of karten) if (!n.karten.includes(k.id)) n.karten.push(k.id);
+    for (const k of karten) if (k.neu) n.karten.push(k.id);
     // Doppelte: Siegellack sammeln; genug davon ergibt einen neuen Brief
     n.wachs = (n.wachs || 0) + karten.filter((k) => !k.neu).length;
     let ausWachs = 0;
@@ -116,7 +116,8 @@ export function view(el, schritt, ctx, fertig) {
   const t = ctx.t;
   let stand = ladeStand();
   const neu = (s) => { stand = s; speichere(s); };
-  const besitz = () => [...new Set([...ctx.karten().map((k) => k.id), ...stand.karten])];
+  // Besitz mit Kopien: Karten aus der Geschichte einmal, aus Siegelbriefen dazu, höchstens maxKopien je Karte
+  const besitz = () => { const aus = []; for (const id of [...ctx.karten().map((k) => k.id), ...stand.karten]) if (anzahl(aus, id) < maxKopien(id)) aus.push(id); return aus; };
 
   function uebersicht() {
     const frei = rules.anfuehrerFrei(stand);

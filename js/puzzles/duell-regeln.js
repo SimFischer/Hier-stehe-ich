@@ -225,3 +225,8 @@ export function kirchenGesehen(flags) {
   for (const g of Object.values(disputation.gegner)) if (flags.includes(`duell:${g.id}`)) [...g.deck, g.anfuehrer].filter(Boolean).forEach((id) => ids.add(id));
   return ids;
 }
+
+/** Kopien je Karte im Deck (nur „Hammer & Siegel“): gewöhnliche und seltene bis zu 2, epische, legendäre und Anführer 1. */
+export const maxKopien = (id) => (['episch', 'legendaer'].includes(K(id)?.seltenheit) || K(id)?.anfuehrer ? 1 : 2);
+/** Wie oft steht eine Karte in einer Liste (Besitz oder Deck)? */
+export const anzahl = (liste, id) => liste.reduce((n, x) => n + (x === id ? 1 : 0), 0);

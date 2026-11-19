@@ -120,6 +120,7 @@ export const t = {
   kampBriefeOffen: 'Siegelbriefe öffnen ({n})', kampBriefTippen: 'Tippe auf das Siegel, um es aufzubrechen.', kampKarteTippen: 'Tippe die Karten an, um sie umzudrehen. Tippst du noch einmal, siehst du sie groß.',
   kampKarteVerdeckt: 'Verdeckte Karte, Seltenheit:', kampNeu: 'Neu!', kampDoppelt: 'Doppelt: +1 Siegellack', kampAlleAufdecken: 'Alle aufdecken', kampDeineKarten: 'Deine Karten',
   kampInSammlung: 'In die Sammlung', kampNaechsterBrief: 'Nächsten Brief öffnen ({n})', kampWachs: 'Siegellack: {n} von {von}', kampWachsBrief: 'Aus deinem Siegellack ist ein neuer Siegelbrief geworden!',
+  duellKopien: '{n} von {von} Kopien im Deck', duellDeckVoll: 'Dein Deck ist voll. Nimm erst eine Karte heraus.', kampKopienText: 'Gewöhnliche und seltene Karten darfst du zweimal ins Deck nehmen. Tippe noch einmal für die zweite Kopie.',
   tutorialAndereKarte: 'In der Übung sagt dir Bruder Johannes, welche Karte jetzt dran ist.',
   duellAnfuehrerGegner: 'Anführer: {name}. Diese Karte kann der Gegner einmal in der ganzen Disputation spielen.',
   duellAnfuehrerDu: 'Dein Anführer: {name}. Tippe im Spiel auf ihn, um ihn einmal auszuspielen.',

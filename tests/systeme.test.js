@@ -187,8 +187,9 @@ test('Kampagne: Aufbau, Freischaltung, Sterne, Belohnungen', () => {
   assert.equal(kamp.anfuehrerFrei(st).length, kampagne.anfuehrer.length, 'Mit allen Sternen sind alle Anführer frei');
 });
 
-test('Kampagne: Siegelbriefe bringen immer Fortschritt, Doppelte werden Siegellack', async () => {
+test('Kampagne: Siegelbriefe bringen immer Fortschritt, Kopien bis zur Grenze, darüber Siegellack', async () => {
   const { briefRules, WACHS_JE_BRIEF } = await import('../js/puzzles/kampagne.js');
+  const { maxKopien, anzahl } = await import('../js/puzzles/duell-regeln.js');
   const { lutherKarten } = await import('../data/kartei.js');
   let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
   const rang = ['gewoehnlich', 'selten', 'episch', 'legendaer'];
@@ -207,7 +208,9 @@ test('Kampagne: Siegelbriefe bringen immer Fortschritt, Doppelte werden Siegella
   let ausWachs = 0;
   while (s.briefe.length) { const r = kamp.oeffne(s, [...story, ...s.karten], rnd); ausWachs += r.ausWachs; s = r.stand; }
   const alle = lutherKarten.filter((x) => x.seltenheit).map((x) => x.id);
-  assert.ok(alle.every((id) => story.includes(id) || s.karten.includes(id)), 'alle Karten gesammelt');
+  const besitz = [...story, ...s.karten];
+  assert.ok(alle.every((id) => anzahl(besitz, id) === maxKopien(id)), 'alle Karten so oft gesammelt, wie man sie haben darf');
+  assert.equal(maxKopien('k1'), 2); assert.equal(maxKopien('r17'), 1, 'legendär nur einmal');
   assert.ok(ausWachs > 0 && s.wachs < WACHS_JE_BRIEF, 'Siegellack wird zu neuen Briefen');
 });
 

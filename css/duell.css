@@ -186,3 +186,9 @@ details.d-tipps.zu { background: var(--pergament); }
 details.d-tipps.zu summary { min-height: var(--tipp); display: flex; align-items: center; cursor: pointer; font-weight: bold; }
 details.d-tipps.zu summary::before { content: "▸"; margin-right: 10px; transition: transform 0.2s; }
 details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
+
+/* Kopien im Deckbau („Hammer & Siegel“): 1/2 heißt eine von zwei Kopien im Deck */
+.d-sammlung .karte-huelle { position: relative; }
+.d-kopien { position: absolute; z-index: 3; left: 6px; bottom: 6px; padding: 2px 10px; border-radius: 12px; pointer-events: none;
+  background: rgba(31, 26, 23, 0.85); color: #fff3c4; font-weight: bold; font-size: 0.9375rem; border: 2px solid #8a6a34; }
+.d-kopien.voll { background: #2f7a3e; border-color: #dbe7d6; }

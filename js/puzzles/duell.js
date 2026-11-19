@@ -1,10 +1,10 @@
 // Kartenspiel „Disputation“: Spieltisch. Die Regeln stehen in duell-regeln.js.
 // Drei Arten: Disputation in der Geschichte, geführte Übung (Gegner mit „tutorial“) und Kampagne (schritt.kampagne).
-import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle, melde } from '../engine/ui.js';
 import { bildHtml, figurHtml, portraetHtml, kartenBild, bildUrl } from '../engine/bilder.js';
 import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
-import { rules, K, wert, summe, entkraeftet, deckVorschlag } from './duell-regeln.js';
+import { rules, K, wert, summe, entkraeftet, deckVorschlag, anzahl } from './duell-regeln.js';
 
 export { rules };
 const PAUSE_KI = 950;
@@ -23,7 +23,8 @@ export function view(el, schritt, ctx, fertig) {
   const passendesDeck = () => {
     if (besitz.length <= R.deckMax) return [...besitz];
     const gemerkt = kamp ? kamp.deck : ctx.state.deck;
-    const vorher = (gemerkt || []).filter((id) => besitz.includes(id)).slice(0, R.deckMax);
+    // Gemerktes Deck nur, soweit man die Karten (und Kopien) noch hat
+    const vorher = []; for (const id of gemerkt || []) if (anzahl(vorher, id) < anzahl(besitz, id) && vorher.length < R.deckMax) vorher.push(id);
     return vorher.length >= R.deckMin ? vorher : deckVorschlag(besitz, R);
   };
   let deck = passendesDeck();
@@ -104,7 +105,14 @@ export function view(el, schritt, ctx, fertig) {
     }
     const zuViel = besitz.length > R.deckMax;
     const ok = deck.length >= Math.min(R.deckMin, besitz.length) && deck.length <= R.deckMax;
-    const umschalten = (id) => { deck = deck.includes(id) ? deck.filter((x) => x !== id) : deck.length < R.deckMax ? [...deck, id] : deck; vorbereitung(); };
+    // Antippen: eine Kopie mehr ins Deck, solange man sie besitzt und Platz ist; sonst alle Kopien wieder heraus.
+    const umschalten = (id) => {
+      const imDeck = anzahl(deck, id);
+      if (imDeck === 0 && deck.length >= R.deckMax) { melde(t.duellDeckVoll); return; }
+      deck = imDeck < anzahl(besitz, id) && deck.length < R.deckMax ? [...deck, id] : deck.filter((x) => x !== id);
+      vorbereitung();
+    };
+    const sammlung = [...new Set(besitz)];
     const fuehrer = g.anfuehrer ? K(g.anfuehrer) : null;
     setzeInhalt(el,
       h('div', { class: 'd-vor' },
@@ -123,8 +131,10 @@ export function view(el, schritt, ctx, fertig) {
         kamp?.anfuehrer || g.lutherAnfuehrer ? h('p', { class: 'klein' }, fuelle(t.duellAnfuehrerDu, { name: K(kamp?.anfuehrer || g.lutherAnfuehrer).titel })) : null,
         zuViel ? [
           h('h3', { class: 'zwischen' }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
-          h('p', { class: 'klein' }, t.duellDeckText),
-          h('div', { class: 'hand d-sammlung' }, besitz.map((id) => h('span', { class: 'karte-huelle' }, kartenChip(K(id), { klein: true, gewaehlt: deck.includes(id), onclick: () => umschalten(id) }),
+          h('p', { class: 'klein' }, t.duellDeckText, kamp ? [' ', t.kampKopienText] : null),
+          h('div', { class: 'hand d-sammlung' }, sammlung.map((id) => h('span', { class: 'karte-huelle' }, kartenChip(K(id), { klein: true, gewaehlt: deck.includes(id), onclick: () => umschalten(id) }),
+            // Kopien: „1/2“ heißt eine von zwei Kopien im Deck
+            anzahl(besitz, id) > 1 ? h('span', { class: `d-kopien${anzahl(deck, id) === 2 ? ' voll' : ''}`, 'aria-label': fuelle(t.duellKopien, { n: anzahl(deck, id), von: anzahl(besitz, id) }) }, `${anzahl(deck, id)}/${anzahl(besitz, id)}`) : null,
             h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(id).titel }), onclick: () => gross({ id }) }, 'i'))))
         ] : h('p', { class: 'klein' }, fuelle(t.duellAlleKarten, { n: deck.length })),
         h('div', { class: 'reihe fuss' }, kamp ? knopf(t.kampZurUebersicht, () => kamp.zurueck(), 'still') : h('span', {}), knopf(t.duellLos, starte, 'haupt', { disabled: !ok }))));
