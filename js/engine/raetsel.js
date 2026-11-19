@@ -24,10 +24,11 @@ import { view as auswahl } from '../puzzles/auswahl.js';
 import { view as uebersetzung } from '../puzzles/uebersetzung.js';
 import { view as flugschrift } from '../puzzles/flugschrift.js';
 import { view as falle } from '../puzzles/falle.js';
+import { suchbild, blasen } from '../puzzles/gottesdienst.js';
 import { wahl, text, gespraech } from '../puzzles/schritte.js';
 import { silben, presse, fahrt, rose, reflexion } from '../puzzles/bonus.js';
 
-const module = { zuordnen, waage, standbild, markt, druck, duell, kampagne, auswahl, uebersetzung, flugschrift, falle, wahl, text, gespraech, silben, presse, fahrt, rose, reflexion };
+const module = { zuordnen, waage, standbild, markt, druck, duell, kampagne, auswahl, uebersetzung, flugschrift, falle, suchbild, blasen, wahl, text, gespraech, silben, presse, fahrt, rose, reflexion };
 export const systeme = { marktplatz, druckwelle, verhoer };
 
 // Fortschritt innerhalb eines Rätsels: bleibt, solange die Seite offen ist.

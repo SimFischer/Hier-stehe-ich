@@ -16,7 +16,7 @@ import { cards } from '../data/cards.js';
 import { teacher } from '../data/teacher.js';
 
 const daten = { cards, systeme, figuren: game.figuren, disputation };
-const BONUS_ARTEN = ['silben', 'presse', 'fahrt', 'rose', 'reflexion', 'zuordnen', 'wahl', 'text'];
+const BONUS_ARTEN = ['silben', 'presse', 'fahrt', 'rose', 'reflexion', 'zuordnen', 'wahl', 'text', 'suchbild', 'blasen'];
 
 test('Bonusspiele: Aufbau, Hilfen, Freischaltung', () => {
   for (const b of Object.values(bonus)) {
@@ -24,7 +24,7 @@ test('Bonusspiele: Aufbau, Hilfen, Freischaltung', () => {
     assert.ok(b.titel && b.kurz && b.minuten > 0 && b.minuten <= 10, `${b.id}: Titel, Kurztext, Zeit`);
     for (const s of b.schritte) {
       assert.ok(BONUS_ARTEN.includes(s.art), `${b.id}: Art ${s.art}`);
-      if (['silben', 'presse', 'fahrt', 'rose', 'zuordnen'].includes(s.art)) assert.equal(s.hilfen?.length, 3, `${b.id}: drei Hilfen`);
+      if (['silben', 'presse', 'fahrt', 'rose', 'zuordnen', 'suchbild', 'blasen'].includes(s.art)) assert.equal(s.hilfen?.length, 3, `${b.id}: drei Hilfen`);
       for (const text of [s.anweisung, s.ende, s.falsch, ...(s.absaetze || []).map((a) => a.text)].filter(Boolean)) {
         for (const satz of text.split(/(?<=[.!?:])\s+/)) assert.ok(woerter(satz) <= 19, `${b.id}: langer Satz: ${satz}`);
       }
@@ -175,4 +175,17 @@ test('Kompendium: Lösungen entstehen aus den Daten, Leitfaden ist vollständig'
   assert.deepEqual(loesung(wahl, daten), [wahl.optionen.find((o) => o.richtig).text]);
   assert.ok(loesung(puzzles.marktplatz.schritte[0], daten).some((z) => z.includes('wohin dein Geld geht')));
   assert.ok(teacher.faq.length >= 10 && teacher.fach.length >= 8);
+});
+
+test('Gottesdienst: Suchbild trifft die drei Unterschiede, Blasen zählen richtig', async () => {
+  const { suchRules, blasenRules } = await import('../js/puzzles/gottesdienst.js');
+  const such = bonus.gottesdienst.schritte.find((s) => s.art === 'suchbild');
+  for (const u of such.unterschiede) for (const o of u.orte) assert.equal(suchRules.treffer(such, o.x, o.y), u.id, `${u.id} in seiner Mitte`);
+  assert.equal(suchRules.treffer(such, 5, 5), null, 'oben links ist kein Unterschied');
+  const ids = new Set(such.unterschiede.map((u) => u.id)); assert.equal(ids.size, such.unterschiede.length);
+  const bl = bonus.gottesdienst.schritte.find((s) => s.art === 'blasen');
+  assert.ok(bl.gut.length >= 5 && bl.schlecht.length >= 5, 'genug Blasen beider Arten');
+  for (const b of [...bl.gut, ...bl.schlecht]) assert.ok(b.text && b.warum, 'jede Blase erklärt sich');
+  assert.equal(blasenRules.punkte([{ gut: true }, { gut: true }, { gut: false }]), 1);
+  assert.equal(blasenRules.gemeinde(bl, 0), bl.gemeinde[0]); assert.equal(blasenRules.gemeinde(bl, 13), bl.gemeinde[12]); assert.equal(blasenRules.gemeinde(bl, -2), bl.gemeinde[0]);
 });

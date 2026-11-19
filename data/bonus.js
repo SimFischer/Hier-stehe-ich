@@ -159,27 +159,52 @@ export const bonus = {
   },
   gottesdienst: {
     id: 'gottesdienst', bild: 'kunst-r8', titel: 'Gottesdienst damals und danach', nach: 'f', minuten: 3,
-    kurz: 'Was änderte sich im Gottesdienst durch die Reformation?',
+    kurz: 'Zeitreise in die Kirche: Finde die Unterschiede, dann hol die ganze Gemeinde ins Boot.',
     schritte: [
-      { art: 'zuordnen', titel: 'Gottesdienst damals und danach', layout: 'zwei',
-        anweisung: 'Durch die Reformation veränderte sich der Gottesdienst in den evangelischen Gemeinden. Was gehört wohin?',
-        falsch: 'Das passt zur anderen Seite. Denk daran: Die Gemeinde soll verstehen und mitmachen.',
-        ziele: [
-          { id: 'alt', bild: 'bonus-gottesdienst-1500', label: 'Um 1500', unter: 'vor der Reformation' },
-          { id: 'neu', bild: 'bonus-gottesdienst-1522', label: 'Evangelisch', unter: 'nach der Reformation' }
-        ],
-        items: [
-          { id: 'i-latein', text: 'Die Sprache ist Latein.', ziel: 'alt' },
-          { id: 'i-lieder', text: 'Die Gemeinde singt Lieder auf Deutsch.', ziel: 'neu' },
-          { id: 'i-kelch', text: 'Beim Abendmahl bekommen alle Brot und Wein.', ziel: 'neu' },
-          { id: 'i-brot', text: 'Die Gemeinde bekommt beim Abendmahl nur das Brot.', ziel: 'alt' },
-          { id: 'i-predigt', text: 'Die Predigt steht im Mittelpunkt und erklärt die Bibel.', ziel: 'neu' },
-          { id: 'i-chor', text: 'Es singen vor allem Priester und Chor.', ziel: 'alt' }
+      // Suchbild mit Zeitregler: dieselbe Kirche um 1500 und nach der Reformation. x, y, r in Prozent des Bildes.
+      { art: 'suchbild', titel: 'Zeitreise in die Kirche', vorher: 'bonus-gottesdienst-1500', nachher: 'bonus-gottesdienst-1522',
+        labelVorher: 'Um 1500', labelNachher: 'Nach der Reformation', regler: 'Zieh mich',
+        anweisung: 'Zweimal dieselbe Kirche. Zieh den Regler hin und her und finde die drei großen Unterschiede. Tippe sie im Bild an.',
+        gefunden: '{n} von {von} gefunden', daneben: 'Hier ist kein großer Unterschied. Vergleiche noch einmal.', fertigText: 'Alle drei gefunden! Im Gottesdienst ging es jetzt darum, dass alle verstehen und mitmachen.',
+        unterschiede: [
+          { id: 'kanzel', titel: 'Die Predigt', orte: [{ x: 87, y: 36, r: 11 }],
+            text: 'Auf der Kanzel predigt jetzt ein Pfarrer. Die Predigt erklärt die Bibel auf Deutsch. Sie steht im Mittelpunkt des Gottesdienstes.' },
+          { id: 'altar', titel: 'Der Altar', orte: [{ x: 50, y: 57, r: 10 }],
+            text: 'Um 1500 feierte der Priester die Messe am Altar, mit dem Rücken zur Gemeinde und auf Latein. Die meisten verstanden kaum etwas und schauten nur zu.' },
+          { id: 'lieder', titel: 'Die Gemeinde singt', orte: [{ x: 22, y: 76, r: 15 }, { x: 79, y: 78, r: 15 }],
+            text: 'Die Gemeinde hält Liedblätter in den Händen und singt selbst, auf Deutsch. Vorher sangen vor allem Priester und Chor.' }
         ],
         hilfen: [
-          'Luther wollte, dass alle verstehen, was im Gottesdienst geschieht.',
-          'Deutsch statt Latein, und die Gemeinde macht selbst mit: Das ist neu.',
-          'Um 1500: Latein, nur Brot, Priester und Chor singen. Evangelisch: deutsche Lieder, Brot und Wein, Predigt im Mittelpunkt.'
+          'Schau dir an, wo die Leute hinschauen. Und was halten sie in den Händen?',
+          'Ein Unterschied ist oben rechts, einer in der Mitte, einer bei den Leuten unten.',
+          'Kanzel oben rechts: Jetzt predigt dort jemand. Altar in der Mitte: Der Priester ist weg. Unten: Die Leute halten Liedblätter.'
+        ] },
+      // Reaktionsspiel: Blasen steigen auf. Antippen, was Luthers Ziel dient (alle verstehen und machen mit).
+      { art: 'blasen', titel: 'Alle machen mit', dauer: 40, start: 'Los!',
+        anweisung: 'Luther will: Alle sollen verstehen und mitmachen. Tippe die Blasen an, die dazu passen. Die anderen lässt du davonfliegen.',
+        punkte: 'Punkte: {n}', zeit: 'Noch {n} s', bestwert: 'Bestwert: {n}', nochmal: 'Noch einmal',
+        ende: 'Die Zeit ist um. Du hast {n} Punkte. {gemeinde}', gemeinde: { 0: 'Die Gemeinde schaut noch zu.', 6: 'Viele singen schon mit.', 12: 'Die ganze Kirche singt!' },
+        gut: [
+          { text: 'Lieder auf Deutsch', warum: 'Alle singen mit.' },
+          { text: 'Die Predigt erklärt die Bibel', warum: 'Alle verstehen, was in der Bibel steht.' },
+          { text: 'Brot und Wein für alle', warum: 'Beim Abendmahl bekommt jeder beides.' },
+          { text: 'Die Bibel auf Deutsch', warum: 'Jeder kann selbst lesen oder zuhören.' },
+          { text: 'Die Gemeinde singt mit', warum: 'Nicht nur der Chor.' },
+          { text: 'Gebete auf Deutsch', warum: 'Alle können mitbeten.' },
+          { text: 'Der Herr sei mit euch', warum: 'Auf Deutsch versteht es jeder.' }
+        ],
+        schlecht: [
+          { text: 'Messe auf Latein', warum: 'Das verstanden nur wenige.' },
+          { text: 'Nur der Chor singt', warum: 'Die Gemeinde hört nur zu.' },
+          { text: 'Der Kelch nur für den Priester', warum: 'Die Gemeinde bekam nur das Brot.' },
+          { text: 'Dominus vobiscum', warum: 'Latein: Die meisten verstanden es nicht.' },
+          { text: 'Die Gemeinde schaut nur zu', warum: 'Luther wollte, dass alle mitmachen.' },
+          { text: 'Ablassbrief kaufen', warum: 'Vergebung kann man nicht kaufen.' }
+        ],
+        hilfen: [
+          'Frag dich bei jeder Blase: Versteht das jeder? Kann jeder mitmachen?',
+          'Latein und „nur der Priester“ oder „nur der Chor“: Das lässt du fliegen.',
+          'Tippen: Deutsch, Lieder, Predigt, Brot und Wein für alle. Fliegen lassen: Latein, Chor allein, Kelch nur für den Priester, Ablass.'
         ] },
       { art: 'wahl', frage: 'Was war Luther am Gottesdienst am wichtigsten?',
         optionen: [
