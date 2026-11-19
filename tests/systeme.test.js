@@ -32,28 +32,43 @@ test('Marktplatz: lösbar, ausgewogen, endet immer', () => {
   for (const f of marktplatz.figuren) { assert.equal(f.antworten.length, 3, `${f.id}: drei Antworten`); assert.ok(f.antworten.some((a) => a.passt) && f.antworten.some((a) => !a.passt), `${f.id}: richtige und falsche Antworten`); }
 });
 
-test('Druckwelle: Deutsch schlägt Latein, alle Stufen erreichbar', () => {
+test('Druckwelle: Wer plant, erreicht mehr; ohne Boten bleibt es klein; alle Stufen erreichbar', () => {
   const l = laeufe((typ, rnd) => spieleDruck(druckwelle, typ, rnd));
-  assert.deepEqual(verteilung(l.sorgfaeltig), { 3: N });
-  assert.ok(mittel(l.zufall, (x) => x.anteil) < mittel(l.schwach, (x) => x.anteil));
-  assert.ok(mittel(l.zufall, (x) => x.stufe) < 2.5);
-  const latein = spieleDruck(druckwelle, 'latein', zufall(3));
-  assert.equal(latein.stufe, 1, 'nur Latein bleibt auf Stufe 1');
-  assert.ok(latein.anteil < 20);
-  const alle = [...l.sorgfaeltig, ...l.schwach, ...l.zufall, latein];
+  assert.deepEqual(verteilung(l.sorgfaeltig), { 3: N }, 'wer Verbote und Druckereien beachtet, erreicht Stufe 3');
+  assert.ok(mittel(l.zufall, (x) => x.anteil) < mittel(l.sorgfaeltig, (x) => x.anteil));
+  assert.ok(mittel(l.zufall, (x) => x.stufe) < 2.5, 'zufälliges Tippen reicht meist nicht für Stufe 3');
+  const passiv = spieleDruck(druckwelle, 'passiv', zufall(3));
+  assert.equal(passiv.stufe, 1, 'ohne Boten bleibt es bei Stufe 1');
+  const alle = [...l.sorgfaeltig, ...l.schwach, ...l.zufall, passiv];
   assert.deepEqual(Object.keys(verteilung(alle)).sort(), ['1', '2', '3']);
   assert.ok(alle.every((x) => x.z.ende && x.z.runde === druckwelle.runden));
+  // Latein trägt nicht weit: Nach der Lateinwoche kennen nur wenige die Thesen.
+  assert.ok(l.sorgfaeltig.every((x) => x.z.lateinAnteil < 15));
 });
 
 test('Druckwelle: Regeln im Einzelnen', () => {
-  let z = druck.start(druckwelle);
-  assert.equal(druck.kann(z, druckwelle, { stadt: 'koeln', fassung: 'latein' }), false, 'ferne Stadt ist nicht erreichbar');
-  z = druck.zug(z, druckwelle, { stadt: 'leipzig', fassung: 'deutsch' });
-  assert.equal(druck.kann(z, druckwelle, { stadt: 'magdeburg', fassung: 'deutsch' }), false, 'nur ein deutsches Blatt pro Woche');
-  z = druck.rundeEnde(z, druckwelle);
-  for (const n of ['wittenberg', 'magdeburg', 'erfurt']) assert.equal(z.st[n].f, 'deutsch', `Knoten Leipzig beliefert ${n}`);
-  assert.equal(z.st.nuernberg.f, 'kein');
-  for (const [a, b] of druckwelle.wege) for (const id of [a, b]) assert.ok(druckwelle.staedte.some((c) => c.id === id), `Weg nennt unbekannte Stadt ${id}`);
+  const d = druckwelle;
+  let z = druck.start(d);
+  assert.equal(druck.sprache(z, d), 'latein');
+  assert.equal(druck.kann(z, d, 'koeln'), false, 'ferne Stadt ist nicht erreichbar');
+  z = druck.zug(z, d, 'leipzig');
+  assert.equal(z.st.leipzig.f, 'latein', 'Woche 1: nur Latein');
+  z = druck.rundeEnde(z, d);
+  assert.deepEqual(z.ereignis.gedruckt, [], 'Latein wird nicht nachgedruckt');
+  assert.equal(druck.sprache(z, d), 'deutsch'); assert.equal(z.ereignis.phase, 'deutsch');
+  assert.equal(z.st.wittenberg.f, 'deutsch', 'Luther schreibt auf Deutsch');
+  z = druck.zug(z, d, 'leipzig');
+  assert.equal(z.st.leipzig.f, 'deutsch', 'Deutsch ersetzt Latein');
+  z = druck.rundeEnde(z, d);
+  assert.equal(z.st.erfurt.f, 'kein', 'Leipzig setzt erst eine Woche');
+  assert.equal(z.st.magdeburg.f, 'deutsch', 'Wittenberg druckt nach');
+  assert.equal(z.ereignis.phase, 'kirche'); assert.ok(z.droht.length > 0, 'ab Woche 3 droht ein Verbot');
+  const ziel = z.droht[0];
+  const geschuetzt = druck.kann(z, d, ziel) ? druck.zug(z, d, ziel) : z;
+  const n = druck.rundeEnde(geschuetzt, d);
+  if (geschuetzt !== z) assert.ok(n.ereignis.zuSpaet.includes(ziel), 'erreicht vor dem Verbot: zu spät für die Kirche');
+  for (const id of n.ereignis.verbot) { assert.equal(n.st[id].f, 'verbot'); assert.equal(druck.kann(n, d, id), false, 'verbotene Stadt bleibt zu'); }
+  for (const [a, b] of d.wege) for (const id of [a, b]) assert.ok(d.staedte.some((c) => c.id === id), 'Weg nennt eine unbekannte Stadt');
 });
 
 // Disputation: Sammlung, wie sie nach einer Station im Spiel vorliegt (zwei Thesen, keine Belohnungskarten).

@@ -1,0 +1,121 @@
+/* „Die Druckwelle“ (Station 5): Karte mit Städten, Boten und fliegenden Blättern. Zur Anzeige js/puzzles/druckwelle.js.
+   Farben: Latein blau-grau (nur Gelehrte), Deutsch rot (alle), Verbot dunkelrotes Siegel, Ziele golden leuchtend. */
+.art-druck:has(.dw-karte) { gap: var(--ab-2); }
+
+/* Kopfzeile: Woche, Boten, Leser */
+.dw-kopf { display: flex; align-items: center; gap: var(--ab-4); flex-wrap: wrap; padding: 6px 12px; border-radius: 10px;
+  background: linear-gradient(#3b2a1d, #2a1c14); color: var(--pergament); border: 2px solid #8a6a34; }
+.dw-woche { font-weight: bold; font-size: var(--text); }
+.dw-sprache { margin-left: 6px; padding: 1px 10px; border-radius: 12px; font-style: normal; font-size: var(--text-klein); }
+.dw-sprache.latein { background: #5d7f9e; color: #fff; }
+.dw-sprache.deutsch { background: var(--rot); color: #fff; }
+.dw-boten { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-klein); color: var(--ocker-hell); }
+.dw-bote-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #f3d27a; color: #2a1c14; border: 2px solid #fff3c4; transition: opacity 0.3s, transform 0.3s; }
+.dw-bote-icon svg { width: 22px; height: 22px; }
+.dw-bote-icon.weg { opacity: 0.25; transform: scale(0.85); }
+.dw-leser { margin-left: auto; display: grid; gap: 4px; min-width: min(360px, 40%); }
+.dw-leser strong { font-size: var(--text-klein); text-align: right; }
+.dw-balken { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(240, 217, 166, 0.5); }
+.dw-balken .gel { background: #8fb0cc; transition: width 0.8s ease-out; }
+.dw-balken .volk { background: linear-gradient(90deg, #c0533a, #e07a5f); transition: width 0.8s ease-out; }
+
+/* Karte */
+.dw-rahmen { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
+.dw-karte { overflow: hidden; border-radius: 8px; }
+.reich-linien .dw-linie { stroke: #3a2717; stroke-width: 0.5; stroke-dasharray: 1.4 1.1; opacity: 0.75; vector-effect: non-scaling-stroke; }
+.reich-linien svg .dw-linie { stroke-width: 3px; stroke-dasharray: 8 6; }
+.reich-linien svg .dw-linie.an { stroke: #b0402c; stroke-width: 6px; stroke-dasharray: none; opacity: 0.9; }
+.reich-linien svg .dw-linie.zu { stroke: #5b5550; opacity: 0.35; }
+
+.dw-stadt { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 2px; min-width: 52px; min-height: 52px; padding: 0;
+  background: transparent; border: 0; cursor: pointer; font: inherit; color: var(--tinte); z-index: 1; }
+.dw-stadt.oben .dw-name { order: -1; }
+.dw-punkt { position: relative; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 3px solid #3a2717;
+  background: #fbf4e2; color: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); transition: background 0.5s, transform 0.3s; }
+.dw-punkt svg { width: 24px; height: 24px; }
+.dw-name { font-size: 0.875rem; font-weight: bold; padding: 0 5px; border-radius: 4px; background: rgba(251, 244, 226, 0.92); white-space: nowrap; }
+.dw-stadt.f-latein .dw-punkt { background: #6f8fae; border-color: #2f4558; }
+.dw-stadt.f-deutsch .dw-punkt { background: #c98474; border-color: #6e1f14; }
+.dw-stadt.f-deutsch.v2 .dw-punkt { background: #b65f4c; }
+.dw-stadt.f-deutsch.v3 .dw-punkt { background: #a6432e; box-shadow: 0 0 0 4px rgba(166, 67, 46, 0.35), 0 2px 4px rgba(0, 0, 0, 0.4); }
+.dw-stadt.f-verbot .dw-punkt { background: radial-gradient(circle at 35% 30%, #a83a26, #5c1f12); border-color: #2a0f08; }
+.dw-stadt.f-verbot .dw-name { text-decoration: line-through; opacity: 0.75; }
+
+/* Druckerei: kleines Pressezeichen am Punkt */
+.dw-presse { position: absolute; top: -6px; right: -4px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 5px;
+  background: #2a1c14; color: #f3d27a; border: 2px solid #f3d27a; z-index: 2; }
+.dw-presse svg { width: 16px; height: 16px; }
+.dw-stadt.oben .dw-presse { top: auto; bottom: 18px; }
+.dw-stadt.setzt .dw-presse { animation: setzen 1s ease-in-out infinite alternate; }
+@keyframes setzen { from { transform: translateY(0); } to { transform: translateY(-3px); box-shadow: 0 0 8px #f3d27a; } }
+
+/* Ziel: golden pulsierend, Antippen schickt einen Boten */
+.dw-stadt.ziel .dw-punkt { animation: zielPuls 1.3s ease-in-out infinite; border-color: #b8860b; }
+@keyframes zielPuls { 0%, 100% { box-shadow: 0 0 0 0 rgba(243, 200, 74, 0.9), 0 2px 4px rgba(0, 0, 0, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(243, 200, 74, 0), 0 2px 4px rgba(0, 0, 0, 0.4); } }
+.dw-stadt.ziel:hover .dw-punkt, .dw-stadt.ziel:focus-visible .dw-punkt { transform: scale(1.15); }
+.dw-stadt.ziel .dw-name { background: #f3d27a; }
+.dw-stadt.neu .dw-punkt { animation: ankommen 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.4); }
+@keyframes ankommen { from { transform: scale(0.4); } }
+
+/* Verbot droht: roter Ring und Schild */
+.dw-stadt.droht .dw-punkt { outline: 3px dashed #c0392b; outline-offset: 4px; }
+.dw-droht { position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); padding: 1px 8px; border-radius: 10px; white-space: nowrap;
+  background: #a6432e; color: #fff; font-size: 0.8125rem; font-weight: bold; animation: drohen 1.2s ease-in-out infinite alternate; }
+@keyframes drohen { to { background: #d0533a; box-shadow: 0 0 10px rgba(208, 83, 58, 0.8); } }
+.dw-stadt.stempel .dw-punkt { animation: stempel 0.7s cubic-bezier(0.3, 1.5, 0.5, 1); background: #7f2f1f; }
+@keyframes stempel { 0% { transform: scale(2.4); opacity: 0; } 60% { transform: scale(0.9); opacity: 1; } 100% { transform: scale(1); } }
+.dw-zuspaet { position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); padding: 2px 10px; border-radius: 10px; white-space: nowrap;
+  background: #2f5a37; color: #eaffe5; font-weight: bold; animation: zoom 0.5s ease-out; }
+
+/* Fliegende Blätter und Boten */
+.dw-flieger { position: absolute; z-index: 3; width: 34px; height: 34px; transform: translate(-50%, -50%); pointer-events: none;
+  transition-property: left, top; transition-timing-function: cubic-bezier(0.45, 0, 0.3, 1); filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.5)); }
+.dw-flieger svg { width: 100%; height: 100%; }
+.dw-flieger.bote { color: #2a1c14; background: #f3d27a; border-radius: 50%; padding: 4px; border: 2px solid #fff3c4; }
+.dw-flieger.blatt { animation: flattern 0.3s ease-in-out infinite alternate; }
+@keyframes flattern { from { rotate: -12deg; } to { rotate: 12deg; } }
+
+/* Zwischenkarte beim Wechsel der Phase */
+.dw-zwischen { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: var(--ab-4); background: rgba(31, 26, 23, 0.55); animation: einblenden 0.3s ease-out; }
+.dw-zwischen-karte { max-width: 30em; padding: var(--ab-4) var(--ab-5); border-radius: 10px; text-align: center;
+  background: radial-gradient(ellipse at 30% 20%, #fdf7e6, #efdfb8); border: 3px solid #3a2717; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55); animation: zoom 0.35s ease-out; }
+.dw-zwischen-karte h3 { margin: 0 0 var(--ab-2); font-size: var(--text-gross); font-variant: small-caps; }
+.dw-zwischen-karte p { margin: 0 0 var(--ab-3); }
+.dw-zwischen.deutsch .dw-zwischen-karte { border-color: var(--rot); }
+.dw-zwischen.kirche .dw-zwischen-karte { border-color: #7f2f1f; background: radial-gradient(ellipse at 30% 20%, #fbeee6, #e7c9b9); }
+
+/* Seitenleiste */
+.dw-seite { gap: var(--ab-2); overflow-y: auto; }
+.dw-aufgabe { font-weight: bold; font-size: var(--text); }
+.dw-warnung { padding: 6px 10px; border-left: 5px solid #a6432e; border-radius: 4px; background: #fbe3da; }
+.dw-meldung { padding: 6px 10px; border-left: 5px solid #8a6a34; border-radius: 4px; background: rgba(255, 255, 255, 0.55); animation: einblenden 0.4s; }
+.dw-meldung.gut { border-color: #3e5b45; background: #e3efdf; }
+.dw-meldung.verbot { border-color: #7f2f1f; background: #f3d6cc; }
+.dw-meldung.info { border-color: #5d7f9e; background: #e5edf4; }
+.dw-legende { list-style: none; margin: auto 0 0; padding: 0; display: grid; gap: 4px; font-size: var(--text-klein); }
+.dw-legende li { display: flex; align-items: center; gap: 8px; }
+.dw-mini { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 2px solid #3a2717; color: #fff; }
+.dw-mini svg { width: 16px; height: 16px; }
+.dw-mini.presse { border-radius: 5px; background: #2a1c14; color: #f3d27a; border-color: #f3d27a; }
+.dw-mini.f-latein { background: #6f8fae; }
+.dw-mini.f-deutsch { background: #a6432e; }
+.dw-mini.f-verbot { background: #7f2f1f; }
+.dw-seite .dw-weiter { min-height: 52px; font-size: var(--text); }
+
+/* Auswertung: Latein gegen Deutsch als zwei Balken */
+.dw-vergleich { display: grid; gap: 6px; }
+.dw-vergleich-zeile { display: grid; grid-template-columns: 10em minmax(0, 1fr) 2.5em; align-items: center; gap: 8px; font-size: var(--text-klein); }
+.dw-vergleich-zeile strong { text-align: right; font-size: var(--text); }
+.dw-balken.gross { height: 22px; border-radius: 11px; background: rgba(31, 26, 23, 0.12); border-color: #8a6a34; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dw-stadt.ziel .dw-punkt, .dw-droht, .dw-stadt.setzt .dw-presse, .dw-flieger.blatt, .dw-stadt.neu .dw-punkt, .dw-stadt.stempel .dw-punkt { animation: none; }
+}
+
+/* Auswertung als große Karte in der Mitte der Karte */
+.dw-zwischen.ende { background: rgba(31, 26, 23, 0.35); }
+.dw-ende { max-width: 40em; width: 92%; text-align: left; display: grid; gap: var(--ab-2); }
+.dw-ende h3 { text-align: center; }
+.dw-ende p { margin: 0; }
+.dw-lehre { padding: 6px 10px; border-left: 5px solid var(--rot); background: rgba(255, 255, 255, 0.6); border-radius: 4px; font-weight: bold; }
+.dw-ende .reihe { justify-content: center; }

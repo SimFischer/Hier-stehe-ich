@@ -66,7 +66,7 @@ function loeseSchritt(s, schritt, sammel, gut) {
       return { stufe: { markt: r.stufe } };
     }
     case 'druck': {
-      const r = spieleDruck(systeme.druckwelle, gut ? 'sorgfaeltig' : 'latein', zufall(5));
+      const r = spieleDruck(systeme.druckwelle, gut ? 'sorgfaeltig' : 'passiv', zufall(5));
       assert.ok(r.z.ende);
       return { stufe: { druck: r.stufe } };
     }

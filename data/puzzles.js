@@ -197,9 +197,9 @@ export const puzzles = {
         anweisung: 'Zwei Thesen nimmst du als Karten in deinen Beutel. Welche findest du am stärksten?' },
       { art: 'druck', titel: 'Die Druckwelle', system: 'druckwelle',
         hilfen: [
-          'Achte auf den Zähler: Was bringt mehr, ein lateinisches oder ein deutsches Blatt?',
-          'Die eckigen Städte sind Knotenpunkte. Ein deutsches Blatt verbreitet sich von dort in alle Richtungen.',
-          'Schicke das erste deutsche Blatt nach Leipzig. Bringe mit Latein einen Boten nach Erfurt und dann ein deutsches Blatt nach Nürnberg. Danach sind Frankfurt, Köln und Straßburg an der Reihe.'
+          'Schau in der ersten Woche auf den Balken oben: Wie viele Menschen lesen Latein mit? Ab Woche 2 hast du deutsche Blätter.',
+          'Städte mit dem Pressezeichen sind Druckereien. Bringst du deutsche Blätter dorthin, drucken sie nach einer Woche nach und schicken sie von selbst weiter.',
+          'Rote Schilder zeigen, wo ein Verbot droht. Schick zuerst dorthin einen Boten. Erfurt hat keine Druckerei: Von dort brauchen Nürnberg und Frankfurt deine Boten.'
         ] },
       { art: 'duell', gegner: 'tetzel2', titel: 'Revanche: Die Thesen gegen Tetzel', szene: 'jueterbog',
         hilfen: [

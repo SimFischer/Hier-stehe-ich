@@ -26,20 +26,17 @@ export function spieleMarkt(d, typ, rnd) {
   return { z, zuege, stufe: markt.stufe(z, d) };
 }
 
+// Druckwelle: 'passiv' schickt keine Boten (nur die Kettenreaktion ab Wittenberg wirkt).
+// Wer es kennt, schickt Boten zuerst dorthin, wo ein Verbot droht, dann zu Druckereien und großen Städten.
 export function spieleDruck(d, typ, rnd) {
   let z = druck.start(d); let schritte = 0;
+  const C = (id) => d.staedte.find((c) => c.id === id);
   while (!z.ende) {
-    const zuege = [];
-    for (const c of d.staedte) for (const fassung of ['deutsch', 'latein']) if (druck.kann(z, d, { stadt: c.id, fassung })) zuege.push({ stadt: c.id, fassung, c });
-    if (!zuege.length || z.boten === 0) { z = druck.rundeEnde(z, d); continue; }
-    let zug;
-    if (kenntEs(typ, rnd)) {
-      // Deutsch zuerst, am liebsten in Knotenpunkte und große Städte; Latein dorthin, wo es neue Wege öffnet.
-      const wert = (m) => (m.fassung === 'deutsch' ? 100 + (m.c.knoten ? 50 : 0) + m.c.volk : druck.nachbarn(d, m.stadt).filter((n) => z.st[n].f === 'kein').length);
-      zug = [...zuege].sort((a, b) => wert(b) - wert(a))[0];
-    } else zug = aus(rnd, typ === 'latein' ? zuege.filter((m) => m.fassung === 'latein').concat(zuege.filter((m) => m.fassung === 'latein').length ? [] : [null]) : zuege);
-    if (!zug) { z = druck.rundeEnde(z, d); continue; }
-    z = druck.zug(z, d, zug);
+    const ziele = druck.ziele(z, d);
+    if (typ === 'passiv' || !ziele.length || z.boten === 0) { z = druck.rundeEnde(z, d); continue; }
+    const wert = (id) => (z.droht.includes(id) ? 100 : 0) + (C(id).druckerei ? 30 : 0) + C(id).volk;
+    const id = kenntEs(typ, rnd) ? [...ziele].sort((a, b) => wert(b) - wert(a))[0] : aus(rnd, ziele);
+    z = druck.zug(z, d, id);
     if (++schritte > 200) throw new Error('Druckwelle endet nicht');
   }
   return { z, anteil: druck.anteil(z, d), stufe: druck.stufe(z, d) };

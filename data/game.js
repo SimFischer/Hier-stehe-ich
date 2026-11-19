@@ -22,7 +22,7 @@ export const game = {
       karten: ['w1', 'w2', 'w3', 'k6'], platte: 'Münze', bild: 'platte-4', minuten: 11, offen: ['s3'],
       abschluss: 'Die Platte mit der Münze ist fertig. Luther hört von Jüterbog und greift zur Feder.' },
     { id: 's5', nr: 5, name: 'Die 95 Thesen', ort: 'Wittenberg', zeit: '31. Oktober 1517', szene: 'schreibstube', raetsel: 'druckwelle',
-      karten: ['k7', 'k8', 'k13'], platte: 'Feder', bild: 'platte-5', minuten: 12, offen: ['s4'],
+      karten: ['k7', 'k8', 'k13'], platte: 'Feder', bild: 'platte-5', minuten: 14, offen: ['s4'],
       abschluss: 'Die Platte mit der Feder ist fertig. 1521 muss Luther sich vor dem Kaiser verantworten.' },
     { id: 'sl', nr: 6, name: 'Die Leipziger Disputation', ort: 'Leipzig', zeit: 'Sommer 1519', szene: 'leipzig', raetsel: 'leipzig',
       karten: ['k9'], minuten: 7, offen: ['s5'], ohnePlatte: true,

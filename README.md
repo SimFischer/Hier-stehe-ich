@@ -51,7 +51,7 @@ npm test
 ```
 
 - **Daten:** Jede Station hat Szene, Rätsel, Lösung, drei Hilfen und Karten; alle Verweise existieren; Satzlänge und Glossar.
-- **Durchspiel:** Der Kernpfad wird zweimal vollständig gespielt, sorgfältig und schwach (falsche Karten in Worms, nur Latein in der Druckwelle), und nach jedem Fortsetzungscode fortgesetzt.
+- **Durchspiel:** Der Kernpfad wird zweimal vollständig gespielt, sorgfältig und schwach (falsche Karten in Worms, ohne Boten in der Druckwelle), und nach jedem Fortsetzungscode fortgesetzt.
 - **Spielsysteme:** Marktplatz, Druckwelle und Verhör je 500-mal für drei Spielertypen mit festem Startwert.
 - **Zeit:** Schätzung je Station aus Textmenge und Bedienschritten.
 - **Phase 3:** Regeln der Bonusspiele, Lehrkraftmodus (Hinspringen, Lösen) und die aus den Daten erzeugten Lösungen des Kompendiums.
