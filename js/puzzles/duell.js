@@ -336,7 +336,7 @@ export function view(el, schritt, ctx, fertig) {
     }
     if (!paare.length) return;
     document.querySelectorAll('.d-stempel').forEach((x) => x.remove());
-    const s = h('div', { class: 'd-stempel', 'aria-hidden': 'true' },
+    const s = h('div', { class: `d-stempel${alsKirche ? ' unten' : ''}`, 'aria-hidden': 'true' },
       h('strong', {}, t.duellStempel),
       paare.map(([l, c]) => h('span', {}, fuelle(t.duellStempelPaar, { karte: name(l), gegen: name(c) }))));
     document.body.append(s);
@@ -445,7 +445,7 @@ export function view(el, schritt, ctx, fertig) {
       h('div', {}, h('strong', {}, g.name), h('p', {}, schritt.text),
         schritt.erwartet ? null : knopf(t.weiter, () => { tutWeiter(); zeichne(); }, 'haupt klein'))) : null;
 
-    setzeInhalt(buehne, h('div', { class: `d-tisch${banner ? ' mit-banner' : ''}${tutorial ? ' mit-tutorial' : ''}`, style: tischStil },
+    setzeInhalt(buehne, h('div', { class: `d-tisch${alsKirche ? ' als-kirche' : ''}${banner ? ' mit-banner' : ''}${tutorial ? ' mit-tutorial' : ''}`, style: tischStil },
       kopf,
       reihe(ER, k.reihe, g.name),
       stand(ER, sk, sk > sl, k.siege, null),
@@ -487,7 +487,7 @@ export function view(el, schritt, ctx, fertig) {
         an ? h('span', { class: 'd-tausch-marke', 'aria-hidden': 'true' }, `↻ ${t.tauschMarke}`) : neu ? h('span', { class: 'd-tausch-marke neu', 'aria-hidden': 'true' }, t.tauschNeu) : null,
         h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: kk.titel }), onclick: () => gross({ id: inst.id }) }, 'i'));
     });
-    setzeInhalt(buehne, h('div', { class: 'd-tisch d-tausch', style: tischStil },
+    setzeInhalt(buehne, h('div', { class: `d-tisch d-tausch${alsKirche ? ' als-kirche' : ''}`, style: tischStil },
       h('div', { class: 'd-kopf kirche' }, verlassenKnopf(),
         h('span', { class: 'd-portrait klein', 'aria-hidden': 'true', html: portraetHtml(g, fig) }),
         h('div', { class: 'd-name' }, h('strong', {}, fuelle(t.duellGegen, { name: wen })), h('span', { class: 'd-runde' }, g.ort)), vollbildKnopf()),

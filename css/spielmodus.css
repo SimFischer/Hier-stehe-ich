@@ -177,3 +177,15 @@ html.im-spielmodus, html.im-spielmodus body { overflow: hidden; overscroll-behav
   .spielmodus .d-passen { min-height: 46px; }
 }
 @media (prefers-reduced-motion: reduce) { .d-konter, .d-tausch-karte, .spielmodus .d-hand > .karte.sammel.gwent { animation: none; transition: none; } }
+
+/* ---------- Kirchen-Modus: der Tisch ist gedreht ---------- */
+/* Du spielst die Kirche: deine (rote) Reihe liegt unten vor deiner Hand, Luthers (grüne) oben. Das Tischbild ist eine Draufsicht und wird um 180° gedreht. */
+.spielmodus .d-tisch.als-kirche { position: relative; isolation: isolate; background: none; }
+.spielmodus .d-tisch.als-kirche::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; transform: rotate(180deg);
+  background: linear-gradient(rgba(40, 26, 18, 0.25), rgba(40, 26, 18, 0.15)), var(--tisch, none) center 77% / 100% 130% no-repeat, radial-gradient(ellipse at 50% 50%, #6b4a30 0%, #4a3122 60%, #33221a 100%); }
+.spielmodus .d-tisch.als-kirche > .d-reihe.luther { grid-area: rk; }
+.spielmodus .d-tisch.als-kirche > .d-stand.luther { grid-area: sk; justify-content: flex-end; }
+.spielmodus .d-tisch.als-kirche > .d-reihe.kirche { grid-area: rl; }
+.spielmodus .d-tisch.als-kirche > .d-stand.kirche { grid-area: sl; justify-content: flex-start; }
+.spielmodus .d-tisch.als-kirche.d-tausch > * { grid-area: auto; }
+.d-stempel.unten { top: 60%; }
