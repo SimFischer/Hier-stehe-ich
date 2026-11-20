@@ -7,10 +7,11 @@ import { K, maxKopien, anzahl } from './duell-regeln.js';
 import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
+import { zeigeEinfuehrung, zielLeiste, zeigeSammlung } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0 });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false });
 // Doppelte Karten werden zu Siegellack. So viel Siegellack ergibt einen neuen Siegelbrief.
 export const WACHS_JE_BRIEF = 5;
 
@@ -125,7 +126,11 @@ export function view(el, schritt, ctx, fertig) {
     setzeInhalt(el, h('div', { class: 'kamp' },
       h('div', { class: 'kamp-kopf' },
         h('div', {}, h('p', { class: 'kicker' }, t.kampKicker), h('p', {}, t.kampText)),
-        h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 }))),
+        h('div', { class: 'kamp-kopf-rechts' },
+          h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 })),
+          knopf(t.kampSoGehts, einfuehrung, 'still klein'))),
+      // Immer ein nächstes Ziel vor Augen: Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer
+      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }) }),
       stand.briefe.length ? h('button', { type: 'button', class: 'kamp-brief-knopf oben', onclick: () => briefeOeffnen(uebersicht) },
         h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
         h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length }))) : null,
@@ -147,9 +152,16 @@ export function view(el, schritt, ctx, fertig) {
           return h('button', { type: 'button', class: `kamp-tafel${offen ? '' : ' zu'}${stand.sterne[id] ? ' besiegt' : ''}`, disabled: !offen, onclick: () => spiel(id) },
             h('span', { class: 'kamp-bild', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
             h('strong', {}, g.name), h('span', { class: 'klein' }, g.ort),
-            offen ? sterneHtml(stand.sterne[id] || 0) : h('span', { class: 'klein' }, t.kampGesperrt));
+            offen ? sterneHtml(stand.sterne[id] || 0) : h('span', { class: 'klein' }, t.kampGesperrt),
+            // Besiegte Gegner lohnen sich weiter: jeder Sieg bringt einen Siegelbrief
+            stand.sterne[id] ? h('span', { class: 'kamp-nochmal' }, t.kampNochmalBrief) : null);
         })))),
       h('div', { class: 'reihe fuss' }, h('span', {}), knopf(t.kampBeenden, () => fertig({}), 'still'))));
+  }
+
+  /** Einführung (beim ersten Start von selbst, sonst über „So funktioniert’s“). */
+  function einfuehrung() {
+    zeigeEinfuehrung({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, fertig: () => { if (!stand.intro) neu({ ...stand, intro: true }); } });
   }
 
   function spiel(id) {
@@ -194,4 +206,5 @@ export function view(el, schritt, ctx, fertig) {
   }
 
   uebersicht();
+  if (!stand.intro) einfuehrung();
 }

@@ -4,6 +4,7 @@ import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '..
 import { bildHtml } from '../engine/bilder.js';
 import { kampagne } from '../../data/kampagne.js';
 import { K } from './duell-regeln.js';
+import { wachsTropfen } from './kampagne-extras.js';
 
 const PAUSE = (ms) => new Promise((r) => setTimeout(r, ms));
 // Ebenen aus docs/ASSET-PROMPTS-5.md: Brief zu und auf auf derselben Fläche, darüber das Siegel (ganz, dann zwei Hälften
@@ -64,18 +65,24 @@ export function zeigeSiegelbriefe({ t, oeffne, anzahl, wachs, fertig }) {
           h('span', { class: 'sb-vorne' }, kartenChip(karte, {}),
             h('span', { class: `sb-marke${k.neu ? ' neu' : ''}` }, k.neu ? t.kampNeu : t.kampDoppelt))));
       platz.addEventListener('click', () => {
-        if (!platz.classList.contains('offen')) { platz.classList.add('offen'); platz.setAttribute('aria-label', karte.titel); offen += 1; if (offen === karten.length) fertigZeigen(); }
-        else zeigeKartenDetail(karte);
+        if (!platz.classList.contains('offen')) {
+          platz.classList.add('offen'); platz.setAttribute('aria-label', karte.titel); offen += 1;
+          // Doppelt: ein Tropfen Siegellack fliegt sichtbar heraus
+          if (!k.neu) platz.append(h('span', { class: 'sb-lack-plus', 'aria-hidden': 'true' }, h('span', { html: bildHtml('siegel-ganz') }), t.kampLackBekommen));
+          if (offen === karten.length) fertigZeigen();
+        } else zeigeKartenDetail(karte);
       });
       return platz;
     });
     const fuss = h('div', { class: 'sb-fuss' });
+    // Siegellack: Stand vor diesem Brief plus die Doppelten daraus; ist ein neuer Brief entstanden, sind die Tropfen wieder leer
     const fertigZeigen = () => {
       const rest = stand.briefe.length;
       setzeInhalt(fuss,
-        h('p', { class: 'sb-wachs' }, fuelle(t.kampWachs, { n: stand.wachs || 0, von: wachs }),
-          h('span', { class: 'sb-wachs-balken', 'aria-hidden': 'true' }, h('span', { style: `width:${((stand.wachs || 0) / wachs) * 100}%` }))),
-        ausWachs ? h('p', { class: 'sb-neuer-brief' }, t.kampWachsBrief) : null,
+        h('div', { class: 'sb-wachs' },
+          h('strong', {}, t.kampLackTitel), wachsTropfen(stand.wachs || 0, wachs),
+          h('span', {}, ausWachs ? t.kampWachsBrief : fuelle(t.kampLackNoch, { n: wachs - (stand.wachs || 0) }))),
+        h('p', { class: 'sb-lack-erklaerung' }, t.kampLackErklaerung),
         h('div', { class: 'reihe mitte' }, rest ? knopf(fuelle(t.kampNaechsterBrief, { n: rest }), briefZeigen, 'haupt gross') : knopf(t.kampInSammlung, zu, 'haupt gross')));
     };
     setzeInhalt(fuss, h('p', { class: 'sb-hinweis' }, t.kampKarteTippen), knopf(t.kampAlleAufdecken, () => plaetze.forEach((p, i) => setTimeout(() => { if (!p.classList.contains('offen')) p.click(); }, i * 250)), 'still'));

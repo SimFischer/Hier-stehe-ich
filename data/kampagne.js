@@ -76,13 +76,22 @@ export const kampagne = {
   // Sterne: 1 für einen Sieg, 1 für einen Sieg ohne verlorene Runde, 1 für einen Sieg mit höchstens kleinDeck Karten.
   sterne: { kleinDeck: 10 },
   regeln: { deckMin: 8, deckMax: 12 },
+  // Einführung beim ersten Start: sechs Tafeln mit Bild (art bestimmt das Bild, siehe js/puzzles/kampagne-extras.js)
+  einfuehrung: [
+    { art: 'weg', titel: 'Argumentiere dich nach oben!', text: 'Die Geschichte ist geschafft. Jetzt beginnt dein eigenes Spiel: Zwölf Gegner stehen zwischen dir und dem Gipfel. Ganz oben warten der Kaiser und der Papst.' },
+    { art: 'karten', titel: 'Deine Karten kommen mit', text: 'Alle Argumente, die du in der Geschichte gesammelt hast, gehören dir. Vor jeder Partie stellst du daraus dein Deck zusammen: acht bis zwölf Karten.' },
+    { art: 'briefe', titel: 'Siegelbriefe voller Karten', text: 'Jeder Sieg bringt einen Siegelbrief mit drei Karten. Mit drei Sternen gibt es einen großen dazu. Je weiter oben dein Gegner steht, desto seltener und stärker sind die Karten.' },
+    { art: 'lack', titel: 'Nichts geht verloren: Siegellack', text: 'Gewöhnliche und seltene Karten darfst du zweimal haben, epische und legendäre einmal. Bekommst du mehr, wird daraus Siegellack. Fünf Siegellack ergeben einen neuen Siegelbrief.' },
+    { art: 'anfuehrer', titel: 'Anführer freischalten', text: 'Für Sterne bekommst du neue Anführer: Melanchthon, Friedrich den Weisen und Katharina von Bora. Deinen Anführer spielst du einmal pro Partie, und er ist stark.' },
+    { art: 'wieder', titel: 'Stecken geblieben?', text: 'Spiel frühere Gegner noch einmal: Jeder Sieg bringt einen neuen Siegelbrief, und dein Deck wird stärker. Schau genau hin, welche Karte welche entkräftet. Wer das herausfindet, schlägt auch den Kaiser.' }
+  ],
   kapitel: [
     { titel: 'Kloster und Markt', zeit: 'bis 1517', gegner: ['k-novize', 'k-prediger', 'k-tetzel'] },
     { titel: 'Rom antwortet', zeit: '1518 bis 1519', gegner: ['k-prierias', 'k-cajetan', 'k-eck'] },
     { titel: 'Der Streit der Schriften', zeit: '1520 bis 1521', gegner: ['k-emser', 'k-aleander', 'k-albrecht'] },
     { titel: 'Kaiser und Papst', zeit: '1521 bis 1522', gegner: ['k-georg', 'k-karl', 'k-leo'] }
   ],
-  // belohnungen: Unter diesen Karten wählst du nach dem ersten Sieg eine aus, beim ersten Mal mit 3 Sternen noch eine.
+  // belohnungen: Beim ersten Sieg gegen diesen Gegner enthält der Siegelbrief sicher eine dieser Karten (js/puzzles/kampagne.js, briefRules).
   gegner: {
     'k-novize': { id: 'k-novize', figur: 'novize', name: 'Der Novizenmeister', ort: 'Erfurt, 1506', anfuehrer: 'a-novize',
       deck: ['c-werke', 'c-richter', 'c-fegefeuer', 'c-brief', 'c-ketzer', 'c-gehorsam', 'c-ketzer', 'c-brief'], belohnungen: ['r9', 'r8', 'r14'],

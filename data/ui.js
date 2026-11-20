@@ -121,6 +121,13 @@ export const t = {
   kampKarteVerdeckt: 'Verdeckte Karte, Seltenheit:', kampNeu: 'Neu!', kampDoppelt: 'Doppelt: +1 Siegellack', kampAlleAufdecken: 'Alle aufdecken', kampDeineKarten: 'Deine Karten',
   kampInSammlung: 'In die Sammlung', kampNaechsterBrief: 'Nächsten Brief öffnen ({n})', kampWachs: 'Siegellack: {n} von {von}', kampWachsBrief: 'Aus deinem Siegellack ist ein neuer Siegelbrief geworden!',
   duellKopien: '{n} von {von} Kopien im Deck', duellDeckVoll: 'Dein Deck ist voll. Nimm erst eine Karte heraus.', kampKopienText: 'Gewöhnliche und seltene Karten darfst du zweimal ins Deck nehmen. Tippe noch einmal für die zweite Kopie.',
+  // Hammer & Siegel: Einführung, Ziele, Sammlung
+  kampSoGehts: 'So funktioniert’s', kampIntroWeiter: 'Weiter', kampIntroZurueck: 'Zurück', kampIntroLos: 'Los geht’s!', kampIntroTafel: 'Tafel {n} von {von}',
+  kampGipfel: 'Dein Weg zum Gipfel: {n} von {von} Gegnern besiegt', kampGipfelZiel: 'Gipfel', kampAktuell: 'jetzt',
+  kampLackTitel: 'Siegellack', kampLackNoch: 'Noch {n} bis zum nächsten Siegelbrief', kampLackErklaerung: 'Karten, die du schon so oft hast, wie du darfst, werden zu Siegellack. 5 Siegellack = 1 neuer Siegelbrief.',
+  kampSammlungTitel: 'Sammlung', kampSammlungStand: '{n} von {von} Karten', kampSammlungAnsehen: 'Sammlung ansehen', kampSammlungText: 'Alle Karten, die es zu gewinnen gibt. Verdeckte Karten fehlen dir noch. Die Zahl zeigt, wie oft du eine Karte hast.',
+  kampFuehrerTitel: 'Nächster Anführer', kampFuehrerNoch: 'Noch {n} ★ bis {name}', kampFuehrerAlle: 'Alle Anführer sind frei!',
+  kampNochmalBrief: 'Nochmal spielen: +1 Siegelbrief', kampLackBekommen: '+1 Siegellack',
   tutorialAndereKarte: 'In der Übung sagt dir Bruder Johannes, welche Karte jetzt dran ist.',
   duellAnfuehrerGegner: 'Anführer: {name}. Diese Karte kann der Gegner einmal in der ganzen Disputation spielen.',
   duellAnfuehrerDu: 'Dein Anführer: {name}. Tippe im Spiel auf ihn, um ihn einmal auszuspielen.',
