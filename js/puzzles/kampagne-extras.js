@@ -41,7 +41,7 @@ function gipfelWeg(stand, figuren, { klein = false } = {}) {
 }
 
 /** Fortschrittsleiste oben in der Übersicht: immer ein nächstes Ziel vor Augen. */
-export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung, onLexikon, onAbzeichen }) {
+export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung, onLexikon, onAbzeichen, onWerkstatt }) {
   const lex = lexikonStand(stand);
   const besiegt = reihenfolge.filter((id) => stand.sterne[id]).length;
   const wachs = stand.wachs || 0;
@@ -55,9 +55,10 @@ export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung
     h('div', { class: 'ke-reihe' },
       h('div', { class: 'ke-ziel lack' },
         h('strong', {}, t.kampLackTitel),
-        wachsTropfen(wachs, wachsJeBrief),
-        h('span', {}, fuelle(t.kampLackNoch, { n: wachsJeBrief - wachs })),
-        h('small', {}, t.kampLackErklaerung)),
+        wachsTropfen(Math.min(wachs, wachsJeBrief), wachsJeBrief),
+        h('span', {}, fuelle(t.kampLackStand, { n: wachs })),
+        h('small', {}, t.kampLackErklaerung),
+        knopf(t.kampWerkOeffnen, onWerkstatt, 'still klein')),
       h('div', { class: 'ke-ziel sammlung' },
         h('strong', {}, t.kampSammlungTitel),
         h('span', { class: 'ke-balken', 'aria-hidden': 'true' }, h('span', { style: `width:${(s.n / s.von) * 100}%` })),
@@ -229,6 +230,56 @@ export function zeigeAbzeichen({ t, stand }) {
     h('div', { class: 'ke-abz-liste' }, kampagne.abzeichen.map((a) => h('div', { class: `ke-abz-eintrag${hat.has(a.id) ? ' an' : ''}` },
       siegelAbzeichen(a, hat.has(a.id)),
       h('div', {}, h('strong', {}, a.titel), h('p', {}, a.text), h('em', {}, hat.has(a.id) ? t.kampAbzErreicht : t.kampAbzOffen)))))));
+  document.body.append(buehne);
+  buehne.querySelector('.knopf')?.focus();
+}
+
+// ---------- Druckerwerkstatt: Siegellack ausgeben ----------
+/** Werkstatt mit drei Bereichen: Siegelbrief, Wunschkarte drucken, Prachtausgaben.
+ *  lage(): { stand, besitz } (aktuell), regeln: { druckbar, preis, kaufe }, kaufen(kauf): neuer Stand oder null, briefeOeffnen(): Briefe zeigen. */
+export function zeigeWerkstatt({ t, lage, regeln, kaufen, briefeOeffnen }) {
+  const buehne = h('div', { class: 'ke-buehne', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.kampWerkTitel });
+  const zu = () => buehne.remove();
+  const preisKnopf = (text, kauf, stand, extra = {}) => {
+    const preis = regeln.preis(kauf, stand);
+    const geht = (stand.wachs || 0) >= preis && !extra.disabled;
+    return h('button', { type: 'button', class: `ke-werk-kauf${geht ? '' : ' zu'}`, disabled: !geht,
+      onclick: () => { if (!kaufen(kauf)) return; if (kauf.art === 'brief') { zu(); briefeOeffnen(); } else zeichne(); } },
+      h('span', {}, text), h('span', { class: 'ke-werk-preis' }, h('span', { class: 'ke-werk-tropfen', 'aria-hidden': 'true', html: bildHtml('siegel-ganz') }), String(preis)));
+  };
+  function zeichne() {
+    const { stand, besitz } = lage();
+    const druckbar = regeln.druckbar(stand, besitz).sort((a, b) => regeln.preis({ art: 'karte', id: a }) - regeln.preis({ art: 'karte', id: b }) || K(a).titel.localeCompare(K(b).titel));
+    const eigene = [...new Set(besitz)].filter((id) => K(id)?.seltenheit).sort((a, b) => ((stand.pracht || {})[b] || 0) - ((stand.pracht || {})[a] || 0) || K(a).titel.localeCompare(K(b).titel));
+    const stufe = (id) => (stand.pracht || {})[id] || 0;
+    setzeInhalt(buehne, h('div', { class: 'ke-sammlung ke-werk' },
+      h('div', { class: 'ke-sammlung-kopf' },
+        h('div', {}, h('h2', {}, t.kampWerkTitel),
+          h('p', { class: 'ke-werk-stand' }, h('span', { class: 'ke-werk-tropfen gross', 'aria-hidden': 'true', html: bildHtml('siegel-ganz') }), fuelle(t.kampWerkStand, { n: stand.wachs || 0 }))),
+        knopf(t.schliessen, zu, 'haupt')),
+      h('p', { class: 'ke-lex-erklaerung' }, t.kampWerkText),
+      // 1. Siegelbrief
+      h('section', { class: 'ke-werk-teil' },
+        h('h3', {}, t.kampWerkBriefTitel),
+        h('div', { class: 'ke-werk-brief' }, h('span', { class: 'ke-brief klein', 'aria-hidden': 'true', html: bildHtml('siegelbrief-zu') }),
+          h('p', {}, t.kampWerkBriefText), preisKnopf(t.kampWerkKaufen, { art: 'brief' }, stand))),
+      // 2. Wunschkarte drucken
+      h('section', { class: 'ke-werk-teil' },
+        h('h3', {}, t.kampWerkKarteTitel), h('p', {}, t.kampWerkKarteText),
+        druckbar.length ? h('div', { class: 'ke-werk-karten' }, druckbar.map((id) => h('div', { class: 'ke-werk-karte' },
+          kartenChip(K(id), { klein: true, onclick: () => zeigeKartenDetail(K(id)) }),
+          h('span', { class: 'ke-werk-hat' }, fuelle(t.kampWerkHast, { n: anzahl(besitz, id), von: maxKopien(id) })),
+          preisKnopf(t.kampWerkDrucken, { art: 'karte', id }, stand))))
+          : h('p', { class: 'ke-werk-leer' }, t.kampWerkKarteLeer)),
+      // 3. Prachtausgaben
+      h('section', { class: 'ke-werk-teil' },
+        h('h3', {}, t.kampWerkPrachtTitel), h('p', {}, t.kampWerkPrachtText),
+        h('div', { class: 'ke-werk-karten' }, eigene.map((id) => h('div', { class: 'ke-werk-karte' },
+          kartenChip(K(id), { klein: true, onclick: () => zeigeKartenDetail(K(id)) }),
+          h('span', { class: 'ke-werk-hat' }, t.kampWerkStufe[stufe(id)]),
+          stufe(id) < 2 ? preisKnopf(stufe(id) ? t.kampWerkVergolden : t.kampWerkKolorieren, { art: 'pracht', id }, stand) : null))))));
+  }
+  zeichne();
   document.body.append(buehne);
   buehne.querySelector('.knopf')?.focus();
 }

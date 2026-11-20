@@ -14,7 +14,7 @@ const vorladen = (namen) => namen.forEach((n) => { const d = document.createElem
 
 /**
  * Öffnet die Briefe in stand.briefe nacheinander.
- * oeffne(): öffnet den ersten Brief und gibt { stand, brief, karten, ausWachs } zurück (speichert selbst).
+ * oeffne(): öffnet den ersten Brief und gibt { stand, brief, karten } zurück (speichert selbst).
  * fertig(): nach dem letzten Brief.
  */
 export function zeigeSiegelbriefe({ t, oeffne, anzahl, wachs, fertig }) {
@@ -80,8 +80,8 @@ export function zeigeSiegelbriefe({ t, oeffne, anzahl, wachs, fertig }) {
       const rest = stand.briefe.length;
       setzeInhalt(fuss,
         h('div', { class: 'sb-wachs' },
-          h('strong', {}, t.kampLackTitel), wachsTropfen(stand.wachs || 0, wachs),
-          h('span', {}, ausWachs ? t.kampWachsBrief : fuelle(t.kampLackNoch, { n: wachs - (stand.wachs || 0) }))),
+          h('strong', {}, t.kampLackTitel), wachsTropfen(Math.min(stand.wachs || 0, wachs), wachs),
+          h('span', {}, fuelle(t.kampLackStand, { n: stand.wachs || 0 }))),
         h('p', { class: 'sb-lack-erklaerung' }, t.kampLackErklaerung),
         h('div', { class: 'reihe mitte' }, rest ? knopf(fuelle(t.kampNaechsterBrief, { n: rest }), briefZeigen, 'haupt gross') : knopf(t.kampInSammlung, zu, 'haupt gross')));
     };

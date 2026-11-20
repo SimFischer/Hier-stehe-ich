@@ -1,7 +1,7 @@
 // Siegel-Abzeichen: Bedingungen, Belohnung, und dass jedes Abzeichen mit der vollen Sammlung erreichbar ist.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { rules, neuerKampagnenStand, ABZEICHEN_WACHS, WACHS_JE_BRIEF } from '../js/puzzles/kampagne.js';
+import { rules, neuerKampagnenStand, ABZEICHEN_WACHS } from '../js/puzzles/kampagne.js';
 import { K, maxKopien, deckGegen } from '../js/puzzles/duell-regeln.js';
 import { kampagne } from '../data/kampagne.js';
 import { lutherKarten } from '../data/kartei.js';
@@ -54,9 +54,8 @@ test('Abzeichen: Belohnung mit Siegellack, jedes nur einmal', () => {
   const s = { ...neuerKampagnenStand(), wachs: 4 };
   const r = rules.vergebeAbzeichen(s, { gegner: 'k-tetzel', z: sieg, deck: thesen });
   assert.ok(r.neue.some((a) => a.id === 'thesen'));
-  const lack = 4 + r.neue.length * ABZEICHEN_WACHS;
-  assert.equal(r.stand.wachs, lack % WACHS_JE_BRIEF);
-  assert.equal(r.stand.briefe.length, Math.floor(lack / WACHS_JE_BRIEF));
+  assert.equal(r.stand.wachs, 4 + r.neue.length * ABZEICHEN_WACHS, 'Siegellack bleibt stehen');
+  assert.equal(r.stand.briefe.length, 0, 'keine automatischen Briefe');
   const nochmal = rules.vergebeAbzeichen(r.stand, { gegner: 'k-tetzel', z: sieg, deck: thesen });
   assert.equal(nochmal.neue.length, 0);
   assert.equal(nochmal.stand, r.stand);

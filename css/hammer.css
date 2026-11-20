@@ -193,3 +193,32 @@
 .kamp-abz-neu .klein { margin: 0; color: #7f2f1f; font-weight: bold; }
 @keyframes siegel-druck { 0% { transform: scale(2.2) rotate(-20deg); opacity: 0; } 70% { transform: scale(0.92) rotate(3deg); opacity: 1; } 100% { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .kamp-abz-zeile .ke-abz-siegel { animation: none; } }
+
+/* ---------- Druckerwerkstatt ---------- */
+.ke-werk-stand { display: flex; align-items: center; gap: 8px; margin: 2px 0 0; font-weight: bold; color: #ffe08a; font-size: var(--text); }
+.ke-werk-tropfen { display: inline-grid; width: 22px; height: 22px; flex: none; }
+.ke-werk-tropfen img { width: 100%; height: 100%; object-fit: contain; }
+.ke-werk-tropfen.gross { width: 30px; height: 30px; }
+.ke-werk-teil { display: grid; gap: var(--ab-2); padding: var(--ab-3); border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(201, 163, 92, 0.35); }
+.ke-werk-teil h3 { margin: 0; color: #ffe08a; font-variant: small-caps; }
+.ke-werk-teil > p { margin: 0; color: var(--ocker-hell); }
+.ke-werk-brief { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--ab-3); }
+.ke-werk-brief .ke-brief { width: 90px; }
+.ke-werk-brief p { margin: 0; }
+.ke-werk-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--ab-3); }
+/* Einfacher Block wie in der Sammlung: Im Raster würde das Seitenverhältnis der Karte die Breite hochtreiben. */
+.ke-werk-karte { display: block; min-width: 0; }
+.ke-werk-karte .karte.sammel.gwent { width: 100%; }
+.ke-werk-karte > * + * { margin-top: 6px; }
+.ke-werk-karte .ke-werk-kauf { width: 100%; }
+.ke-werk-hat { display: block; text-align: center; font-size: var(--text-klein); color: var(--ocker-hell); }
+.ke-werk-kauf { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; padding: 6px 12px; border-radius: 10px; cursor: pointer;
+  font: inherit; font-weight: bold; background: linear-gradient(#fff6d8, #efdfb8); color: var(--tinte); border: 2px solid #f3d27a; }
+.ke-werk-kauf:hover:not(:disabled) { background: linear-gradient(#fffaf0, #f6e6bf); }
+.ke-werk-kauf.zu { opacity: 0.45; cursor: default; }
+.ke-werk-preis { display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; border-radius: 10px; background: #7f2f1f; color: #fff3c4; }
+.ke-werk-preis .ke-werk-tropfen { width: 18px; height: 18px; }
+.ke-werk-leer { font-style: italic; }
+@media (orientation: portrait) { .ke-werk-brief { grid-template-columns: auto minmax(0, 1fr); } .ke-werk-brief .ke-werk-kauf { grid-column: 1 / -1; } }
+/* In der Kartenreihe: Knopf schmal, Preis darf in eine zweite Zeile rutschen */
+.ke-werk-karte .ke-werk-kauf { flex-wrap: wrap; gap: 4px 6px; padding: 5px 6px; font-size: var(--text-klein); overflow: hidden; }

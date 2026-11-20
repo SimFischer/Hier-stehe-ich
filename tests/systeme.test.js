@@ -203,19 +203,18 @@ test('Kampagne: Siegelbriefe bringen immer Fortschritt, Kopien bis zur Grenze, d
   // Großer Brief: vier Karten, die letzte mindestens episch
   const gr = briefRules.inhalt({ art: 'gross', gegner: reihenfolge.at(-1) }, story, rnd);
   assert.equal(gr.length, 4); assert.ok(rang.indexOf(K(gr[3].id).seltenheit) >= 2);
-  // Viele Briefe: Am Ende ist alles gesammelt; Doppelte ergeben neue Briefe
+  // Viele Briefe: Am Ende ist alles gesammelt; Doppelte werden zu Siegellack
   // Kapitel 1: höchstens „selten“ (außer der sicheren Belohnungskarte)
   for (let i = 0; i < 30; i++) for (const x of briefRules.inhalt({ art: i % 3 ? 'klein' : 'gross', gegner: reihenfolge[0] }, story, rnd)) assert.ok(rang.indexOf(K(x.id).seltenheit) <= 1, `Kapitel 1 ohne ${K(x.id).seltenheit}`);
   // Kapitel 2: höchstens „episch“
   for (let i = 0; i < 30; i++) for (const x of briefRules.inhalt({ art: 'klein', gegner: reihenfolge[3] }, story, rnd)) assert.ok(rang.indexOf(K(x.id).seltenheit) <= 2, 'Kapitel 2 ohne legendär');
-  let s = neuerKampagnenStand(); s.briefe = Array.from({ length: 40 }, () => ({ art: 'klein', gegner: reihenfolge.at(-1) }));
-  let ausWachs = 0;
-  while (s.briefe.length) { const r = kamp.oeffne(s, [...story, ...s.karten], rnd); ausWachs += r.ausWachs; s = r.stand; }
+  let s = neuerKampagnenStand(); s.briefe = Array.from({ length: 70 }, () => ({ art: 'klein', gegner: reihenfolge.at(-1) }));
+  while (s.briefe.length) { const r = kamp.oeffne(s, [...story, ...s.karten], rnd); s = r.stand; }
   const alle = lutherKarten.filter((x) => x.seltenheit).map((x) => x.id);
   const besitz = [...story, ...s.karten];
   assert.ok(alle.every((id) => anzahl(besitz, id) === maxKopien(id)), 'alle Karten so oft gesammelt, wie man sie haben darf');
   assert.equal(maxKopien('k1'), 2); assert.equal(maxKopien('r17'), 1, 'legendär nur einmal');
-  assert.ok(ausWachs > 0 && s.wachs < WACHS_JE_BRIEF, 'Siegellack wird zu neuen Briefen');
+  assert.ok(s.wachs > WACHS_JE_BRIEF, 'Doppelte werden zu Siegellack, der stehen bleibt (ausgeben in der Werkstatt)');
 });
 
 test('Kampagne: Schwierigkeit steigt, jeder Gegner ist zu schlagen', () => {

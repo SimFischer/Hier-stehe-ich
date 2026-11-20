@@ -7,6 +7,8 @@ import { zeigeKarte, zeigeBeutel, zeigeNotizbuch, zeigeBonus, zeigeDisputation, 
 import { bildHtml, hatBild, bildUrl } from './engine/bilder.js';
 import { game } from '../data/game.js';
 import { t } from '../data/ui.js';
+import { ladeStand } from './puzzles/kampagne.js';
+import { setzePracht } from './engine/pracht.js';
 
 const ico = (pfad) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${pfad}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 // Symbol der Leiste: Holzschnitt leiste-<name> (docs/ASSET-PROMPTS-7.md), bis dahin ein Strichsymbol.
@@ -64,6 +66,8 @@ function aufbau() {
 }
 
 start();
+// Prachtausgaben aus „Hammer & Siegel“ gelten überall, wo Karten gezeigt werden
+setzePracht(ladeStand().pracht);
 aufbau();
 beiAenderung(zeichnePlatten);
 zeichnePlatten();

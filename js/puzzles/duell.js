@@ -5,6 +5,7 @@ import { bildHtml, figurHtml, portraetHtml, kartenBild, bildUrl } from '../engin
 import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
 import { trenne } from '../../data/silben.js';
+import { prachtKlasse } from '../engine/pracht.js';
 import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, startDeckGegen, anzahl } from './duell-regeln.js';
 
 export { rules };
@@ -253,7 +254,7 @@ export function view(el, schritt, ctx, fertig) {
     const vorher = werteVorher.get(inst.uid);
     const ent = entkraeftet(z, seite, inst);
     const bild = kartenBild(k);
-    const klassen = ['bk', `typ-${k.typ}`, `rar-${k.seltenheit}`, seite, bild.kunst ? 'mit-kunst' : '', k.anfuehrer ? 'ist-anfuehrer' : '',
+    const klassen = ['bk', `typ-${k.typ}`, `rar-${k.seltenheit}`, seite, seite === 'luther' ? prachtKlasse(k.id).trim() : '', bild.kunst ? 'mit-kunst' : '', k.anfuehrer ? 'ist-anfuehrer' : '',
       ent ? 'entkraeftet' : '', w > k.staerke ? 'plus' : w < k.staerke ? 'minus' : '',
       inst.uid === letzte ? 'neu' : '', vorher != null && vorher !== w ? 'pop' : '', ent && vorher != null && vorher !== 1 ? 'bricht' : ''];
     return h('button', { type: 'button', class: klassen.filter(Boolean).join(' '), onclick: () => gross({ id: inst.id, seite, uid: inst.uid }),

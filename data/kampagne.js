@@ -117,6 +117,9 @@ export const kampagne = {
   // gegen diesen Gegner oder sobald man ihn einmal besiegt hat.
   startDeck: { groesse: [11, 10, 10, 10], offen: 3 },
   bestesDeckNach: 2,
+  // Druckerwerkstatt: Siegellack ausgeben. Ein Siegelbrief ist am günstigsten; Wunschkarten (nur Konter gegen Karten,
+  // die man schon kennt) kosten nach Seltenheit; Prachtausgaben verschönern eigene Karten (Stufe 1 koloriert, Stufe 2 mit Gold).
+  werkstatt: { brief: 5, karte: { gewoehnlich: 8, selten: 12, episch: 20, legendaer: 30 }, pracht: [3, 8] },
   // Siegel-Abzeichen: Aufgaben, die zu immer neuen Decks anregen. Jedes bringt Siegellack (js/puzzles/kampagne.js, ABZEICHEN_WACHS).
   // bed: gegner (nur gegen ihn), abKapitel (Gegner ab diesem Kapitel, 1–4), typMin/typMax (Karten einer Art im Deck), bundMin, deckMax,
   // trefferMin (Konter in einer Partie), zuNull (keine Runde verloren), ohneAnfuehrer, durchschaut (für jede Karte dieses Gegners
@@ -144,7 +147,7 @@ export const kampagne = {
     { art: 'weg', titel: 'Argumentiere dich nach oben!', text: 'Die Geschichte ist geschafft. Jetzt beginnt dein eigenes Spiel: Zwölf Gegner stehen zwischen dir und dem Gipfel. Ganz oben warten der Kaiser und der Papst.' },
     { art: 'karten', titel: 'Deine Karten kommen mit', text: 'Alle Argumente, die du in der Geschichte gesammelt hast, gehören dir. Vor jeder Partie stellst du daraus dein Deck zusammen: acht bis zwölf Karten.' },
     { art: 'briefe', titel: 'Siegelbriefe voller Karten', text: 'Jeder Sieg bringt einen Siegelbrief mit drei Karten. Mit drei Sternen gibt es einen großen dazu. Epische Karten gibt es erst ab Kapitel 2, legendäre erst ab Kapitel 3: Wer weiterkommt, findet die stärksten Karten.' },
-    { art: 'lack', titel: 'Nichts geht verloren: Siegellack', text: 'Gewöhnliche und seltene Karten darfst du zweimal haben, epische und legendäre einmal. Bekommst du mehr, wird daraus Siegellack. Fünf Siegellack ergeben einen neuen Siegelbrief.' },
+    { art: 'lack', titel: 'Nichts geht verloren: Siegellack', text: 'Gewöhnliche und seltene Karten darfst du zweimal haben, epische und legendäre einmal. Bekommst du mehr, wird daraus Siegellack. In der Druckerwerkstatt tauschst du ihn gegen Siegelbriefe (fünf Siegellack), Wunschkarten oder Prachtausgaben.' },
     { art: 'anfuehrer', titel: 'Anführer freischalten', text: 'Für Sterne bekommst du neue Anführer: Melanchthon, Friedrich den Weisen und Katharina von Bora. Deinen Anführer spielst du einmal pro Partie, und er ist stark.' },
     { art: 'wieder', titel: 'Stecken geblieben?', text: 'Spiel frühere Gegner noch einmal: Jeder Sieg bringt einen neuen Siegelbrief, und dein Deck wird stärker. Schau genau hin, welche Karte welche entkräftet. Wer das herausfindet, schlägt auch den Kaiser.' }
   ],

@@ -4,6 +4,7 @@ import { t } from '../../data/ui.js';
 import { bildHtml, bildUrl, kartenBild, symbolHtml } from './bilder.js';
 import { alleKarten } from '../../data/kartei.js';
 import { trenne } from '../../data/silben.js';
+import { prachtKlasse } from './pracht.js';
 
 /** Baut ein Element: h('button', { class: 'x', onclick: fn }, 'Text', kind) */
 export function h(tag, attrs = {}, ...kinder) {
@@ -102,7 +103,7 @@ export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = fa
     h('span', { class: 'k-kopf' }, h('strong', {}, karte.titel), staerke));
   const bild = kartenBild(karte);
   return h(onclick ? 'button' : 'div', { type: onclick ? 'button' : null,
-    class: `karte sammel gwent typ-${typ}${rar}${bild.kunst ? ' mit-kunst' : ''}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''}${text ? ' mit-text' : ''} ${extra}`.trim(),
+    class: `karte sammel gwent typ-${typ}${rar}${prachtKlasse(karte.id)}${bild.kunst ? ' mit-kunst' : ''}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''}${text ? ' mit-text' : ''} ${extra}`.trim(),
     'aria-pressed': onclick ? String(gewaehlt) : null, disabled: aus, onclick,
     'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', karte.seltenheit ? t.seltenheit[karte.seltenheit] : '', ...faehigkeiten(karte), karte.text].filter(Boolean).join('. ') },
     h('span', { class: 'k-bild', 'aria-hidden': 'true', style: bild.kunst ? `--kunst: url("${bildUrl(bild.name)}")` : null, html: bildHtml(bild.name) }),

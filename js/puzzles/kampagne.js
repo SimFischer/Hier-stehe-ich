@@ -7,15 +7,16 @@ import { K, maxKopien, anzahl } from './duell-regeln.js';
 import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
-import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen } from './kampagne-extras.js';
+import { setzePracht } from '../engine/pracht.js';
+import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen, zeigeWerkstatt } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {} });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {} });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
-// Doppelte Karten werden zu Siegellack. So viel Siegellack ergibt einen neuen Siegelbrief.
+// Doppelte Karten werden zu Siegellack. So viel kostet ein Siegelbrief in der Druckerwerkstatt.
 export const WACHS_JE_BRIEF = 5;
 // Siegellack für jedes neue Siegel-Abzeichen (data/kampagne.js, abzeichen)
 export const ABZEICHEN_WACHS = 3;
@@ -124,6 +125,45 @@ export const rules = {
     const kap = Math.max(0, kampagne.kapitel.findIndex((k) => k.gegner.includes(gegnerId)));
     return { groesse: kampagne.startDeck.groesse[kap], offenLassen: kampagne.startDeck.offen };
   },
+  // ---------- Druckerwerkstatt ----------
+  /** Höchste Seltenheit, die man drucken darf: wie bei den Siegelbriefen nach dem weitesten offenen Kapitel. */
+  hoechsteDruckbar(s) {
+    const kap = Math.max(0, ...reihenfolge.filter((id) => rules.offen(s, id)).map((id) => kampagne.kapitel.findIndex((k) => k.gegner.includes(id))));
+    return KAPITEL_HOECHSTE[kap];
+  },
+  /** Kirchenkarten, die man kennt: aus den Decks der Gegner, gegen die man gespielt hat, und aus dem Lexikon. */
+  bekannteKirche(s) {
+    const k = new Set();
+    for (const id of s.gesehen || []) { const g = kampagne.gegner[id]; [...(g?.deck || []), g?.anfuehrer].filter(Boolean).forEach((c) => k.add(c)); }
+    for (const p of s.lexikon || []) k.add(p.split('>')[1]);
+    return k;
+  },
+  /** Wunschkarten: Luthers Karten, die eine bekannte Kirchenkarte entkräften, die man noch (öfter) haben darf. */
+  druckbar(s, besitz) {
+    const bekannt = rules.bekannteKirche(s);
+    const hoechste = SELTEN.indexOf(rules.hoechsteDruckbar(s));
+    return lutherKarten.filter((k) => k.seltenheit && SELTEN.indexOf(k.seltenheit) <= hoechste && anzahl(besitz, k.id) < maxKopien(k.id)
+      && (k.entkraeftet || []).some((c) => bekannt.has(c))).map((k) => k.id);
+  },
+  preis(kauf, s = null) {
+    const w = kampagne.werkstatt;
+    if (kauf.art === 'brief') return w.brief;
+    if (kauf.art === 'karte') return w.karte[K(kauf.id).seltenheit];
+    return w.pracht[(s?.pracht || {})[kauf.id] || 0];
+  },
+  /** Etwas in der Werkstatt kaufen. kauf: { art: 'brief' } | { art: 'karte', id } | { art: 'pracht', id }. Gibt den neuen Stand zurück oder null. */
+  kaufe(s, kauf, besitz) {
+    const preis = rules.preis(kauf, s);
+    if (preis == null || (s.wachs || 0) < preis) return null;
+    if (kauf.art === 'karte' && !rules.druckbar(s, besitz).includes(kauf.id)) return null;
+    if (kauf.art === 'pracht' && (!besitz.includes(kauf.id) || ((s.pracht || {})[kauf.id] || 0) >= kampagne.werkstatt.pracht.length)) return null;
+    const n = structuredClone(s);
+    n.wachs -= preis;
+    if (kauf.art === 'brief') n.briefe = [...(n.briefe || []), { art: 'klein', gegner: reihenfolge.filter((id) => rules.offen(s, id)).at(-1), ausWachs: true }];
+    if (kauf.art === 'karte') n.karten.push(kauf.id);
+    if (kauf.art === 'pracht') n.pracht = { ...(n.pracht || {}), [kauf.id]: ((n.pracht || {})[kauf.id] || 0) + 1 };
+    return n;
+  },
   /** Ist ein Abzeichen erfüllt? partie: { gegner, z, deck } nach einem Duell, sonst null (dann zählen nur Lexikon-Abzeichen). */
   abzeichenErfuellt(a, s, partie) {
     const b = a.bed;
@@ -148,7 +188,7 @@ export const rules = {
       && (!b.zuNull || z.runden.every((r) => r.sieger === 'luther'))
       && (!b.ohneAnfuehrer || !z.log.some((e) => e.seite === 'luther' && e.art === 'spiel' && K(e.id).anfuehrer));
   },
-  /** Neue Abzeichen vergeben: je Abzeichen Siegellack, genug Siegellack ergibt Siegelbriefe. */
+  /** Neue Abzeichen vergeben: je Abzeichen Siegellack (ausgeben in der Druckerwerkstatt). */
   vergebeAbzeichen(s, partie = null) {
     const hat = new Set(s.abzeichen || []);
     const neue = kampagne.abzeichen.filter((a) => !hat.has(a.id) && rules.abzeichenErfuellt(a, s, partie));
@@ -156,9 +196,6 @@ export const rules = {
     const n = structuredClone(s);
     n.abzeichen = [...hat, ...neue.map((a) => a.id)];
     n.wachs = (n.wachs || 0) + neue.length * ABZEICHEN_WACHS;
-    n.briefe = n.briefe || [];
-    const gegner = partie?.gegner || reihenfolge[0];
-    while (n.wachs >= WACHS_JE_BRIEF) { n.wachs -= WACHS_JE_BRIEF; n.briefe.push({ art: 'klein', gegner, ausWachs: true }); }
     return { stand: n, neue };
   },
   /** Den ersten Brief öffnen: Karten in die Sammlung, Brief weg. */
@@ -168,11 +205,9 @@ export const rules = {
     if (!brief) return { stand: s, brief: null, karten: [] };
     const karten = briefRules.inhalt(brief, besitz, rnd);
     for (const k of karten) if (k.neu) n.karten.push(k.id);
-    // Doppelte: Siegellack sammeln; genug davon ergibt einen neuen Brief
+    // Doppelte: Siegellack sammeln (ausgeben in der Druckerwerkstatt)
     n.wachs = (n.wachs || 0) + karten.filter((k) => !k.neu).length;
-    let ausWachs = 0;
-    while (n.wachs >= WACHS_JE_BRIEF) { n.wachs -= WACHS_JE_BRIEF; n.briefe.push({ art: 'klein', gegner: brief.gegner, ausWachs: true }); ausWachs += 1; }
-    return { stand: n, brief, karten, ausWachs };
+    return { stand: n, brief, karten };
   }
 };
 
@@ -186,7 +221,8 @@ const sterneHtml = (n, von = 3) => h('span', { class: 'k-sterne', 'aria-hidden':
 export function view(el, schritt, ctx, fertig) {
   const t = ctx.t;
   let stand = ladeStand();
-  const neu = (s) => { stand = s; speichere(s); };
+  const neu = (s) => { stand = s; speichere(s); setzePracht(s.pracht); };
+  setzePracht(stand.pracht);
   // Besitz mit Kopien: Karten aus der Geschichte einmal, aus Siegelbriefen dazu, höchstens maxKopien je Karte
   const besitz = () => { const aus = []; for (const id of [...ctx.karten().map((k) => k.id), ...stand.karten]) if (anzahl(aus, id) < maxKopien(id)) aus.push(id); return aus; };
 
@@ -200,7 +236,10 @@ export function view(el, schritt, ctx, fertig) {
           h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 })),
           knopf(t.kampSoGehts, einfuehrung, 'still klein'))),
       // Immer ein nächstes Ziel vor Augen: Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer
-      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }), onAbzeichen: () => zeigeAbzeichen({ t, stand }) }),
+      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }), onAbzeichen: () => zeigeAbzeichen({ t, stand }),
+        onWerkstatt: () => zeigeWerkstatt({ t, lage: () => ({ stand, besitz: besitz() }), regeln: rules,
+          kaufen: (kauf) => { const n = rules.kaufe(stand, kauf, besitz()); if (n) { neu(n); melde(kaufMeldung(kauf)); } return n; },
+          briefeOeffnen: () => briefeOeffnen(uebersicht) }) }),
       stand.briefe.length ? h('button', { type: 'button', class: 'kamp-brief-knopf oben', onclick: () => briefeOeffnen(uebersicht) },
         h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
         h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length }))) : null,
@@ -229,6 +268,9 @@ export function view(el, schritt, ctx, fertig) {
         })))),
       h('div', { class: 'reihe fuss' }, h('span', {}), knopf(t.kampBeenden, () => fertig({}), 'still'))));
   }
+
+  const kaufMeldung = (kauf) => (kauf.art === 'brief' ? t.kampWerkGekauftBrief : kauf.art === 'karte' ? fuelle(t.kampWerkGedruckt, { titel: K(kauf.id).titel })
+    : fuelle(t.kampWerkVerschoenert, { titel: K(kauf.id).titel, stufe: t.kampWerkStufe[stand.pracht?.[kauf.id] || 0] }));
 
   /** Einführung (beim ersten Start von selbst, sonst über „So funktioniert’s“). */
   function einfuehrung() {
