@@ -112,6 +112,28 @@ export const kampagne = {
   // Sterne: 1 für einen Sieg, 1 für einen Sieg ohne verlorene Runde, 1 für einen Sieg mit höchstens kleinDeck Karten.
   sterne: { kleinDeck: 10 },
   regeln: { deckMin: 8, deckMax: 12 },
+  // Siegel-Abzeichen: Aufgaben, die zu immer neuen Decks anregen. Jedes bringt Siegellack (js/puzzles/kampagne.js, ABZEICHEN_WACHS).
+  // bed: gegner (nur gegen ihn), abKapitel (Gegner ab diesem Kapitel, 1–4), typMin/typMax (Karten einer Art im Deck), bundMin, deckMax,
+  // trefferMin (Konter in einer Partie), zuNull (keine Runde verloren), ohneAnfuehrer, durchschaut (für jede Karte dieses Gegners
+  // einen Konter im Lexikon), lexikonMin. Alle Bedingungen außer durchschaut und lexikonMin verlangen einen Sieg.
+  abzeichen: [
+    { id: 'thesen', symbol: 'these', titel: 'Thesenanschlag', text: 'Besiege Tetzel mit mindestens fünf Thesen im Deck.', bed: { gegner: 'k-tetzel', typMin: { these: 5 } } },
+    { id: 'presse', symbol: 'druck', titel: 'Die Presse rollt', text: 'Besiege einen Gegner ab Kapitel 2 mit mindestens fünf Druck-Karten im Deck.', bed: { abKapitel: 2, typMin: { druck: 5 } } },
+    { id: 'schrift', symbol: 'bibel', titel: 'Allein die Schrift', text: 'Besiege einen Gegner ab Kapitel 2 mit mindestens fünf Bibel-Karten im Deck.', bed: { abKapitel: 2, typMin: { bibel: 5 } } },
+    { id: 'stimmen', symbol: 'menschen', titel: 'Viele Stimmen', text: 'Besiege einen Gegner ab Kapitel 2 mit mindestens sechs Karten der Art Menschen.', bed: { abKapitel: 2, typMin: { menschen: 6 } } },
+    { id: 'gelehrt', symbol: 'wissen', titel: 'Gelehrtenstreit', text: 'Besiege einen Gegner ab Kapitel 2 mit mindestens sechs Wissen-Karten im Deck.', bed: { abKapitel: 2, typMin: { wissen: 6 } } },
+    { id: 'bund', symbol: 'menschen', titel: 'Gemeinsam stark', text: 'Besiege einen Gegner ab Kapitel 2 mit mindestens fünf Bund-Karten im Deck.', bed: { abKapitel: 2, bundMin: 5 } },
+    { id: 'ohne-bibel', symbol: 'wissen', titel: 'Leipzig ohne Bibel', text: 'Besiege Johann Eck ohne eine einzige Bibel-Karte im Deck.', bed: { gegner: 'k-eck', typMax: { bibel: 0 } } },
+    { id: 'gepaeck', symbol: 'druck', titel: 'Leichtes Gepäck', text: 'Besiege Hieronymus Emser mit nur acht Karten im Deck.', bed: { gegner: 'k-emser', deckMax: 8 } },
+    { id: 'kontermeister', symbol: 'gewissen', titel: 'Kontermeister', text: 'Entkräfte in einer gewonnenen Partie vier Karten der Kirche.', bed: { trefferMin: 4 } },
+    { id: 'ohne-kratzer', symbol: 'gottesbild', titel: 'Ohne Kratzer', text: 'Besiege einen Gegner ab Kapitel 3, ohne eine Runde zu verlieren.', bed: { abKapitel: 3, zuNull: true } },
+    { id: 'allein', symbol: 'gewissen', titel: 'Auf eigenen Füßen', text: 'Besiege einen Gegner ab Kapitel 3, ohne deinen Anführer auszuspielen.', bed: { abKapitel: 3, ohneAnfuehrer: true } },
+    { id: 'tetzel-durchschaut', symbol: 'rom', titel: 'Tetzel durchschaut', text: 'Finde für jede Karte Tetzels einen Konter (Konter-Lexikon).', bed: { durchschaut: 'k-tetzel' } },
+    { id: 'eck-durchschaut', symbol: 'rom', titel: 'Eck durchschaut', text: 'Finde für jede Karte Johann Ecks einen Konter (Konter-Lexikon).', bed: { durchschaut: 'k-eck' } },
+    { id: 'kaiser-durchschaut', symbol: 'rom', titel: 'Den Kaiser durchschaut', text: 'Finde für jede Karte Kaiser Karls einen Konter (Konter-Lexikon).', bed: { durchschaut: 'k-karl' } },
+    { id: 'gelehrter', symbol: 'gnade', titel: 'Konter-Gelehrter', text: 'Entdecke 30 Konter im Konter-Lexikon.', bed: { lexikonMin: 30 } },
+    { id: 'rom', symbol: 'kirche', titel: 'Bis nach Rom', text: 'Besiege Papst Leo X.', bed: { gegner: 'k-leo' } }
+  ],
   // Einführung beim ersten Start: sechs Tafeln mit Bild (art bestimmt das Bild, siehe js/puzzles/kampagne-extras.js)
   einfuehrung: [
     { art: 'weg', titel: 'Argumentiere dich nach oben!', text: 'Die Geschichte ist geschafft. Jetzt beginnt dein eigenes Spiel: Zwölf Gegner stehen zwischen dir und dem Gipfel. Ganz oben warten der Kaiser und der Papst.' },

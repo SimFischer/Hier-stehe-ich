@@ -255,3 +255,18 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .d-deck-info .gegen { color: #7f2f1f; font-weight: bold; }
 .d-deck-info .mit { color: #24402c; font-weight: bold; }
 .d-deck-info .fehlt { margin: 8px 0 0; color: #7f2f1f; }
+
+/* ---------- Stempel „Entkräftet!“ ---------- */
+/* Knallt nach einem Konter über die Reihe der Kirche: roter Stempel wie auf einer Urkunde, darunter welches Argument worauf antwortet. */
+.d-stempel { position: fixed; z-index: 80; left: 50%; top: 24%; transform: translate(-50%, -50%); pointer-events: none;
+  display: grid; justify-items: center; gap: 6px; max-width: min(640px, 90vw); text-align: center;
+  animation: stempel-weg 2.3s ease-in forwards; }
+.d-stempel strong { padding: 4px 26px; font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.1; letter-spacing: 0.06em; font-variant: small-caps;
+  color: #b23a24; background: rgba(251, 245, 230, 0.92); border: 5px double #b23a24; border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  animation: stempel-auf 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.d-stempel span { padding: 4px 14px; border-radius: 12px; background: rgba(31, 26, 23, 0.88); color: #fff3c4; font-weight: bold; font-size: 1.05rem;
+  animation: einblenden 0.4s ease-out 0.3s both; }
+@keyframes stempel-auf { 0% { transform: scale(2.6) rotate(-14deg); opacity: 0; } 65% { transform: scale(0.94) rotate(-5deg); opacity: 1; } 100% { transform: rotate(-6deg); } }
+@keyframes stempel-weg { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .d-stempel, .d-stempel strong, .d-stempel span { animation: none; } }

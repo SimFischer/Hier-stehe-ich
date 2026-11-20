@@ -104,6 +104,7 @@ export const t = {
   // Spielmodus des Kartenspiels: eigene Fläche über der ganzen Seite
   spielVerlassen: 'Spiel verlassen', spielVollbild: 'Vollbild', spielVollbildAus: 'Vollbild beenden', spielFlaeche: 'Spieltisch',
   duellFortsetzen: 'Zur Partie zurück', duellLaeuft: 'Deine Partie läuft noch. Du kannst sie fortsetzen oder neu beginnen.', duellImSpiel: 'Die Partie läuft im Spielmodus.',
+  duellStempel: 'Entkräftet!', duellStempelPaar: '{karte} antwortet auf {gegen}',
   duellKonter: '{karte} entkräftet {gegen}: {vorher} → {jetzt}', duellSofort: '{gegen} ist sofort entkräftet, denn {karte} liegt schon: {vorher} → 1',
   duellTrefferKurz: 'Treffer!', duellEntkraeftetDurch: 'Entkräftet durch {karte}.', duellWarte: 'Ausspielen kannst du, sobald du am Zug bist.', duellFaehig: 'Fähigkeit',
   tauschTitel: 'Wähle Karten zum Tauschen ({n} von {max})', tauschText: 'Tippe Karten an, die zurück ins Deck sollen. Du ziehst dafür neue. Mit i siehst du eine Karte groß.',
@@ -137,6 +138,10 @@ export const t = {
   kampFuehrerTitel: 'Nächster Anführer', kampFuehrerNoch: 'Noch {n} ★ bis {name}', kampFuehrerAlle: 'Alle Anführer sind frei!',
   kampNochmalBrief: 'Nochmal spielen: +1 Siegelbrief',
   kampLexikonNeu: 'Neu im Konter-Lexikon: „{karte}“ entkräftet „{gegen}“.', kampLexikonBrief: 'Neu im Konter-Lexikon: „{karte}“ entkräftet „{gegen}“. Fünf neue Konter: Du bekommst einen Siegelbrief!',
+  kampAbzTitel: 'Siegel-Abzeichen', kampAbzStand: '{n} von {von} Abzeichen', kampAbzLohn: 'Jedes Abzeichen: +3 Siegellack', kampAbzOeffnen: 'Abzeichen ansehen',
+  kampAbzText: 'Abzeichen sind Aufgaben für besondere Decks und Siege. Probier neue Kartenarten aus: Nicht jedes Abzeichen schafft man mit demselben Deck.',
+  kampAbzErreicht: 'Erreicht', kampAbzOffen: 'Noch offen', kampAbzNeuEins: 'Neues Siegel-Abzeichen!', kampAbzNeuMehr: 'Neue Siegel-Abzeichen!',
+  kampAbzLack: '+{n} Siegellack', kampAbzNeu: 'Neues Siegel-Abzeichen: „{titel}“ (+{n} Siegellack)',
   kampLexikonTitel: 'Konter-Lexikon', kampLexikonStand: '{n} von {von} Kontern entdeckt', kampLexikonOeffnen: 'Lexikon öffnen', kampLexikonLohn: 'Je 5 entdeckte Konter: +1 Siegelbrief',
   kampLexikonText: 'Ein Konter liegt in derselben Runde wie die Karte der Kirche und nimmt ihr die Kraft (Stärke 1). Jeder Konter, der in deinen Partien wirkt, kommt hierher.',
   kampLexikonKirche: 'Die Kirche sagt', kampLexikonDagegen: 'Dagegen', kampLexikonUnbekannt: 'Diese Karte hast du noch nicht gesehen.', kampLexikonOffen: 'Noch {n} Konter zu entdecken',

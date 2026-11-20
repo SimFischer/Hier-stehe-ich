@@ -41,7 +41,7 @@ function gipfelWeg(stand, figuren, { klein = false } = {}) {
 }
 
 /** Fortschrittsleiste oben in der Übersicht: immer ein nächstes Ziel vor Augen. */
-export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung, onLexikon }) {
+export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung, onLexikon, onAbzeichen }) {
   const lex = lexikonStand(stand);
   const besiegt = reihenfolge.filter((id) => stand.sterne[id]).length;
   const wachs = stand.wachs || 0;
@@ -75,7 +75,8 @@ export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung
           h('span', { class: 'ke-fuehrer-bild', 'aria-hidden': 'true', html: bildHtml(kartenBild(K(naechster.id)).name) }),
           h('span', { class: 'ke-balken', 'aria-hidden': 'true' }, h('span', { style: `width:${Math.min(100, (sterne / naechster.ab) * 100)}%` })),
           h('span', {}, fuelle(t.kampFuehrerNoch, { n: naechster.ab - sterne, name: K(naechster.id).titel }))
-        ] : h('span', {}, t.kampFuehrerAlle))));
+        ] : h('span', {}, t.kampFuehrerAlle))),
+    abzeichenStreifen({ t, stand, onOeffnen: onAbzeichen }));
 }
 
 /** Sammlung: alle Karten nach Seltenheit; fehlende verdeckt mit der Rückseite ihrer Seltenheit. */
@@ -195,6 +196,39 @@ export function zeigeLexikon({ t, stand }) {
         }),
         offen ? h('small', {}, fuelle(t.kampLexikonOffen, { n: offen })) : null));
     }))));
+  document.body.append(buehne);
+  buehne.querySelector('.knopf')?.focus();
+}
+
+// ---------- Siegel-Abzeichen ----------
+/** Ein Abzeichen als Wachssiegel mit dem Zeichen seiner Kartenart; noch offene Abzeichen blass. */
+export const siegelAbzeichen = (a, erreicht) => h('span', { class: `ke-abz-siegel${erreicht ? ' an' : ''}`, 'aria-hidden': 'true', html: bildHtml(`symbol-${a.symbol}`, 'ke-abz-zeichen') });
+
+/** Streifen in der Zielleiste: alle Abzeichen als Siegel, dazu Stand und Knopf. */
+export function abzeichenStreifen({ t, stand, onOeffnen }) {
+  const hat = new Set(stand.abzeichen || []);
+  return h('div', { class: 'ke-abz-streifen' },
+    h('div', { class: 'ke-abz-text' },
+      h('strong', {}, t.kampAbzTitel),
+      h('span', {}, fuelle(t.kampAbzStand, { n: hat.size, von: kampagne.abzeichen.length })),
+      h('small', {}, t.kampAbzLohn)),
+    h('div', { class: 'ke-abz-reihe' }, kampagne.abzeichen.map((a) => siegelAbzeichen(a, hat.has(a.id)))),
+    knopf(t.kampAbzOeffnen, onOeffnen, 'still klein'));
+}
+
+/** Übersicht aller Abzeichen mit Aufgabe; erreichte zuerst hervorgehoben. */
+export function zeigeAbzeichen({ t, stand }) {
+  const hat = new Set(stand.abzeichen || []);
+  const buehne = h('div', { class: 'ke-buehne', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.kampAbzTitel });
+  const zu = () => buehne.remove();
+  setzeInhalt(buehne, h('div', { class: 'ke-sammlung ke-abz' },
+    h('div', { class: 'ke-sammlung-kopf' },
+      h('div', {}, h('h2', {}, t.kampAbzTitel), h('p', {}, fuelle(t.kampAbzStand, { n: hat.size, von: kampagne.abzeichen.length }), ' · ', t.kampAbzLohn)),
+      knopf(t.schliessen, zu, 'haupt')),
+    h('p', { class: 'ke-lex-erklaerung' }, t.kampAbzText),
+    h('div', { class: 'ke-abz-liste' }, kampagne.abzeichen.map((a) => h('div', { class: `ke-abz-eintrag${hat.has(a.id) ? ' an' : ''}` },
+      siegelAbzeichen(a, hat.has(a.id)),
+      h('div', {}, h('strong', {}, a.titel), h('p', {}, a.text), h('em', {}, hat.has(a.id) ? t.kampAbzErreicht : t.kampAbzOffen)))))));
   document.body.append(buehne);
   buehne.querySelector('.knopf')?.focus();
 }

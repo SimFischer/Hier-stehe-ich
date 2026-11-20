@@ -9,6 +9,8 @@ import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, anzahl } 
 
 export { rules };
 const PAUSE_KI = 950;
+// Nach einem Konter: Stempel „Entkräftet!“ so lange zeigen, erst dann zieht die Kirche.
+const STEMPEL_MS = 2300;
 
 export const gegnerDaten = (id) => disputation.gegner[id] || kampagnenDaten.gegner[id];
 
@@ -231,6 +233,7 @@ export function view(el, schritt, ctx, fertig) {
   // Die Kartengrößen rechnet das CSS aus Breite und Höhe der Reihe (--n = Zahl der Karten), siehe css/spielmodus.css.
   const FAEHIG = ['staerkt', 'schwaecht', 'bann', 'zieht', 'standhaft', 'bund', 'entkraeftet'];
   let konter = null; // Erklärung des letzten Konters: { nr: Länge des Logs, zeilen }
+  let stempelBis = 0; // bis wann der Stempel steht (die Kirche wartet so lange)
   let handVorher = new Set();
   let tauschWahl = new Set();
   let tauschNeu = new Set();
@@ -298,6 +301,25 @@ export function view(el, schritt, ctx, fertig) {
     return zeilen;
   }
 
+  /** Stempel „Entkräftet!“ über dem Tisch: welches Argument worauf antwortet. Liegt außerhalb des Tisches, damit Neuzeichnen ihn nicht abbricht. */
+  function zeigeStempel(letzte) {
+    const paare = [];
+    if (letzte?.art === 'spiel' && letzte.treffer) for (const id of letzte.treffer) paare.push([letzte.id, id]);
+    if (letzte?.art === 'spiel' && letzte.seite === 'kirche') {
+      const inst = z.seiten.kirche.reihe.find((x) => x.uid === letzte.uid);
+      const durch = inst && entkraeftet(z, 'kirche', inst);
+      if (durch) paare.push([durch, letzte.id]);
+    }
+    if (!paare.length) return;
+    document.querySelectorAll('.d-stempel').forEach((x) => x.remove());
+    const s = h('div', { class: 'd-stempel', 'aria-hidden': 'true' },
+      h('strong', {}, t.duellStempel),
+      paare.map(([l, c]) => h('span', {}, fuelle(t.duellStempelPaar, { karte: name(l), gegen: name(c) }))));
+    document.body.append(s);
+    stempelBis = Date.now() + STEMPEL_MS;
+    setTimeout(() => s.remove(), STEMPEL_MS + 400);
+  }
+
   function zeichne() {
     if (!lebt()) { spielmodus(false); return; }
     clearTimeout(timer);
@@ -336,7 +358,9 @@ export function view(el, schritt, ctx, fertig) {
       `warn d-passen${leuchtet('passen')}`, { disabled: !amZug || !tutErlaubt('passe') });
 
     // Mitte: letzter Zug und, falls es einen Konter gab, was er bewirkt
+    const neuerZug = konter?.nr !== z.log.length;
     const zeilen = konterZeilen(letzte);
+    if (neuerZug && zeilen.length) zeigeStempel(letzte);
     const text = banner ? '' : z.am === 'kirche' && z.phase === 'spiel' ? `${ereignisText(letzte)} ${fuelle(t.duellUeberlegt, { name: Wer })}`.trim()
       : `${ereignisText(letzte)} ${amZug ? t.duellDeinZug : ''}`.trim();
     const mitte = h('div', { class: `d-mitte${letzte?.treffer ? ' treffer' : letzte?.bann ? ' bann' : ''}`, role: 'status' },
@@ -374,7 +398,7 @@ export function view(el, schritt, ctx, fertig) {
     for (const s of ['luther', 'kirche']) for (const inst of z.seiten[s].reihe) werteVorher.set(inst.uid, wert(z, s, inst));
     handVorher = new Set(l.hand.map((x) => x.uid));
 
-    if (!banner && z.phase === 'spiel' && z.am === 'kirche') timer = setTimeout(kiZug, PAUSE_KI);
+    if (!banner && z.phase === 'spiel' && z.am === 'kirche') timer = setTimeout(kiZug, Math.max(PAUSE_KI, stempelBis - Date.now()));
   }
 
   // ---------- Kartentausch vor dem Start ----------

@@ -7,16 +7,18 @@ import { K, maxKopien, anzahl } from './duell-regeln.js';
 import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
-import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon } from './kampagne-extras.js';
+import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [] });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [] });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
 // Doppelte Karten werden zu Siegellack. So viel Siegellack ergibt einen neuen Siegelbrief.
 export const WACHS_JE_BRIEF = 5;
+// Siegellack für jedes neue Siegel-Abzeichen (data/kampagne.js, abzeichen)
+export const ABZEICHEN_WACHS = 3;
 
 // ---------- Siegelbriefe (Kartenpakete) ----------
 // Nach jedem Sieg ein Siegelbrief, beim ersten Mal mit drei Sternen dazu ein großer. Inhalt: Luthers Karten nach Seltenheit.
@@ -114,6 +116,43 @@ export const rules = {
     if (brief) n.briefe = [...(n.briefe || []), { art: 'klein', gegner: gegnerId, ausLexikon: true }];
     return { stand: n, neu: true, brief };
   },
+  /** Ist ein Abzeichen erfüllt? partie: { gegner, z, deck } nach einem Duell, sonst null (dann zählen nur Lexikon-Abzeichen). */
+  abzeichenErfuellt(a, s, partie) {
+    const b = a.bed;
+    const lexikon = new Set(s.lexikon || []);
+    if (b.lexikonMin) return lexikon.size >= b.lexikonMin;
+    if (b.durchschaut) {
+      const kirche = [...new Set(kampagne.gegner[b.durchschaut].deck)];
+      return kirche.every((c) => [...lexikon].some((p) => p.endsWith(`>${c}`)));
+    }
+    if (!partie || partie.z.sieger !== 'luther') return false;
+    const { gegner, z, deck } = partie;
+    const typ = (art) => deck.filter((id) => K(id).typ === art).length;
+    const kapitel = kampagne.kapitel.findIndex((k) => k.gegner.includes(gegner)) + 1;
+    const treffer = z.log.reduce((n, e) => n + (e.seite === 'luther' && e.treffer ? e.treffer.length : 0), 0);
+    return (!b.gegner || b.gegner === gegner)
+      && (!b.abKapitel || kapitel >= b.abKapitel)
+      && Object.entries(b.typMin || {}).every(([art, n]) => typ(art) >= n)
+      && Object.entries(b.typMax || {}).every(([art, n]) => typ(art) <= n)
+      && (!b.bundMin || deck.filter((id) => K(id).bund).length >= b.bundMin)
+      && (!b.deckMax || deck.length <= b.deckMax)
+      && (!b.trefferMin || treffer >= b.trefferMin)
+      && (!b.zuNull || z.runden.every((r) => r.sieger === 'luther'))
+      && (!b.ohneAnfuehrer || !z.log.some((e) => e.seite === 'luther' && e.art === 'spiel' && K(e.id).anfuehrer));
+  },
+  /** Neue Abzeichen vergeben: je Abzeichen Siegellack, genug Siegellack ergibt Siegelbriefe. */
+  vergebeAbzeichen(s, partie = null) {
+    const hat = new Set(s.abzeichen || []);
+    const neue = kampagne.abzeichen.filter((a) => !hat.has(a.id) && rules.abzeichenErfuellt(a, s, partie));
+    if (!neue.length) return { stand: s, neue: [] };
+    const n = structuredClone(s);
+    n.abzeichen = [...hat, ...neue.map((a) => a.id)];
+    n.wachs = (n.wachs || 0) + neue.length * ABZEICHEN_WACHS;
+    n.briefe = n.briefe || [];
+    const gegner = partie?.gegner || reihenfolge[0];
+    while (n.wachs >= WACHS_JE_BRIEF) { n.wachs -= WACHS_JE_BRIEF; n.briefe.push({ art: 'klein', gegner, ausWachs: true }); }
+    return { stand: n, neue };
+  },
   /** Den ersten Brief öffnen: Karten in die Sammlung, Brief weg. */
   oeffne(s, besitz, rnd = Math.random) {
     const n = structuredClone(s);
@@ -153,7 +192,7 @@ export function view(el, schritt, ctx, fertig) {
           h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 })),
           knopf(t.kampSoGehts, einfuehrung, 'still klein'))),
       // Immer ein nächstes Ziel vor Augen: Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer
-      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }) }),
+      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }), onAbzeichen: () => zeigeAbzeichen({ t, stand }) }),
       stand.briefe.length ? h('button', { type: 'button', class: 'kamp-brief-knopf oben', onclick: () => briefeOeffnen(uebersicht) },
         h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
         h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length }))) : null,
@@ -203,6 +242,8 @@ export function view(el, schritt, ctx, fertig) {
         if (!r.neu) return;
         neu(r.stand);
         melde(fuelle(r.brief ? t.kampLexikonBrief : t.kampLexikonNeu, { karte: K(lutherId).titel, gegen: K(kircheId).titel }));
+        const a = rules.vergebeAbzeichen(stand);
+        if (a.neue.length) { neu(a.stand); setTimeout(() => melde(fuelle(t.kampAbzNeu, { titel: a.neue.map((x) => x.titel).join(t.und), n: a.neue.length * ABZEICHEN_WACHS })), 2600); }
       }
     } }, ctx, () => uebersicht());
   }
@@ -211,6 +252,8 @@ export function view(el, schritt, ctx, fertig) {
     const g = kampagne.gegner[id];
     const r = rules.eintragen(stand, id, z, deck.length);
     neu(r.stand);
+    const abz = rules.vergebeAbzeichen(stand, { gegner: id, z, deck });
+    neu(abz.stand);
     const sieg = z.sieger === 'luther';
     const zeichne = () => setzeInhalt(el, h('div', { class: `d-ende ${sieg ? 'sieg' : 'niederlage'}` },
       h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
@@ -219,6 +262,10 @@ export function view(el, schritt, ctx, fertig) {
         ' ', h('strong', {}, x.sieger === 'luther' ? t.duellGewonnen : t.duellVerloren)))),
       sieg ? h('div', { class: 'kamp-ergebnis' }, sterneHtml(r.jetzt), h('p', {}, fuelle(t.kampSterneJetzt, { n: r.jetzt })),
         h('ul', { class: 'klein' }, h('li', {}, t.kampStern1), h('li', {}, t.kampStern2), h('li', {}, fuelle(t.kampStern3, { n: kampagne.sterne.kleinDeck })))) : h('p', {}, t.kampNiederlageTipp),
+      abz.neue.length ? h('div', { class: 'kamp-abz-neu', role: 'status' },
+        h('p', { class: 'kicker' }, abz.neue.length > 1 ? t.kampAbzNeuMehr : t.kampAbzNeuEins),
+        abz.neue.map((a) => h('div', { class: 'kamp-abz-zeile' }, siegelAbzeichen(a, true), h('div', {}, h('strong', {}, a.titel), h('span', {}, a.text)))),
+        h('p', { class: 'klein' }, fuelle(t.kampAbzLack, { n: abz.neue.length * ABZEICHEN_WACHS }))) : null,
       r.neueAnfuehrer.length ? h('p', { class: 'kamp-neu' }, fuelle(t.kampNeuerAnfuehrer, { name: r.neueAnfuehrer.map((a) => K(a).titel).join(t.und) })) : null,
       // Belohnung: Siegelbriefe. Ein großer Brief mit Siegel, Antippen öffnet ihn.
       stand.briefe.length ? h('div', { class: 'kamp-briefe' },
