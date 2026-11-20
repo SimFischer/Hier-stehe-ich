@@ -230,3 +230,44 @@ export function kirchenGesehen(flags) {
 export const maxKopien = (id) => (['episch', 'legendaer'].includes(K(id)?.seltenheit) || K(id)?.anfuehrer ? 1 : 2);
 /** Wie oft steht eine Karte in einer Liste (Besitz oder Deck)? */
 export const anzahl = (liste, id) => liste.reduce((n, x) => n + (x === id ? 1 : 0), 0);
+
+/**
+ * Bestes Deck gegen einen Gegner, nur aus Karten, die man hat (besitz, Kopien mehrfach).
+ * 1. Konter: Für jede Karte des Gegners (wie oft sie im Deck liegt, höchstens zweimal) ein Konter, starke Kirchenkarten zuerst.
+ *    Eine Karte, die mehrere Gegnerkarten entkräftet, zählt mehr.
+ * 2. Auffüllen mit den stärksten Karten (Stärken für andere Karten zählen mit).
+ * Gibt das Deck zurück, welche Kirchenkarte womit gekontert wird und wofür kein Konter in der Sammlung ist.
+ */
+export function deckGegen(besitz, gegner, regeln = disputation.regeln) {
+  const max = regeln.deckMax;
+  const gegnerKarten = [...(gegner.deck || []), gegner.anfuehrer].filter(Boolean);
+  const bedarf = new Map();
+  for (const c of gegnerKarten) bedarf.set(c, Math.min(2, (bedarf.get(c) || 0) + 1));
+  const frei = [...besitz];
+  const deck = [];
+  const abgedeckt = [];
+  const nimm = (id) => { frei.splice(frei.indexOf(id), 1); deck.push(id); };
+  const wertKonter = (id) => {
+    let w = 0;
+    for (const c of K(id).entkraeftet || []) if ((bedarf.get(c) || 0) > 0) w += K(c).staerke + 4;
+    return w;
+  };
+  // 1. Konter, solange einer noch etwas abdeckt
+  while (deck.length < max) {
+    const kandidaten = [...new Set(frei)].map((id) => ({ id, w: wertKonter(id) })).filter((x) => x.w > 0);
+    if (!kandidaten.length) break;
+    kandidaten.sort((a, b) => b.w - a.w || K(b.id).staerke - K(a.id).staerke);
+    const id = kandidaten[0].id;
+    for (const c of K(id).entkraeftet || []) if ((bedarf.get(c) || 0) > 0) { bedarf.set(c, bedarf.get(c) - 1); abgedeckt.push({ kirche: c, karte: id }); }
+    nimm(id);
+  }
+  // 2. Auffüllen: stark, mit Bonus für Karten, die andere stärken oder nachziehen lassen
+  const wert = (id) => { const k = K(id); return k.staerke + (k.staerkt ? 2 : 0) + (k.zieht ? 1 : 0) + (k.standhaft ? 1 : 0); };
+  while (deck.length < max && frei.length) {
+    const id = [...frei].sort((a, b) => wert(b) - wert(a))[0];
+    nimm(id);
+  }
+  const fehlt = [...new Set(gegnerKarten)].filter((c) => !abgedeckt.some((a) => a.kirche === c)
+    && !besitz.some((id) => (K(id).entkraeftet || []).includes(c)) && lutherKarten.some((k) => (k.entkraeftet || []).includes(c)));
+  return { deck, abgedeckt, fehlt };
+}

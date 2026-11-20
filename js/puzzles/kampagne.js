@@ -11,7 +11,7 @@ import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon } from './kam
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [] });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [] });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
@@ -192,6 +192,9 @@ export function view(el, schritt, ctx, fertig) {
     duellView(el, { art: 'duell', gegner: id, kampagne: {
       besitz: besitz(), anfuehrer: stand.anfuehrer, deck: stand.deck,
       merkeDeck: (deck) => neu({ ...stand, deck: [...deck] }),
+      // Gespeicherte Decks (Name und Karten), höchstens sechs
+      get decks() { return stand.decks || []; },
+      speichereDecks: (decks) => neu({ ...stand, decks }),
       zurueck: uebersicht,
       ergebnis: (z, deck) => auswertung(id, z, deck),
       // Konter gesehen: ins Lexikon, kurze Meldung, bei jedem fünften ein Siegelbrief

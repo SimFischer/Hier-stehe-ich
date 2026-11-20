@@ -142,3 +142,7 @@ button.karte.sammel:hover:not(:disabled), button.karte.sammel:focus-visible { tr
 .karte.sammel.mini { padding: 2px 6px; box-shadow: inset 0 0 0 2px var(--kf); border-width: 2px; }
 .karte.sammel.mini .k-kopf { padding: 0; align-items: center; }
 .karte.sammel.mini .k-kopf strong { font-size: 0.875rem; line-height: 1.1; }
+
+/* Endbildschirm: Hammer & Siegel als nächster Schritt hervorgehoben */
+.ende-hs { margin: var(--ab-3) 0; padding: var(--ab-3); border-radius: 14px; background: linear-gradient(#fff3c4, #f3d27a); border: 3px solid #8a6a34; }
+.ende-hs > .kicker { margin: 0 0 var(--ab-2); font-size: 1.15rem; font-weight: bold; color: #7f2f1f; text-transform: none; }

@@ -85,6 +85,7 @@ function zeichneHotspots() {
           : h('span', { class: 'marke', 'aria-hidden': 'true' }));
   }));
   el('ziel').textContent = zielText(s, sz);
+  if (s.done.includes('f')) el('ziel').append(' ', h('button', { type: 'button', class: 'ziel-hs', onclick: () => document.dispatchEvent(new CustomEvent('hammer-siegel')) }, t.hsSpielen));
 }
 
 /** Zeigt eine Szene. ruhig: Der Einstiegstext wird nicht erneut eingeblendet. */

@@ -18,6 +18,11 @@ function zeichnePlatten() {
   setzeInhalt(el, ...p.map((x) => h('span', { class: `platte${x.da ? ' da' : ''}${hatBild(x.bild) ? ' mit-bild' : ''}`, title: x.da ? x.platte : '', html: bildHtml(x.da ? x.bild : 'platte-leer') }, x.da && !hatBild(x.bild) ? String(x.nr) : '')));
   const beutel = document.querySelector('#beutel .zahl');
   beutel.textContent = String(store.state.cards.length);
+  // Nach dem Finale wird der Reiter „Disputation“ zum goldenen Reiter „Hammer & Siegel“: das eigentliche Spiel beginnt.
+  const hs = store.state.done.includes('f');
+  const disp = document.getElementById('disputation');
+  disp.classList.toggle('hs-frei', hs);
+  disp.querySelector('span:nth-child(2)').textContent = hs ? t.hsReiter : t.disputationReiter;
 }
 
 
@@ -58,5 +63,7 @@ aufbau();
 beiAenderung(zeichnePlatten);
 zeichnePlatten();
 setzeStationHoerer(zeigeAbschluss);
+// Knopf im Zielstreifen (szenen.js) öffnet „Hammer & Siegel“
+document.addEventListener('hammer-siegel', () => zeigeDisputation());
 document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); zeigeLehrkraft(); } });
 zeigeStart();

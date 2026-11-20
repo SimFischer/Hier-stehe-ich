@@ -11,7 +11,7 @@ export const scenes = [
       { text: 'Wittenberg, Herbst 1522. Du bist Lehrling in einer Druckerei. Heute Morgen ist der Setzkasten umgestürzt. Der Meister sieht nicht glücklich aus.' }
     ],
     ziel: [
-      { wenn: { done: 'f' }, text: 'Geschafft! Über den Titel oben kommst du zum Menü.' },
+      { wenn: { done: 'f' }, text: 'Die Geschichte ist geschafft. Jetzt beginnt das eigentliche Spiel:' },
       { wenn: { done: 's7' }, text: 'Geh zum Setzkasten und setze deine Flugschrift.' },
       { wenn: { done: 'p' }, text: 'Öffne die Karte und reise zu einem Ort.' },
       { text: 'Sprich mit dem Meister und sieh dir den Setzkasten an.' }

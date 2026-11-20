@@ -114,3 +114,4 @@ Jede Kirchenkarte hat jetzt mindestens zwei Konter, damit verschiedene Decks mö
 | Der große lutherische Narr | Cranachs Bilder | Cranachs Bildnisse prägen ein würdiges Bild Luthers |
 | Die Messe auf Latein | Deutsche Lieder | die Gemeinde singt auf Deutsch mit |
 | Ehelos bleiben | Freiheit eines Christenmenschen | ein Christ ist frei; Gelübde machen nicht gerecht |
+| Der Ablassprediger, Tetzels Predigt | Nicht käuflich | Gnade lässt sich weder verkaufen noch herbeipredigen (Thesen 27 und 35/36: Vergebung schenkt Gott dem, der bereut) |

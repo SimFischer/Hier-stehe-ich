@@ -129,11 +129,11 @@ export const kampagne = {
   ],
   // belohnungen: Beim ersten Sieg gegen diesen Gegner enthält der Siegelbrief sicher eine dieser Karten (js/puzzles/kampagne.js, briefRules).
   gegner: {
-    'k-novize': { id: 'k-novize', figur: 'novize', name: 'Der Novizenmeister', ort: 'Erfurt, 1506', anfuehrer: 'a-novize',
+    'k-novize': { id: 'k-novize', figur: 'novize', name: 'Der Novizenmeister', wen: 'den Novizenmeister', ort: 'Erfurt, 1506', anfuehrer: 'a-novize',
       deck: ['c-werke', 'c-richter', 'c-fegefeuer', 'c-brief', 'c-ketzer', 'c-gehorsam', 'c-ketzer', 'c-brief'], belohnungen: ['r9', 'r8', 'r14'],
       einleitung: 'Im Kloster lernen die jungen Mönche, was die Kirche lehrt. Der Novizenmeister prüft dich.',
       sieg: 'Der Novizenmeister nickt. Du hast gut zugehört und noch besser geantwortet.', niederlage: 'Der Novizenmeister lächelt. Übung macht den Meister.' },
-    'k-prediger': { id: 'k-prediger', figur: 'prediger', name: 'Ein Ablassprediger', ort: 'Unterwegs, 1517',
+    'k-prediger': { id: 'k-prediger', figur: 'prediger', name: 'Ein Ablassprediger', wen: 'einen Ablassprediger', ort: 'Unterwegs, 1517',
       deck: ['c-ablassprediger', 'c-ablassprediger', 'c-brief', 'c-brief', 'c-ablass', 'c-fegefeuer', 'c-petersdom', 'c-predigt', 'c-richter'], belohnungen: ['r12', 'r13', 'r2'],
       einleitung: 'Von Dorf zu Dorf ziehen Prediger mit Kasten und Kreuz. Dieser hier wirbt für den Ablass.',
       sieg: 'Der Prediger zieht weiter. Heute hat niemand gekauft.', niederlage: 'Die Leute stehen Schlange am Kasten.' },

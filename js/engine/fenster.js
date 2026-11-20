@@ -207,11 +207,13 @@ function zeigeEnde(st) {
     h('h2', { class: 'ende-titel' }, t.endeGlueckwunsch),
     h('div', { class: 'ende-platten', 'aria-label': t.platten }, platten(s).map((p) => h('span', { class: 'platte da mit-bild', title: p.platte, html: bildHtml(p.bild) }))),
     h('p', {}, rich(st.abschluss), ' ', t.endeText),
+    h('div', { class: 'ende-hs' },
+      h('p', { class: 'kicker' }, t.endeHsKicker),
+      kachel({ bild: kamp.bild, bildGegner: kamp.bildGegner, titel: t.dispSpielImSpiel, kurz: t.endeHsText, offen: true, gross: true, status: t.endeJetztSpielen,
+        onclick: () => { dlg.close(); oeffneRaetsel(kamp.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); } })),
     h('div', { class: 'ende-frei' },
       h('h3', {}, t.endeFrei),
       h('div', { class: 'kacheln' },
-        kachel({ bild: kamp.bild, bildGegner: kamp.bildGegner, titel: t.dispSpielImSpiel, kurz: kamp.kurz, offen: true, status: t.endeJetztSpielen,
-          onclick: () => { dlg.close(); oeffneRaetsel(kamp.id, { bild: szene(s.szene), beiEnde: () => zeigeSzene(s.szene, { ruhig: true }) }); } }),
         kachel({ bild: bonus.gottesdienst.bild, titel: t.bonusTitel, kurz: fuelle(t.endeBonusText, { titel: offeneBonus.map((b) => b.titel).join(', ') }), offen: true, status: t.endeAnsehen,
           onclick: () => { dlg.close(); zeigeBonus(); } })))), { breit: true });
 }

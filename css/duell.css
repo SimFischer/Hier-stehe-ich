@@ -235,3 +235,23 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .d-auswahl-stand.frei { top: auto; bottom: 22%; background: rgba(31, 26, 23, 0.8); color: #fff3c4; }
 .d-auswahl-konter { display: block; margin-top: 4px; padding: 2px 8px; border-radius: 8px; background: #2f5a37; color: #eaffe5; font-size: 0.8125rem; font-weight: bold; line-height: 1.25; }
 .d-auswahl-karte .karte-info { position: absolute; z-index: 4; top: -8px; right: -8px; width: 44px; height: 44px; }
+
+/* ---------- Deckbau-Werkzeuge: bestes Deck, gespeicherte Decks ---------- */
+.d-deck-werkzeug { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ab-2); margin: var(--ab-2) 0; }
+.d-auto { display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 8px 20px; border-radius: 26px; cursor: pointer;
+  font: inherit; font-weight: bold; font-size: 1.1rem; color: #2a1c14; background: linear-gradient(#ffe08a, #e0b24a); border: 3px solid #8a6a34;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); }
+.d-auto span { font-size: 1.4rem; }
+.d-gespeichert { display: inline-flex; align-items: stretch; border-radius: 22px; overflow: hidden; border: 2px solid #3e5b45; }
+.d-laden, .d-loeschen, .d-speichern-knopf { min-height: 44px; padding: 6px 14px; cursor: pointer; font: inherit; font-weight: bold; border: 0; }
+.d-laden { background: #e3efe0; color: #24402c; }
+.d-loeschen { min-width: 44px; padding: 6px 10px; background: #f3d6cc; color: #7f2f1f; border-left: 2px solid #3e5b45; }
+.d-speichern-knopf { border-radius: 22px; background: #fff8e6; color: var(--tinte); border: 2px dashed #8a6a34; }
+.d-speichern { display: inline-flex; gap: 6px; align-items: center; }
+.d-speichern input { min-height: 44px; padding: 6px 12px; border-radius: 10px; border: 2px solid #8a6a34; font: inherit; width: 14em; }
+.d-deck-info { margin: 0 0 var(--ab-2); padding: var(--ab-2) var(--ab-3); border-radius: 12px; background: #e3efe0; border: 2px solid #3e5b45; }
+.d-deck-info ul { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.d-deck-info li { padding: 3px 10px; border-radius: 10px; background: #fff; }
+.d-deck-info .gegen { color: #7f2f1f; font-weight: bold; }
+.d-deck-info .mit { color: #24402c; font-weight: bold; }
+.d-deck-info .fehlt { margin: 8px 0 0; color: #7f2f1f; }

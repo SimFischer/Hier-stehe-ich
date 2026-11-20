@@ -27,7 +27,7 @@ export const cards = [
     titel: 'Ohne Reue kein Erlass', text: 'Ohne echte Reue hilft kein Ablassbrief.' },
   { id: 'w3', art: 'wissen', station: 's4', bild: 'wandbild-4', typ: 'wissen', staerke: 3, seltenheit: 'selten', entkraeftet: ['c-fegefeuer'],
     titel: 'Gott entscheidet', text: 'Über die Verstorbenen entscheidet Gott allein.' },
-  { id: 'k6', art: 'argument', station: 's4', bild: 'muenze', typ: 'gnade', staerke: 2, seltenheit: 'gewoehnlich', entkraeftet: ['c-ablass'],
+  { id: 'k6', art: 'argument', station: 's4', bild: 'muenze', typ: 'gnade', staerke: 2, seltenheit: 'gewoehnlich', entkraeftet: ['c-ablass', 'c-ablassprediger', 'c-predigt'],
     titel: 'Nicht käuflich', text: 'Vergebung kann man nicht kaufen.' },
   { id: 'n1', art: 'argument', station: 's4', duell: 'tetzel', bild: 'fig-witwe', typ: 'menschen', staerke: 4, seltenheit: 'selten', entkraeftet: ['c-petersdom'], zieht: 1,
     titel: 'Die Not der Leute', text: 'Arme Leute geben ihr letztes Geld. Luther sieht ihre Not.' },

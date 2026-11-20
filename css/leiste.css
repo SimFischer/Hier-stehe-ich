@@ -84,3 +84,13 @@
   .platte.mit-bild { width: 26px; height: 28px; }
 }
 @media (max-width: 900px) { #titel > strong { padding: 2px 1.2em 3px; font-size: 1rem; } }
+
+/* Nach dem Finale: „Hammer & Siegel“ ist das eigentliche Spiel – goldener Reiter und Knopf im Zielstreifen */
+.leisten-knopf.hs-frei { background: linear-gradient(#ffe08a, #d9a640); color: #2a1c14; border-color: #fff3c4; font-weight: bold;
+  box-shadow: 0 0 0 2px #7f2f1f, 0 0 14px rgba(255, 210, 110, 0.7); animation: hs-leuchten 2.4s ease-in-out 4; }
+.leisten-knopf.hs-frei span:nth-child(2) { display: inline; }
+@keyframes hs-leuchten { 50% { box-shadow: 0 0 0 2px #7f2f1f, 0 0 26px rgba(255, 210, 110, 1); } }
+@media (prefers-reduced-motion: reduce) { .leisten-knopf.hs-frei { animation: none; } }
+.ziel-hs { min-height: 34px; margin: -4px 0; padding: 2px 16px; vertical-align: middle; border-radius: 20px; cursor: pointer; font: inherit; font-weight: bold;
+  background: linear-gradient(#ffe08a, #d9a640); color: #2a1c14; border: 2px solid #7f2f1f; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+#ziel:has(.ziel-hs)::after { content: none; }

@@ -4,7 +4,7 @@ import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle, melde } f
 import { bildHtml, figurHtml, portraetHtml, kartenBild, bildUrl } from '../engine/bilder.js';
 import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
-import { rules, K, wert, summe, entkraeftet, deckVorschlag, anzahl } from './duell-regeln.js';
+import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, anzahl } from './duell-regeln.js';
 
 export { rules };
 const PAUSE_KI = 950;
@@ -28,6 +28,8 @@ export function view(el, schritt, ctx, fertig) {
     return vorher.length >= R.deckMin ? vorher : deckVorschlag(besitz, R);
   };
   let deck = passendesDeck();
+  let autoInfo = null;       // Ergebnis von deckGegen (Erklärung der Konter)
+  let speichernOffen = false;
   let z = null;
   let werteVorher = new Map();
   let gezeigteRunden = 0;
@@ -133,7 +135,7 @@ export function view(el, schritt, ctx, fertig) {
               kartenChip(K(id), { klein: true, onclick: () => {
                 if (voll) { melde(fuelle(t.duellSchonImDeck, { titel: K(id).titel })); return; }
                 if (deck.length >= R.deckMax) { melde(t.duellDeckVoll); return; }
-                deck = [...deck, id]; zeichneAuswahl();
+                deck = [...deck, id]; autoInfo = null; zeichneAuswahl();
               } }),
               imDeck ? h('span', { class: 'd-auswahl-stand' }, voll ? `✓ ${t.duellImDeck}` : `${imDeck}/${hat} ${t.duellImDeck}`) : hat > 1 ? h('span', { class: 'd-auswahl-stand frei' }, `0/${hat}`) : null,
               konter.length ? h('span', { class: 'd-auswahl-konter' }, '⚔ ', fuelle(t.duellKontert, { titel: konter.map((c) => K(c).titel).join(', ') })) : null,
@@ -161,13 +163,44 @@ export function view(el, schritt, ctx, fertig) {
         // Deckbau: oben das eigene Deck groß (mit freien Plätzen), die Sammlung öffnet sich über „Karten hinzufügen“
         zuViel ? [
           h('h3', { class: `zwischen d-deck-titel${ok ? ' ok' : ''}` }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
+          // Werkzeuge: bestes Deck gegen diesen Gegner (nur aus eigenen Karten), Decks speichern und laden
+          h('div', { class: 'd-deck-werkzeug' },
+            h('button', { type: 'button', class: 'd-auto', onclick: () => {
+              const r = deckGegen(besitz, g, R);
+              deck = r.deck; autoInfo = r; vorbereitung();
+              el.querySelector('.d-deck-info')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            } }, h('span', { 'aria-hidden': 'true' }, '⚡'), fuelle(t.duellAuto, { name: wen })),
+            kamp ? [
+              (kamp.decks || []).map((d, i) => h('span', { class: 'd-gespeichert' },
+                h('button', { type: 'button', class: 'd-laden', onclick: () => {
+                  // Nur Karten, die man (noch) hat, in der Anzahl, die man hat
+                  const neuDeck = []; for (const id of d.karten) if (anzahl(neuDeck, id) < anzahl(besitz, id) && neuDeck.length < R.deckMax) neuDeck.push(id);
+                  deck = neuDeck; autoInfo = null; vorbereitung();
+                } }, `📂 ${d.name}`),
+                h('button', { type: 'button', class: 'd-loeschen', 'aria-label': fuelle(t.duellDeckLoeschen, { name: d.name }), onclick: () => { kamp.speichereDecks(kamp.decks.filter((_, j) => j !== i)); vorbereitung(); } }, '✕'))),
+              speichernOffen
+                ? h('form', { class: 'd-speichern', onsubmit: (e) => {
+                  e.preventDefault();
+                  const name = e.target.querySelector('input').value.trim().slice(0, 30) || fuelle(t.duellDeckStandardName, { name: wen });
+                  kamp.speichereDecks([...(kamp.decks || []).filter((d) => d.name !== name), { name, karten: [...deck] }].slice(-6));
+                  speichernOffen = false; melde(fuelle(t.duellDeckGespeichert, { name })); vorbereitung();
+                } },
+                  h('input', { type: 'text', maxlength: 30, placeholder: fuelle(t.duellDeckStandardName, { name: wen }), 'aria-label': t.duellDeckName }),
+                  h('button', { type: 'submit', class: 'knopf haupt klein' }, t.duellSpeichern))
+                : h('button', { type: 'button', class: 'd-speichern-knopf', onclick: () => { speichernOffen = true; vorbereitung(); el.querySelector('.d-speichern input')?.focus(); } }, '💾 ', t.duellDeckSpeichern)
+            ] : null),
+          // Nach dem automatischen Bauen: welcher Konter wogegen hilft und wofür noch einer fehlt
+          autoInfo ? h('div', { class: 'd-deck-info' },
+            h('strong', {}, fuelle(t.duellAutoTitel, { name: wen })),
+            autoInfo.abgedeckt.length ? h('ul', {}, autoInfo.abgedeckt.map((a) => h('li', {}, h('span', { class: 'gegen' }, K(a.kirche).titel), ' ← ', h('span', { class: 'mit' }, K(a.karte).titel)))) : null,
+            autoInfo.fehlt.length ? h('p', { class: 'fehlt' }, fuelle(t.duellAutoFehlt, { karten: autoInfo.fehlt.map((c) => `„${K(c).titel}“`).join(', ') })) : null) : null,
           h('p', { class: 'klein' }, t.duellDeckTextNeu, kamp ? [' ', t.kampKopienText] : null),
           h('div', { class: 'd-deck' },
             [...new Set(deck)].sort((a, b) => K(b).staerke - K(a).staerke).map((id) => h('span', { class: 'd-deck-karte' },
               kartenChip(K(id), { klein: true, onclick: () => gross({ id }) }),
               anzahl(deck, id) > 1 ? h('span', { class: 'd-deck-anzahl' }, `×${anzahl(deck, id)}`) : null,
               konterGegen(id).length ? h('span', { class: 'd-konter-marke', title: konterGegen(id).map((c) => K(c).titel).join(', ') }, '⚔') : null,
-              h('button', { type: 'button', class: 'd-deck-raus', 'aria-label': fuelle(t.duellRausnehmen, { titel: K(id).titel }), onclick: () => { deck.splice(deck.lastIndexOf(id), 1); deck = [...deck]; vorbereitung(); } }, '−'))),
+              h('button', { type: 'button', class: 'd-deck-raus', 'aria-label': fuelle(t.duellRausnehmen, { titel: K(id).titel }), onclick: () => { deck.splice(deck.lastIndexOf(id), 1); deck = [...deck]; autoInfo = null; vorbereitung(); } }, '−'))),
             Array.from({ length: Math.max(0, R.deckMax - deck.length) }, (_, i) => h('button', { type: 'button', class: `d-deck-frei${i === 0 ? ' erster' : ''}`, onclick: sammlungOeffnen },
               h('span', { 'aria-hidden': 'true' }, '+'), i === 0 ? h('small', {}, t.duellKartenHinzu) : null))),
           h('div', { class: 'reihe' }, knopf(t.duellKartenHinzu, sammlungOeffnen, 'haupt'))
