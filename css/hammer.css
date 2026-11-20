@@ -122,3 +122,32 @@
 /* Fächer: Platz nach unten für die gedrehten äußeren Karten */
 .ke-bild.karten { padding-bottom: 40px; min-height: 0; }
 .ke-faecher { width: clamp(100px, 12vw, 150px); }
+/* Was die Siegelbriefe eines Kapitels enthalten */
+.kamp-beute { display: inline-block; margin-left: 10px; padding: 2px 10px; border-radius: 10px; font-variant: normal; font-size: var(--text-klein); font-weight: bold; vertical-align: middle; color: #fff; }
+.kamp-beute.rar-selten { background: #4f6a83; }
+.kamp-beute.rar-episch { background: #6b3f8a; }
+.kamp-beute.rar-legendaer { background: linear-gradient(90deg, #8a5d0e, #c99a3a); }
+
+/* Fortschrittsleiste mit vier Zielen */
+.ke-reihe { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .ke-reihe { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Konter-Lexikon ---------- */
+.ke-lex-erklaerung { margin: 0; color: var(--ocker-hell); }
+.ke-lex-liste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ab-3); }
+.ke-lex-eintrag { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: var(--ab-3); padding: var(--ab-3); border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(201, 163, 92, 0.4); }
+.ke-lex-eintrag.voll { border-color: #9fd09a; background: rgba(62, 91, 69, 0.25); }
+.ke-lex-kirche, .ke-lex-konter { display: grid; align-content: start; gap: 6px; }
+.ke-lex-karte { position: relative; display: block; width: 104px; }
+.ke-lex-karte .karte.sammel.gwent { width: 100%; }
+.ke-lex-karte.fehlt { aspect-ratio: 63 / 88; }
+.ke-lex-kirche p, .ke-lex-paar p { margin: 0; font-size: var(--text-klein); line-height: 1.35; }
+.ke-lex-kirche strong { color: #f3b4a2; }
+.ke-lex-paar { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 8px; align-items: start; padding: 6px; border-radius: 8px; background: rgba(62, 91, 69, 0.3); }
+.ke-lex-paar .ke-lex-karte { width: 80px; }
+.ke-lex-paar strong { color: #b7e0b2; }
+.ke-lex-paar.offen { grid-template-columns: 1fr; place-items: center; min-height: 60px; background: rgba(255, 255, 255, 0.04); border: 2px dashed rgba(201, 163, 92, 0.4); }
+.ke-lex-frage { font-size: 2rem; font-weight: bold; color: rgba(240, 217, 166, 0.6); }
+.ke-lex-konter small { color: var(--ocker-hell); }
+@media (orientation: portrait) { .ke-lex-liste { grid-template-columns: minmax(0, 1fr); } }

@@ -80,7 +80,7 @@ export const kampagne = {
   einfuehrung: [
     { art: 'weg', titel: 'Argumentiere dich nach oben!', text: 'Die Geschichte ist geschafft. Jetzt beginnt dein eigenes Spiel: Zwölf Gegner stehen zwischen dir und dem Gipfel. Ganz oben warten der Kaiser und der Papst.' },
     { art: 'karten', titel: 'Deine Karten kommen mit', text: 'Alle Argumente, die du in der Geschichte gesammelt hast, gehören dir. Vor jeder Partie stellst du daraus dein Deck zusammen: acht bis zwölf Karten.' },
-    { art: 'briefe', titel: 'Siegelbriefe voller Karten', text: 'Jeder Sieg bringt einen Siegelbrief mit drei Karten. Mit drei Sternen gibt es einen großen dazu. Je weiter oben dein Gegner steht, desto seltener und stärker sind die Karten.' },
+    { art: 'briefe', titel: 'Siegelbriefe voller Karten', text: 'Jeder Sieg bringt einen Siegelbrief mit drei Karten. Mit drei Sternen gibt es einen großen dazu. Epische Karten gibt es erst ab Kapitel 2, legendäre erst ab Kapitel 3: Wer weiterkommt, findet die stärksten Karten.' },
     { art: 'lack', titel: 'Nichts geht verloren: Siegellack', text: 'Gewöhnliche und seltene Karten darfst du zweimal haben, epische und legendäre einmal. Bekommst du mehr, wird daraus Siegellack. Fünf Siegellack ergeben einen neuen Siegelbrief.' },
     { art: 'anfuehrer', titel: 'Anführer freischalten', text: 'Für Sterne bekommst du neue Anführer: Melanchthon, Friedrich den Weisen und Katharina von Bora. Deinen Anführer spielst du einmal pro Partie, und er ist stark.' },
     { art: 'wieder', titel: 'Stecken geblieben?', text: 'Spiel frühere Gegner noch einmal: Jeder Sieg bringt einen neuen Siegelbrief, und dein Deck wird stärker. Schau genau hin, welche Karte welche entkräftet. Wer das herausfindet, schlägt auch den Kaiser.' }

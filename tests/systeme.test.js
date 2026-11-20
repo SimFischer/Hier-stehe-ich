@@ -204,7 +204,11 @@ test('Kampagne: Siegelbriefe bringen immer Fortschritt, Kopien bis zur Grenze, d
   const gr = briefRules.inhalt({ art: 'gross', gegner: reihenfolge.at(-1) }, story, rnd);
   assert.equal(gr.length, 4); assert.ok(rang.indexOf(K(gr[3].id).seltenheit) >= 2);
   // Viele Briefe: Am Ende ist alles gesammelt; Doppelte ergeben neue Briefe
-  let s = neuerKampagnenStand(); s.briefe = Array.from({ length: 40 }, () => ({ art: 'klein', gegner: reihenfolge[3] }));
+  // Kapitel 1: höchstens „selten“ (außer der sicheren Belohnungskarte)
+  for (let i = 0; i < 30; i++) for (const x of briefRules.inhalt({ art: i % 3 ? 'klein' : 'gross', gegner: reihenfolge[0] }, story, rnd)) assert.ok(rang.indexOf(K(x.id).seltenheit) <= 1, `Kapitel 1 ohne ${K(x.id).seltenheit}`);
+  // Kapitel 2: höchstens „episch“
+  for (let i = 0; i < 30; i++) for (const x of briefRules.inhalt({ art: 'klein', gegner: reihenfolge[3] }, story, rnd)) assert.ok(rang.indexOf(K(x.id).seltenheit) <= 2, 'Kapitel 2 ohne legendär');
+  let s = neuerKampagnenStand(); s.briefe = Array.from({ length: 40 }, () => ({ art: 'klein', gegner: reihenfolge.at(-1) }));
   let ausWachs = 0;
   while (s.briefe.length) { const r = kamp.oeffne(s, [...story, ...s.karten], rnd); ausWachs += r.ausWachs; s = r.stand; }
   const alle = lutherKarten.filter((x) => x.seltenheit).map((x) => x.id);
@@ -277,4 +281,21 @@ test('Ecks Falle: Ausweichen einmal je Frage, Nachgeben kostet Gewissen, jede eh
   assert.equal(falle.stufe(z), 2);
   let g = falle.start(); for (const f of s.fragen) g = falle.antworte(g, s, idx(f, 'stand'));
   assert.equal(falle.stufe(g), 3);
+});
+
+test('Kampagne: Konter-Lexikon trägt wirkende Konter ein, je fünf gibt es einen Siegelbrief', async () => {
+  const { lexikonPaare, LEXIKON_JE_BRIEF } = await import('../js/puzzles/kampagne.js');
+  const paare = lexikonPaare();
+  assert.ok(paare.length >= 40, 'genug Konter zum Entdecken');
+  for (const p of paare) { const [l, c] = p.split('>'); assert.ok(K(l) && K(c), `Paar ${p} besteht aus echten Karten`); }
+  let s = neuerKampagnenStand();
+  const [l0, c0] = paare[0].split('>');
+  let r = kamp.entdecke(s, l0, c0, reihenfolge[0]);
+  assert.ok(r.neu && r.stand.lexikon.length === 1 && !r.brief);
+  assert.equal(kamp.entdecke(r.stand, l0, c0, reihenfolge[0]).neu, false, 'dasselbe Paar nur einmal');
+  assert.equal(kamp.entdecke(r.stand, 'k1', 'c-gibtsnicht', reihenfolge[0]).neu, false, 'nur echte Konter');
+  s = r.stand;
+  for (const p of paare.slice(1, LEXIKON_JE_BRIEF)) { const [l, c] = p.split('>'); r = kamp.entdecke(s, l, c, reihenfolge[2]); s = r.stand; }
+  assert.ok(r.brief, 'der fünfte Konter bringt einen Siegelbrief');
+  assert.equal(s.briefe.length, 1); assert.equal(s.briefe[0].gegner, reihenfolge[2]);
 });

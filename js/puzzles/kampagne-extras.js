@@ -41,7 +41,8 @@ function gipfelWeg(stand, figuren, { klein = false } = {}) {
 }
 
 /** Fortschrittsleiste oben in der Übersicht: immer ein nächstes Ziel vor Augen. */
-export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung }) {
+export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung, onLexikon }) {
+  const lex = lexikonStand(stand);
   const besiegt = reihenfolge.filter((id) => stand.sterne[id]).length;
   const wachs = stand.wachs || 0;
   const s = sammlungStand(besitz);
@@ -62,6 +63,12 @@ export function zielLeiste({ t, stand, besitz, figuren, wachsJeBrief, onSammlung
         h('span', { class: 'ke-balken', 'aria-hidden': 'true' }, h('span', { style: `width:${(s.n / s.von) * 100}%` })),
         h('span', {}, fuelle(t.kampSammlungStand, { n: s.n, von: s.von })),
         knopf(t.kampSammlungAnsehen, onSammlung, 'still klein')),
+      h('div', { class: 'ke-ziel lexikon' },
+        h('strong', {}, t.kampLexikonTitel),
+        h('span', { class: 'ke-balken', 'aria-hidden': 'true' }, h('span', { style: `width:${(lex.n / lex.von) * 100}%` })),
+        h('span', {}, fuelle(t.kampLexikonStand, { n: lex.n, von: lex.von })),
+        h('small', {}, t.kampLexikonLohn),
+        knopf(t.kampLexikonOeffnen, onLexikon, 'still klein')),
       h('div', { class: 'ke-ziel fuehrer' },
         h('strong', {}, t.kampFuehrerTitel),
         naechster ? [
@@ -142,4 +149,52 @@ export function zeigeEinfuehrung({ t, stand, besitz, figuren, wachsJeBrief, fert
     buehne.querySelector('.knopf.haupt')?.focus();
   };
   zeichne();
+}
+
+// ---------- Konter-Lexikon ----------
+// Alle Paare „Luthers Karte entkräftet Kirchenkarte“. Eingetragen wird ein Paar, sobald es in einer Partie wirkt (js/puzzles/kampagne.js, rules.entdecke).
+const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => [k.id, c]));
+export function lexikonStand(stand) {
+  const alle = lexikonPaare().map(([l, c]) => `${l}>${c}`);
+  return { n: (stand.lexikon || []).filter((p) => alle.includes(p)).length, von: alle.length };
+}
+
+/** Lexikon: jede Kirchenkarte mit ihren Kontern. Entdeckte Konter zeigen beide Texte nebeneinander, die anderen ein Fragezeichen. */
+export function zeigeLexikon({ t, stand }) {
+  const entdeckt = new Set(stand.lexikon || []);
+  // Kirchenkarten, die man kennt: aus den Decks der Gegner, gegen die man schon gespielt hat, und aus entdeckten Paaren
+  const gesehen = new Set();
+  for (const id of stand.gesehen || []) { const g = kampagne.gegner[id]; [...(g?.deck || []), g?.anfuehrer].filter(Boolean).forEach((c) => gesehen.add(c)); }
+  for (const p of entdeckt) gesehen.add(p.split('>')[1]);
+  const nachKirche = new Map();
+  for (const [l, c] of lexikonPaare()) { if (!nachKirche.has(c)) nachKirche.set(c, []); nachKirche.get(c).push(l); }
+  // Reihenfolge: wie die Gegner kommen, danach die übrigen
+  const reihe = [...new Set([...reihenfolge.flatMap((id) => [...kampagne.gegner[id].deck, kampagne.gegner[id].anfuehrer]).filter((c) => nachKirche.has(c)), ...nachKirche.keys()])];
+  const s = lexikonStand(stand);
+  const buehne = h('div', { class: 'ke-buehne', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.kampLexikonTitel });
+  const zu = () => buehne.remove();
+  setzeInhalt(buehne, h('div', { class: 'ke-sammlung ke-lexikon' },
+    h('div', { class: 'ke-sammlung-kopf' },
+      h('div', {}, h('h2', {}, t.kampLexikonTitel), h('p', {}, fuelle(t.kampLexikonStand, { n: s.n, von: s.von }), ' · ', t.kampLexikonLohn)),
+      knopf(t.schliessen, zu, 'haupt')),
+    h('p', { class: 'ke-lex-erklaerung' }, t.kampLexikonText),
+    h('div', { class: 'ke-lex-liste' }, reihe.map((c) => {
+      const kirche = K(c); const konter = nachKirche.get(c);
+      const kennt = gesehen.has(c);
+      const offen = konter.filter((l) => !entdeckt.has(`${l}>${c}`)).length;
+      return h('div', { class: `ke-lex-eintrag${offen === 0 ? ' voll' : ''}` },
+        h('div', { class: 'ke-lex-kirche' },
+          kennt ? h('span', { class: 'ke-lex-karte' }, kartenChip(kirche, { klein: true, onclick: () => zeigeKartenDetail(kirche) }))
+            : h('span', { class: 'ke-lex-karte ke-sammel-karte fehlt' }, h('span', { class: 'ke-fehlt-bild', html: bildHtml('ruecken-kirche') }), h('span', { class: 'ke-fehlt-zeichen' }, '?')),
+          h('p', {}, kennt ? [h('strong', {}, `${t.kampLexikonKirche}: `), kirche.text] : t.kampLexikonUnbekannt)),
+        h('div', { class: 'ke-lex-konter' }, konter.map((l) => {
+          const ja = entdeckt.has(`${l}>${c}`);
+          return ja ? h('div', { class: 'ke-lex-paar' }, h('span', { class: 'ke-lex-karte' }, kartenChip(K(l), { klein: true, onclick: () => zeigeKartenDetail(K(l)) })),
+            h('p', {}, h('strong', {}, `${t.kampLexikonDagegen}: `), K(l).text))
+            : h('div', { class: 'ke-lex-paar offen' }, h('span', { class: 'ke-lex-frage' }, '?'));
+        }),
+        offen ? h('small', {}, fuelle(t.kampLexikonOffen, { n: offen })) : null));
+    }))));
+  document.body.append(buehne);
+  buehne.querySelector('.knopf')?.focus();
 }

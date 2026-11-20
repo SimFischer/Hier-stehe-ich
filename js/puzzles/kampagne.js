@@ -1,17 +1,20 @@
 // Kartenspiel „Hammer & Siegel“ (Spiel im Spiel): Kampagne mit zwölf Gegnern. Oben die Regeln (in Node testbar), unten die Anzeige.
 // Der Fortschritt bleibt auf dem Gerät (localStorage). Der Fortsetzungscode der Geschichte bleibt davon unberührt.
-import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle, melde } from '../engine/ui.js';
 import { figurHtml, portraetHtml, bildHtml, kartenBild } from '../engine/bilder.js';
 import { kampagne } from '../../data/kampagne.js';
 import { K, maxKopien, anzahl } from './duell-regeln.js';
 import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
-import { zeigeEinfuehrung, zielLeiste, zeigeSammlung } from './kampagne-extras.js';
+import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [] });
+// Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
+export const LEXIKON_JE_BRIEF = 5;
+export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
 // Doppelte Karten werden zu Siegellack. So viel Siegellack ergibt einen neuen Siegelbrief.
 export const WACHS_JE_BRIEF = 5;
 
@@ -20,12 +23,20 @@ export const WACHS_JE_BRIEF = 5;
 // Immer Fortschritt: Karten, die man noch nicht (oft genug) hat, kommen zuerst. Der erste Sieg gegen einen Gegner bringt sicher eine seiner Belohnungskarten.
 // Kopien: gewöhnliche und seltene Karten darf man zweimal haben (und zweimal ins Deck nehmen), epische und legendäre einmal (maxKopien).
 const SELTEN = ['gewoehnlich', 'selten', 'episch', 'legendaer'];
+// Höchste Seltenheit je Kapitel: Wer weiterkommt, findet bessere Karten. Kapitel 1 bis „selten“, Kapitel 2 bis „episch“, ab Kapitel 3 auch legendär.
+// (Die sichere Belohnungskarte beim ersten Sieg gegen einen Gegner gilt unabhängig davon.)
+export const KAPITEL_HOECHSTE = ['selten', 'episch', 'legendaer', 'legendaer'];
 export const briefRules = {
   /** Gewichte der Seltenheiten. kapitel 0–3 macht seltene Karten wahrscheinlicher, glanz heißt: mindestens „selten“ (groß: mindestens „episch“). */
   gewichte(kapitel, platz) {
-    const g = { gewoehnlich: 55, selten: 30, episch: 12 + 3 * kapitel, legendaer: 3 + 2 * kapitel };
+    const g = { gewoehnlich: 55, selten: 30, episch: 14, legendaer: kapitel >= 3 ? 8 : 4 };
     if (platz === 'glanz') g.gewoehnlich = 0;
-    if (platz === 'gross') { g.gewoehnlich = 0; g.selten = 0; g.episch = 70; g.legendaer = 20 + 5 * kapitel; }
+    if (platz === 'gross') { g.gewoehnlich = 0; g.selten = 0; g.episch = 70; g.legendaer = kapitel >= 3 ? 30 : 15; }
+    // Was es in diesem Kapitel noch nicht gibt, fällt weg (der große Brief bekommt dann die beste erlaubte Seltenheit)
+    const hoechste = SELTEN.indexOf(KAPITEL_HOECHSTE[kapitel] || 'legendaer');
+    SELTEN.forEach((sel, i) => { if (i > hoechste) g[sel] = 0; });
+    // Bleibt nichts übrig (großer Brief in Kapitel 1), gibt es die beste Seltenheit, die das Kapitel erlaubt
+    if (SELTEN.every((sel) => !g[sel])) g[SELTEN[hoechste]] = 1;
     return g;
   },
   ziehSeltenheit(gewichte, rnd) {
@@ -52,15 +63,17 @@ export const briefRules = {
     const rest = gezogen.length ? plaetze.slice(1) : plaetze;
     for (const platz of rest) {
       const seltenheit = briefRules.ziehSeltenheit(briefRules.gewichte(kapitel, platz), rnd);
-      const mindest = platz === 'gross' ? 2 : platz === 'glanz' ? 1 : 0;
+      const hoechste = SELTEN.indexOf(KAPITEL_HOECHSTE[kapitel] || 'legendaer');
+      const mindest = Math.min(hoechste, platz === 'gross' ? 2 : platz === 'glanz' ? 1 : 0);
       const nichtImBrief = (k) => !gezogen.some((y) => y.id === k.id);
       const passend = pool.filter((k) => k.seltenheit === seltenheit && nichtImBrief(k));
       let k;
-      if (platz === 'frei') k = aus(passend.length ? passend : pool.filter(nichtImBrief));
+      const erlaubt = (x) => SELTEN.indexOf(x.seltenheit) <= hoechste;
+      if (platz === 'frei') k = aus(passend.length ? passend : pool.filter((x) => nichtImBrief(x) && erlaubt(x)));
       else {
         const neuePassend = passend.filter((x) => !hat(x.id));
-        const neueHoeher = pool.filter((x) => SELTEN.indexOf(x.seltenheit) >= mindest && !hat(x.id));
-        k = neuePassend.length ? aus(neuePassend) : neueHoeher.length ? aus(neueHoeher) : aus(passend.length ? passend : pool.filter(nichtImBrief));
+        const neueHoeher = pool.filter((x) => SELTEN.indexOf(x.seltenheit) >= mindest && erlaubt(x) && !hat(x.id));
+        k = neuePassend.length ? aus(neuePassend) : neueHoeher.length ? aus(neueHoeher) : aus(passend.length ? passend : pool.filter((x) => nichtImBrief(x) && erlaubt(x)));
       }
       gezogen.push({ id: k.id, neu: !hat(k.id) });
     }
@@ -90,6 +103,16 @@ export const rules = {
     if (vorher < 3 && jetzt === 3) briefe.push({ art: 'gross', gegner: gegnerId });
     n.briefe = [...(n.briefe || []), ...briefe];
     return { stand: n, jetzt, briefe, ersterSieg: vorher === 0 && jetzt > 0, neueAnfuehrer: rules.anfuehrerFrei(n).filter((a) => !freiVorher.includes(a)) };
+  },
+  /** Ein Konter wurde in einer Partie gesehen: ins Lexikon, und bei jedem fünften Eintrag ein Siegelbrief. */
+  entdecke(s, lutherId, kircheId, gegnerId) {
+    const paar = `${lutherId}>${kircheId}`;
+    const lexikon = s.lexikon || [];
+    if (lexikon.includes(paar) || !lexikonPaare().includes(paar)) return { stand: s, neu: false, brief: false };
+    const n = { ...s, lexikon: [...lexikon, paar] };
+    const brief = n.lexikon.length % LEXIKON_JE_BRIEF === 0;
+    if (brief) n.briefe = [...(n.briefe || []), { art: 'klein', gegner: gegnerId, ausLexikon: true }];
+    return { stand: n, neu: true, brief };
   },
   /** Den ersten Brief öffnen: Karten in die Sammlung, Brief weg. */
   oeffne(s, besitz, rnd = Math.random) {
@@ -130,7 +153,7 @@ export function view(el, schritt, ctx, fertig) {
           h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 })),
           knopf(t.kampSoGehts, einfuehrung, 'still klein'))),
       // Immer ein nächstes Ziel vor Augen: Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer
-      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }) }),
+      zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }) }),
       stand.briefe.length ? h('button', { type: 'button', class: 'kamp-brief-knopf oben', onclick: () => briefeOeffnen(uebersicht) },
         h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
         h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length }))) : null,
@@ -145,7 +168,8 @@ export function view(el, schritt, ctx, fertig) {
           h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(a.id).titel }), onclick: () => zeigeKartenDetail(K(a.id)) }, 'i'));
       })),
       kampagne.kapitel.map((kap, i) => h('section', { class: 'kamp-kapitel' },
-        h('h3', {}, fuelle(t.kampKapitel, { n: i + 1, titel: kap.titel }), h('em', {}, ` ${kap.zeit}`)),
+        h('h3', {}, fuelle(t.kampKapitel, { n: i + 1, titel: kap.titel }), h('em', {}, ` ${kap.zeit}`),
+          h('span', { class: `kamp-beute rar-${KAPITEL_HOECHSTE[i]}` }, t.kampBeute[i])),
         h('div', { class: 'kamp-gegner' }, kap.gegner.map((id) => {
           const g = kampagne.gegner[id];
           const offen = rules.offen(stand, id);
@@ -169,7 +193,14 @@ export function view(el, schritt, ctx, fertig) {
       besitz: besitz(), anfuehrer: stand.anfuehrer, deck: stand.deck,
       merkeDeck: (deck) => neu({ ...stand, deck: [...deck] }),
       zurueck: uebersicht,
-      ergebnis: (z, deck) => auswertung(id, z, deck)
+      ergebnis: (z, deck) => auswertung(id, z, deck),
+      // Konter gesehen: ins Lexikon, kurze Meldung, bei jedem fünften ein Siegelbrief
+      entdecke: (lutherId, kircheId) => {
+        const r = rules.entdecke(stand, lutherId, kircheId, id);
+        if (!r.neu) return;
+        neu(r.stand);
+        melde(fuelle(r.brief ? t.kampLexikonBrief : t.kampLexikonNeu, { karte: K(lutherId).titel, gegen: K(kircheId).titel }));
+      }
     } }, ctx, () => uebersicht());
   }
 

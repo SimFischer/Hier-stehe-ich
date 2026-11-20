@@ -236,6 +236,8 @@ export function view(el, schritt, ctx, fertig) {
     setzeInhalt(el, h('p', { class: 'klein' }, t.duellImSpiel));
     if (z.phase === 'tausch') { tauschAnsicht(); return; }
     const l = z.seiten.luther; const k = z.seiten.kirche;
+    // Konter-Lexikon (nur Kampagne): jedes Paar, das gerade wirkt
+    if (kamp?.entdecke) for (const inst of k.reihe) { const durch = entkraeftet(z, 'kirche', inst); if (durch) kamp.entdecke(durch, inst.id); }
     const letzte = z.log.at(-1);
     const letzteUid = letzte?.art === 'spiel' ? letzte.uid : null;
     const amZug = z.phase === 'spiel' && z.am === 'luther' && !banner && !tutErklaert();
