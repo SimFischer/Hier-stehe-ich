@@ -298,3 +298,5 @@
 .kamp-kirche.zu { opacity: 0.75; }
 .kamp-kirche-fuehrer .kamp-fuehrer em { font-size: var(--text-klein); }
 .ke-kapitel-kirche { margin: 0; padding: 6px 14px; border-radius: 12px; background: #7f2f1f; color: #fff3c4; animation: einblenden 0.6s ease-out 1.6s both; }
+.kamp-kirche .kamp-kirche-fuehrer { margin-bottom: var(--ab-5); }
+.kamp-kirche-gegner-titel { margin: 0 0 var(--ab-2); }

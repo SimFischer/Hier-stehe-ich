@@ -318,6 +318,7 @@ export function view(el, schritt, ctx, fertig) {
       h('div', { class: 'kamp-anfuehrer kamp-kirche-fuehrer' }, fuehrer.map((a) => h('button', { type: 'button', class: `kamp-fuehrer kamp-kirche-wahl${a === gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': String(a === gewaehlt),
         onclick: () => { neu({ ...stand, kircheAnfuehrer: a }); uebersicht(); } },
         h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(kartenBild(K(a)).name) }), h('strong', {}, K(a).titel), h('em', {}, fuelle(t.kartenStaerke, { n: K(a).staerke }))))),
+      h('p', { class: 'kicker kamp-kirche-gegner-titel' }, t.kircheGegnerTitel),
       h('div', { class: 'kamp-gegner' }, ks.gegner.map((id) => {
         const g = kampagne.lutherGegner[id];
         const offen = rules.kircheOffen(stand, id);

@@ -156,7 +156,7 @@ export const t = {
   kampAbzText: 'Abzeichen sind Aufgaben für besondere Decks und Siege. Probier neue Kartenarten aus: Nicht jedes Abzeichen schafft man mit demselben Deck.',
   kampAbzErreicht: 'Erreicht', kampAbzOffen: 'Noch offen', kampAbzNeuEins: 'Neues Siegel-Abzeichen!', kampAbzNeuMehr: 'Neue Siegel-Abzeichen!',
   kampAbzLack: '+{n} Siegellack', kampAbzNeu: 'Neues Siegel-Abzeichen: „{titel}“ (+{n} Siegellack)',
-  kircheKicker: 'Du bist die Kirche', kircheAnfuehrerWahl: 'Dein Anführer (Kirchenvertreter, die du besiegt hast):', kircheOffen: 'Herausfordern', kircheGeschafft: '✓ Verteidigt',
+  kircheGegnerTitel: 'Deine Gegner: Luther in drei Stationen', kircheKicker: 'Du bist die Kirche', kircheAnfuehrerWahl: 'Dein Anführer (Kirchenvertreter, die du besiegt hast):', kircheOffen: 'Herausfordern', kircheGeschafft: '✓ Verteidigt',
   kircheGefahr: 'Luther kann kontern: {titel}', kircheDeckTipp: 'Tipp: Karten mit ⚠ kann Luther mit einem Gegenargument entkräften. Welche Argumente der Kirche halten stand?',
   kircheDeckText: 'Das sind die Karten der Kirche, die du mitnimmst. Mit − legst du eine zurück, mit „Karten hinzufügen“ holst du andere, die du aus deinen Disputationen kennst.',
   kircheLack: '+{n} Siegellack für deinen ersten Sieg gegen diesen Luther.', kircheGetroffen: 'Diese deiner Karten hat Luther entkräftet:',
