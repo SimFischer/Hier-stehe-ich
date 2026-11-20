@@ -105,15 +105,44 @@ export function view(el, schritt, ctx, fertig) {
     }
     const zuViel = besitz.length > R.deckMax;
     const ok = deck.length >= Math.min(R.deckMin, besitz.length) && deck.length <= R.deckMax;
-    // Antippen: eine Kopie mehr ins Deck, solange man sie besitzt und Platz ist; sonst alle Kopien wieder heraus.
-    const umschalten = (id) => {
-      const imDeck = anzahl(deck, id);
-      if (imDeck === 0 && deck.length >= R.deckMax) { melde(t.duellDeckVoll); return; }
-      deck = imDeck < anzahl(besitz, id) && deck.length < R.deckMax ? [...deck, id] : deck.filter((x) => x !== id);
-      vorbereitung();
-    };
     const sammlung = [...new Set(besitz)];
     const fuehrer = g.anfuehrer ? K(g.anfuehrer) : null;
+    // Welche Karten des Gegners entkräftet diese Karte? (für die Marke „Kontert“ und den Filter)
+    const gegnerKarten = new Set([...g.deck, g.anfuehrer].filter(Boolean));
+    const konterGegen = (id) => (K(id).entkraeftet || []).filter((c) => gegnerKarten.has(c));
+    /** Sammlung als eigene Ansicht: Antippen nimmt eine Kopie ins Deck. Was im Deck ist, ist deutlich markiert. */
+    function sammlungOeffnen() {
+      let nurKonter = false;
+      const buehne = h('div', { class: 'd-auswahl', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.duellKartenHinzu });
+      document.body.append(buehne);
+      const zu = () => { buehne.remove(); vorbereitung(); };
+      const zeichneAuswahl = () => {
+        const liste = sammlung.filter((id) => !nurKonter || konterGegen(id).length)
+          .sort((a, b) => konterGegen(b).length - konterGegen(a).length || K(b).staerke - K(a).staerke);
+        setzeInhalt(buehne, h('div', { class: 'd-auswahl-innen' },
+          h('div', { class: 'd-auswahl-kopf' },
+            h('div', {}, h('h2', {}, t.duellKartenHinzu), h('p', { class: `d-deck-zahl${ok2() ? ' ok' : ''}` }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax }))),
+            h('div', { class: 'reihe' },
+              h('button', { type: 'button', class: `d-filter${nurKonter ? ' an' : ''}`, 'aria-pressed': String(nurKonter), onclick: () => { nurKonter = !nurKonter; zeichneAuswahl(); } }, '⚔ ', fuelle(t.duellNurKonter, { name: wen })),
+              knopf(t.duellFertig, zu, 'haupt'))),
+          h('p', { class: 'klein' }, t.duellAuswahlText),
+          h('div', { class: 'd-auswahl-karten' }, liste.map((id) => {
+            const imDeck = anzahl(deck, id), hat = anzahl(besitz, id), voll = imDeck >= hat;
+            const konter = konterGegen(id);
+            return h('span', { class: `d-auswahl-karte${imDeck ? ' im-deck' : ''}${voll ? ' voll' : ''}` },
+              kartenChip(K(id), { klein: true, onclick: () => {
+                if (voll) { melde(fuelle(t.duellSchonImDeck, { titel: K(id).titel })); return; }
+                if (deck.length >= R.deckMax) { melde(t.duellDeckVoll); return; }
+                deck = [...deck, id]; zeichneAuswahl();
+              } }),
+              imDeck ? h('span', { class: 'd-auswahl-stand' }, voll ? `✓ ${t.duellImDeck}` : `${imDeck}/${hat} ${t.duellImDeck}`) : hat > 1 ? h('span', { class: 'd-auswahl-stand frei' }, `0/${hat}`) : null,
+              konter.length ? h('span', { class: 'd-auswahl-konter' }, '⚔ ', fuelle(t.duellKontert, { titel: konter.map((c) => K(c).titel).join(', ') })) : null,
+              h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(id).titel }), onclick: () => gross({ id }) }, 'i'));
+          }))));
+      };
+      const ok2 = () => deck.length >= Math.min(R.deckMin, besitz.length) && deck.length <= R.deckMax;
+      zeichneAuswahl();
+    }
     setzeInhalt(el,
       h('div', { class: 'd-vor' },
         h('div', { class: 'd-gegner-kopf' },
@@ -129,13 +158,19 @@ export function view(el, schritt, ctx, fertig) {
           [...new Set(g.deck)].map((id) => kartenChip(K(id), { mini: true, onclick: () => gross({ id }) }))),
         fuehrer ? h('p', { class: 'klein' }, fuelle(t.duellAnfuehrerGegner, { name: fuehrer.titel })) : null,
         kamp?.anfuehrer || g.lutherAnfuehrer ? h('p', { class: 'klein' }, fuelle(t.duellAnfuehrerDu, { name: K(kamp?.anfuehrer || g.lutherAnfuehrer).titel })) : null,
+        // Deckbau: oben das eigene Deck groß (mit freien Plätzen), die Sammlung öffnet sich über „Karten hinzufügen“
         zuViel ? [
-          h('h3', { class: 'zwischen' }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
-          h('p', { class: 'klein' }, t.duellDeckText, kamp ? [' ', t.kampKopienText] : null),
-          h('div', { class: 'hand d-sammlung' }, sammlung.map((id) => h('span', { class: 'karte-huelle' }, kartenChip(K(id), { klein: true, gewaehlt: deck.includes(id), onclick: () => umschalten(id) }),
-            // Kopien: „1/2“ heißt eine von zwei Kopien im Deck
-            anzahl(besitz, id) > 1 ? h('span', { class: `d-kopien${anzahl(deck, id) === 2 ? ' voll' : ''}`, 'aria-label': fuelle(t.duellKopien, { n: anzahl(deck, id), von: anzahl(besitz, id) }) }, `${anzahl(deck, id)}/${anzahl(besitz, id)}`) : null,
-            h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(id).titel }), onclick: () => gross({ id }) }, 'i'))))
+          h('h3', { class: `zwischen d-deck-titel${ok ? ' ok' : ''}` }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
+          h('p', { class: 'klein' }, t.duellDeckTextNeu, kamp ? [' ', t.kampKopienText] : null),
+          h('div', { class: 'd-deck' },
+            [...new Set(deck)].sort((a, b) => K(b).staerke - K(a).staerke).map((id) => h('span', { class: 'd-deck-karte' },
+              kartenChip(K(id), { klein: true, onclick: () => gross({ id }) }),
+              anzahl(deck, id) > 1 ? h('span', { class: 'd-deck-anzahl' }, `×${anzahl(deck, id)}`) : null,
+              konterGegen(id).length ? h('span', { class: 'd-konter-marke', title: konterGegen(id).map((c) => K(c).titel).join(', ') }, '⚔') : null,
+              h('button', { type: 'button', class: 'd-deck-raus', 'aria-label': fuelle(t.duellRausnehmen, { titel: K(id).titel }), onclick: () => { deck.splice(deck.lastIndexOf(id), 1); deck = [...deck]; vorbereitung(); } }, '−'))),
+            Array.from({ length: Math.max(0, R.deckMax - deck.length) }, (_, i) => h('button', { type: 'button', class: `d-deck-frei${i === 0 ? ' erster' : ''}`, onclick: sammlungOeffnen },
+              h('span', { 'aria-hidden': 'true' }, '+'), i === 0 ? h('small', {}, t.duellKartenHinzu) : null))),
+          h('div', { class: 'reihe' }, knopf(t.duellKartenHinzu, sammlungOeffnen, 'haupt'))
         ] : h('p', { class: 'klein' }, fuelle(t.duellAlleKarten, { n: deck.length })),
         h('div', { class: 'reihe fuss' }, kamp ? knopf(t.kampZurUebersicht, () => kamp.zurueck(), 'still') : h('span', {}), knopf(t.duellLos, starte, 'haupt', { disabled: !ok }))));
   }

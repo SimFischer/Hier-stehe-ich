@@ -91,3 +91,26 @@ Siebzehn Karten kamen dazu. Jede hat einen gesicherten historischen Kern; die Te
 | Ehelos bleiben (Kirche) | Zölibat für Priester, Mönche und Nonnen | |
 
 Zuordnung zu den Gegnern: Abschwören! bei Eck (Professor in Ingolstadt), der Narr bei Emser (ebenfalls Streitschriftsteller gegen Luther), das Edikt bei Kaiser Karl und Herzog Georg, Messe und Zölibat bei Albrecht, Georg und Leo. Spätere Ereignisse (1524 bis 1534) erscheinen nur als Karten Luthers: was aus der Reformation wurde.
+
+### Zweite Konter (20.11.2026)
+
+Jede Kirchenkarte hat jetzt mindestens zwei Konter, damit verschiedene Decks möglich sind (Anführer ausgenommen: Personen werden nicht „widerlegt“). Ergänzt wurden diese Paare; der Text der Luther-Karte antwortet jeweils auf die Aussage der Kirchenkarte:
+
+| Kirchenkarte | Neuer Konter | Begründung |
+|---|---|---|
+| Gott, der strenge Richter | Allein aus Glauben | Turmerlebnis: Gottes Gerechtigkeit als Geschenk statt Gericht |
+| Der Papst entscheidet | An den christlichen Adel | 1520 gegen die „Mauern“ Roms, auch gegen das Auslegungsmonopol des Papstes |
+| Die Konzilien | Maßstab Bibel | Maßstab ist die Schrift, nicht die Zahl der Bischöfe |
+| Wie Jan Hus | Das Augsburger Bekenntnis | die Evangelischen bekennen den gemeinsamen christlichen Glauben |
+| Ketzer! | Loci communes | die Lehre geordnet aus der Bibel begründet |
+| Der Kirchenbann | Die Bulle im Feuer | Luther verbrennt 1520 die Bannandrohung |
+| Ruhe und Ordnung | Neue Kirchenordnungen | neue Ordnung der Gemeinden statt Unruhe |
+| Die Bannandrohung | Gewissen | Luther widerruft nicht |
+| Bücher ins Feuer | Die Druckerpresse | mehr Abzüge, als man verbrennen kann |
+| Die Reichsacht, Der Ketzerprozess | Junker Jörg | Luther wird auf der Wartburg in Sicherheit gebracht |
+| Die Macht des Kaisers | Die Protestation | Fürsten und Städte widersprechen dem Reichstagsbeschluss |
+| Widerrufe! | Argula von Grumbach | fordert Begründung aus der Bibel statt Widerruf |
+| Abschwören! | Gewissen | Glaube lässt sich nicht erzwingen |
+| Der große lutherische Narr | Cranachs Bilder | Cranachs Bildnisse prägen ein würdiges Bild Luthers |
+| Die Messe auf Latein | Deutsche Lieder | die Gemeinde singt auf Deutsch mit |
+| Ehelos bleiben | Freiheit eines Christenmenschen | ein Christ ist frei; Gelübde machen nicht gerecht |

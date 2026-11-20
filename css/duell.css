@@ -192,3 +192,46 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .d-kopien { position: absolute; z-index: 3; left: 6px; bottom: 6px; padding: 2px 10px; border-radius: 12px; pointer-events: none;
   background: rgba(31, 26, 23, 0.85); color: #fff3c4; font-weight: bold; font-size: 0.9375rem; border: 2px solid #8a6a34; }
 .d-kopien.voll { background: #2f7a3e; border-color: #dbe7d6; }
+
+/* ---------- Deckbau: eigenes Deck groß, Sammlung als eigene Ansicht ---------- */
+.d-deck-titel { display: inline-block; padding: 2px 12px; border-radius: 10px; background: #f3d6cc; }
+.d-deck-titel.ok { background: var(--gruen-hell); }
+.d-deck { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: var(--ab-3); padding: var(--ab-3); border-radius: 12px;
+  background: linear-gradient(#3e5b45, #2f4636); border: 3px solid #24402c; box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.4); }
+.d-deck-karte { position: relative; display: block; }
+.d-deck-karte .karte.sammel.gwent { width: 100%; box-shadow: 0 0 0 3px #f3d27a, 0 4px 10px rgba(0, 0, 0, 0.5); }
+.d-deck-anzahl { position: absolute; z-index: 3; left: 50%; top: -10px; transform: translateX(-50%); padding: 2px 12px; border-radius: 12px;
+  background: #f3d27a; color: var(--tinte); font-weight: bold; font-size: 1rem; border: 2px solid #3a2717; }
+.d-deck-raus { position: absolute; z-index: 4; right: -8px; top: -8px; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  background: #a6432e; color: #fff; border: 3px solid #fff3c4; font-size: 1.6rem; font-weight: bold; line-height: 1; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+.d-konter-marke { position: absolute; z-index: 3; left: -8px; top: -8px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  background: #2f5a37; color: #eaffe5; border: 2px solid #b7e0b2; font-size: 1rem; }
+.d-deck-frei { display: grid; place-content: center; justify-items: center; gap: 4px; aspect-ratio: 63 / 88; border-radius: 10px; cursor: pointer;
+  border: 3px dashed rgba(240, 217, 166, 0.5); background: rgba(255, 255, 255, 0.05); color: rgba(240, 217, 166, 0.8); font: inherit; }
+.d-deck-frei span { font-size: 2.4rem; font-weight: bold; line-height: 1; }
+.d-deck-frei small { font-weight: bold; padding: 0 6px; text-align: center; }
+.d-deck-frei.erster { border-color: #f3d27a; color: #ffe08a; }
+
+/* Sammlung zum Hinzufügen */
+.d-auswahl { position: fixed; inset: 0; z-index: 55; overflow-y: auto; padding: max(12px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: radial-gradient(ellipse at 50% 30%, #4a3122 0%, #24180f 70%); color: var(--pergament); animation: einblenden 0.25s ease-out; }
+.d-auswahl-innen { width: min(1150px, 100%); margin: 0 auto; display: grid; gap: var(--ab-2); }
+.d-auswahl-kopf { position: sticky; top: calc(-1 * max(12px, env(safe-area-inset-top))); z-index: 3; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--ab-2);
+  padding: var(--ab-2) 0; background: #2a1c14; border-bottom: 2px solid #8a6a34; }
+.d-auswahl-kopf h2 { margin: 0; color: #ffe08a; font-variant: small-caps; }
+.d-deck-zahl { margin: 0; display: inline-block; padding: 1px 10px; border-radius: 10px; background: #7f2f1f; color: #fff3c4; font-weight: bold; }
+.d-deck-zahl.ok { background: #2f5a37; }
+.d-filter { min-height: 44px; padding: 6px 14px; border-radius: 22px; cursor: pointer; font: inherit; font-weight: bold;
+  background: rgba(255, 255, 255, 0.08); color: var(--pergament); border: 2px solid #8a6a34; }
+.d-filter.an { background: #2f5a37; border-color: #b7e0b2; color: #eaffe5; }
+.d-auswahl .klein { color: var(--ocker-hell); margin: 0; }
+.d-auswahl-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--ab-3); padding-top: 10px; }
+.d-auswahl-karte { position: relative; display: block; }
+.d-auswahl-karte .karte.sammel.gwent { width: 100%; }
+.d-auswahl-karte.im-deck .karte.sammel.gwent { box-shadow: 0 0 0 4px #f3d27a, 0 0 16px rgba(243, 210, 122, 0.6); }
+.d-auswahl-karte.voll .karte.sammel.gwent { filter: grayscale(0.5) brightness(0.65); }
+.d-auswahl-stand { position: absolute; z-index: 3; left: 50%; top: 42%; transform: translateX(-50%); padding: 4px 12px; border-radius: 14px; white-space: nowrap;
+  background: #f3d27a; color: var(--tinte); font-weight: bold; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); pointer-events: none; }
+.d-auswahl-stand.frei { top: auto; bottom: 22%; background: rgba(31, 26, 23, 0.8); color: #fff3c4; }
+.d-auswahl-konter { display: block; margin-top: 4px; padding: 2px 8px; border-radius: 8px; background: #2f5a37; color: #eaffe5; font-size: 0.8125rem; font-weight: bold; line-height: 1.25; }
+.d-auswahl-karte .karte-info { position: absolute; z-index: 4; top: -8px; right: -8px; width: 44px; height: 44px; }

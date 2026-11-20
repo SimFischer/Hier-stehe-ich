@@ -242,7 +242,8 @@ test('Disputation: Lernhinweis nach einer Niederlage nennt fehlende Karten und w
   const tipps = duell.verpasst(z, sammlung(5), deck);
   assert.ok(tipps.length > 0);
   for (const x of tipps) { assert.ok(K(x.kirche) && K(x.karte)); assert.ok(['runde', 'hand', 'deck', 'besitz', 'fehlt'].includes(x.ort)); }
-  if (tipps.some((x) => x.kirche === 'c-konzil')) assert.equal(tipps.find((x) => x.kirche === 'c-konzil').ort, 'fehlt', 'Konzilien irren gibt es erst in Worms');
+  // Gegen die Konzilien helfen „Konzilien irren“ (gibt es erst später) und „Maßstab Bibel“ (hat man schon)
+  for (const x of tipps.filter((y) => y.kirche === 'c-konzil')) { assert.ok(['k9', 'k5'].includes(x.karte)); if (x.karte === 'k9') assert.equal(x.ort, 'fehlt', 'Konzilien irren gibt es erst später'); }
 });
 
 test('Disputation: Ohne Karten endet die Runde von selbst, ein Anführer darf noch gespielt werden', () => {
