@@ -119,6 +119,19 @@ export const kampagne = {
   bestesDeckNach: 2,
   // Druckerwerkstatt: Siegellack ausgeben. Ein Siegelbrief ist am günstigsten; Wunschkarten (nur Konter gegen Karten,
   // die man schon kennt) kosten nach Seltenheit; Prachtausgaben verschönern eigene Karten (Stufe 1 koloriert, Stufe 2 mit Gold).
+  // Abschluss nach dem ersten Sieg gegen den Papst: Urkunde (nur zum Ansehen) und ein historischer Ausklang.
+  // Wichtig: Luther hat Rom nicht „besiegt“. Der Ausklang ordnet ein, was seine Argumente bewirkt haben.
+  finale: {
+    titel: 'Meister der Disputation',
+    einleitung: 'Du hast jede Karte Roms mit einem Argument beantwortet, vom Novizenmeister in Erfurt bis zum Papst in Rom.',
+    ausklangTitel: 'Und wie ging es wirklich weiter?',
+    ausklang: [
+      '1521 belegt Papst Leo X. Luther mit dem Bann, auf dem Reichstag in Worms verhängt der Kaiser die Reichsacht. Besiegt hat Luther Rom nicht.',
+      'Aber seine Argumente verbreiten sich durch den Buchdruck schneller, als man sie verbieten kann. Es entstehen evangelische Kirchen, die Christen im Westen Europas sind seitdem getrennt.',
+      'Heute arbeiten katholische und evangelische Christen in vielem zusammen. 2017, 500 Jahre nach den Thesen, haben sie in Deutschland gemeinsam an die Reformation erinnert.'
+    ],
+    urkunde: 'Hiermit wird bezeugt, dass in der Disputation „Hammer & Siegel“ alle zwölf Gegner mit guten Argumenten beantwortet wurden.'
+  },
   werkstatt: { brief: 5, karte: { gewoehnlich: 8, selten: 12, episch: 20, legendaer: 30 }, pracht: [3, 8] },
   // Siegel-Abzeichen: Aufgaben, die zu immer neuen Decks anregen. Jedes bringt Siegellack (js/puzzles/kampagne.js, ABZEICHEN_WACHS).
   // bed: gegner (nur gegen ihn), abKapitel (Gegner ab diesem Kapitel, 1–4), typMin/typMax (Karten einer Art im Deck), bundMin, deckMax,
@@ -152,9 +165,16 @@ export const kampagne = {
     { art: 'wieder', titel: 'Stecken geblieben?', text: 'Spiel frühere Gegner noch einmal: Jeder Sieg bringt einen neuen Siegelbrief, und dein Deck wird stärker. Schau genau hin, welche Karte welche entkräftet. Wer das herausfindet, schlägt auch den Kaiser.' }
   ],
   kapitel: [
-    { titel: 'Kloster und Markt', zeit: 'bis 1517', gegner: ['k-novize', 'k-prediger', 'k-tetzel'] },
-    { titel: 'Rom antwortet', zeit: '1518 bis 1519', gegner: ['k-prierias', 'k-cajetan', 'k-eck'] },
-    { titel: 'Der Streit der Schriften', zeit: '1520 bis 1521', gegner: ['k-emser', 'k-aleander', 'k-albrecht'] },
+    // geschafft: was historisch am Ende des Kapitels steht; weiter: Ausblick auf das nächste Kapitel (Kapitel-Abschluss)
+    { titel: 'Kloster und Markt', zeit: 'bis 1517', gegner: ['k-novize', 'k-prediger', 'k-tetzel'],
+      geschafft: 'Im Herbst 1517 veröffentlicht Luther seine 95 Thesen gegen den Ablasshandel. In wenigen Wochen kennt man sie in ganz Deutschland.',
+      weiter: 'Jetzt meldet sich Rom: Gelehrte des Papstes und ein Kardinal stellen Luther zur Rede.' },
+    { titel: 'Rom antwortet', zeit: '1518 bis 1519', gegner: ['k-prierias', 'k-cajetan', 'k-eck'],
+      geschafft: 'In Augsburg verlangt Kardinal Cajetan den Widerruf, in Leipzig streitet Luther mit Johann Eck. Luther bleibt bei seinen Argumenten.',
+      weiter: 'Nun wird mit Schriften gestritten: Flugschriften, Spottbilder und eine Bannandrohung aus Rom.' },
+    { titel: 'Der Streit der Schriften', zeit: '1520 bis 1521', gegner: ['k-emser', 'k-aleander', 'k-albrecht'],
+      geschafft: '1520 schreibt Luther seine großen Reformationsschriften. Die Bannandrohung des Papstes verbrennt er öffentlich vor dem Elstertor in Wittenberg.',
+      weiter: 'In Worms stehen Luther Kaiser und Reich gegenüber. Am Ende wartet der Papst selbst.' },
     { titel: 'Kaiser und Papst', zeit: '1521 bis 1522', gegner: ['k-georg', 'k-karl', 'k-leo'] }
   ],
   // belohnungen: Beim ersten Sieg gegen diesen Gegner enthält der Siegelbrief sicher eine dieser Karten (js/puzzles/kampagne.js, briefRules).
@@ -206,6 +226,6 @@ export const kampagne = {
     'k-leo': { id: 'k-leo', figur: 'leo', name: 'Papst Leo X.', ort: 'Rom, 1521', anfuehrer: 'a-leo', regeln: { handKirche: 10 },
       deck: ['c-papst', 'c-kurie', 'c-unfehlbar', 'c-bulle', 'c-bann', 'c-konzil', 'c-tradition', 'c-zoelibat', 'c-weihe', 'c-latein', 'c-ablass'], belohnungen: ['r5', 'r15', 'r11', 'r24', 'r29'],
       einleitung: 'Der letzte und stärkste Gegner: der Papst selbst, mit allen Karten der Kirche von Rom.',
-      sieg: 'Meisterhaft! Du kennst jede Karte und ihre Antwort. Hammer & Siegel ist gewonnen.', niederlage: 'Rom ist mächtig. Stell dein Deck neu zusammen und versuch es noch einmal.' }
+      sieg: 'Meisterhaft! Du kennst jede Karte Roms und ihre Antwort. Die letzte Disputation ist gewonnen.', niederlage: 'Rom ist mächtig. Stell dein Deck neu zusammen und versuch es noch einmal.' }
   }
 };

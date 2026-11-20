@@ -29,7 +29,7 @@ export function wachsTropfen(n, von) {
 /** Kleine Porträtreihe: der Weg zum Gipfel. */
 function gipfelWeg(stand, figuren, { klein = false } = {}) {
   const aktuell = reihenfolge.find((id) => !stand.sterne[id]);
-  return h('ol', { class: `ke-weg${klein ? ' klein' : ''}` }, reihenfolge.map((id, i) => {
+  return h('ol', { class: `ke-weg${klein ? ' klein' : ''}${stand.durchgespielt ? ' erreicht' : ''}` }, reihenfolge.map((id, i) => {
     const g = kampagne.gegner[id];
     const besiegt = Boolean(stand.sterne[id]);
     const gipfel = i >= reihenfolge.length - 2;
@@ -280,6 +280,72 @@ export function zeigeWerkstatt({ t, lage, regeln, kaufen, briefeOeffnen }) {
           stufe(id) < 2 ? preisKnopf(stufe(id) ? t.kampWerkVergolden : t.kampWerkKolorieren, { art: 'pracht', id }, stand) : null))))));
   }
   zeichne();
+  document.body.append(buehne);
+  buehne.querySelector('.knopf')?.focus();
+}
+
+// ---------- Abschluss: Urkunde und historischer Ausklang ----------
+/** Nach dem ersten Sieg gegen den Papst (und später über „Urkunde ansehen“). Nur zum Ansehen: nichts wird gespeichert oder gedruckt. */
+export function zeigeFinale({ t, stand, besitz, figuren, weiter = () => {} }) {
+  const f = kampagne.finale;
+  const lex = lexikonStand(stand);
+  const s = sammlungStand(besitz);
+  const fuehrer = K(stand.anfuehrer || 'a-luther');
+  const datum = stand.durchgespielt ? new Date(stand.durchgespielt).toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  const buehne = h('div', { class: 'ke-buehne ke-finale-buehne', role: 'dialog', 'aria-modal': 'true', 'aria-label': f.titel });
+  const zu = () => { buehne.remove(); weiter(); };
+  const zahl = (n, von, text) => h('li', {}, h('strong', {}, von ? `${n} / ${von}` : String(n)), h('span', {}, text));
+  setzeInhalt(buehne, h('div', { class: 'ke-finale' },
+    h('p', { class: 'kicker' }, t.kampFinaleKicker),
+    h('h2', { class: 'ke-finale-titel' }, f.titel),
+    h('p', { class: 'ke-finale-einleitung' }, f.einleitung),
+    gipfelWeg(stand, figuren, { klein: true }),
+    // Die Urkunde: Pergament mit Siegel, rollt sich auf
+    h('div', { class: 'ke-urkunde' },
+      h('p', { class: 'ke-urkunde-kopf' }, t.kampUrkunde),
+      h('div', { class: 'ke-urkunde-fuehrer' },
+        h('span', { class: 'ke-urkunde-bild', 'aria-hidden': 'true', html: bildHtml(kartenBild(fuehrer).name) }),
+        h('p', {}, f.urkunde, ' ', fuelle(t.kampUrkundeFuehrer, { name: fuehrer.titel }))),
+      h('ul', { class: 'ke-urkunde-zahlen' },
+        zahl(sterneSumme(stand), reihenfolge.length * 3, t.kampUrkundeSterne),
+        zahl(lex.n, lex.von, t.kampUrkundeKonter),
+        zahl((stand.abzeichen || []).length, kampagne.abzeichen.length, t.kampUrkundeAbzeichen),
+        zahl(s.n, s.von, t.kampUrkundeKarten)),
+      h('p', { class: 'ke-urkunde-fuss' }, datum ? fuelle(t.kampUrkundeDatum, { datum }) : ''),
+      h('span', { class: 'ke-urkunde-siegel', 'aria-hidden': 'true', html: bildHtml('siegel-ganz') })),
+    // Historischer Ausklang
+    h('section', { class: 'ke-ausklang' },
+      h('h3', {}, f.ausklangTitel),
+      f.ausklang.map((x) => h('p', {}, x))),
+    h('div', { class: 'reihe mitte' }, knopf(t.weiter, zu, 'haupt gross'))));
+  document.body.append(buehne);
+  buehne.querySelector('.knopf')?.focus();
+}
+
+/** Kapitel geschafft: die drei besiegten Gegner mit Sternen, was historisch passiert ist, Ausblick und neue Beute. */
+export function zeigeKapitelAbschluss({ t, kapitel, stand, figuren, weiter = () => {} }) {
+  const kap = kampagne.kapitel[kapitel];
+  const naechstes = kampagne.kapitel[kapitel + 1];
+  const buehne = h('div', { class: 'ke-buehne ke-finale-buehne', role: 'dialog', 'aria-modal': 'true', 'aria-label': fuelle(t.kampKapitelGeschafft, { n: kapitel + 1 }) });
+  const zu = () => { buehne.remove(); weiter(); };
+  setzeInhalt(buehne, h('div', { class: 'ke-finale ke-kapitel-ende' },
+    h('p', { class: 'kicker' }, fuelle(t.kampKapitelGeschafft, { n: kapitel + 1 })),
+    h('h2', { class: 'ke-finale-titel' }, kap.titel),
+    h('div', { class: 'ke-kapitel-sieger' }, kap.gegner.map((id, i) => {
+      const g = kampagne.gegner[id]; const n = stand.sterne[id] || 0;
+      return h('div', { class: 'ke-kapitel-gegner', style: `--i: ${i}` },
+        h('span', { class: 'ke-kapitel-bild', 'aria-hidden': 'true', html: portraetHtml(g, figuren[g.figur] || {}) },
+          h('span', { class: 'ke-haken', 'aria-hidden': 'true' }, '✓')),
+        h('strong', {}, g.name),
+        h('span', { class: 'k-sterne', 'aria-label': fuelle(t.kampSterneJetzt, { n }) }, Array.from({ length: 3 }, (_, j) => h('span', { class: j < n ? 'an' : '' }, '★'))));
+    })),
+    h('p', { class: 'ke-kapitel-geschichte' }, kap.geschafft),
+    naechstes ? h('div', { class: 'ke-kapitel-weiter' },
+      h('p', { class: 'kicker' }, fuelle(t.kampKapitelNaechstes, { n: kapitel + 2 })),
+      h('strong', {}, naechstes.titel, h('em', {}, ` ${naechstes.zeit}`)),
+      h('p', {}, kap.weiter),
+      h('p', { class: `ke-kapitel-beute rar-${['selten', 'episch', 'legendaer', 'legendaer'][kapitel + 1]}` }, t.kampBeute[kapitel + 1])) : null,
+    h('div', { class: 'reihe mitte' }, knopf(naechstes ? fuelle(t.kampKapitelLos, { titel: naechstes.titel }) : t.weiter, zu, 'haupt gross'))));
   document.body.append(buehne);
   buehne.querySelector('.knopf')?.focus();
 }

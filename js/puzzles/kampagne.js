@@ -8,11 +8,11 @@ import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
 import { setzePracht } from '../engine/pracht.js';
-import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen, zeigeWerkstatt } from './kampagne-extras.js';
+import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen, zeigeWerkstatt, zeigeFinale, zeigeKapitelAbschluss } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {} });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {}, durchgespielt: null });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
@@ -93,20 +93,27 @@ export const rules = {
     : 1 + (z.runden.every((r) => r.sieger === 'luther') ? 1 : 0) + (deckGroesse <= kampagne.sterne.kleinDeck ? 1 : 0)),
   anfuehrerFrei: (s) => kampagne.anfuehrer.filter((a) => rules.sterneSumme(s) >= a.ab).map((a) => a.id),
   /** Ergebnis einer Partie eintragen. Gibt zurück, was neu ist. */
-  eintragen(s, gegnerId, z, deckGroesse) {
+  eintragen(s, gegnerId, z, deckGroesse, heute = new Date().toISOString().slice(0, 10)) {
     const n = structuredClone(s);
     const vorher = n.sterne[gegnerId] || 0;
     const jetzt = rules.sterneFuer(z, deckGroesse);
     n.sterne[gegnerId] = Math.max(vorher, jetzt);
     if (!jetzt) n.niederlagen = { ...(n.niederlagen || {}), [gegnerId]: ((n.niederlagen || {})[gegnerId] || 0) + 1 };
     if (!n.gesehen.includes(gegnerId)) n.gesehen.push(gegnerId);
+    // Erster Sieg gegen den letzten Gegner: Hammer & Siegel ist durchgespielt (Datum für die Urkunde)
+    const finale = jetzt > 0 && gegnerId === reihenfolge.at(-1) && !n.durchgespielt;
+    // Kapitel geschafft: gerade eben alle drei Gegner des Kapitels besiegt (das letzte Kapitel feiert das große Finale)
+    const kap = kampagne.kapitel.findIndex((k) => k.gegner.includes(gegnerId));
+    const alleBesiegt = (st) => kampagne.kapitel[kap].gegner.every((g) => (st.sterne[g] || 0) > 0);
+    const kapitelFertig = kap >= 0 && kap < kampagne.kapitel.length - 1 && !alleBesiegt(s) && alleBesiegt(n) ? kap : null;
+    if (finale) n.durchgespielt = heute;
     const freiVorher = rules.anfuehrerFrei(s);
     // Siegelbriefe: nach jedem Sieg einer (beim ersten Sieg mit sicherer Belohnungskarte), beim ersten Mal mit 3 Sternen ein großer dazu
     const briefe = [];
     if (jetzt > 0) briefe.push({ art: 'klein', gegner: gegnerId, belohnung: vorher === 0 });
     if (vorher < 3 && jetzt === 3) briefe.push({ art: 'gross', gegner: gegnerId });
     n.briefe = [...(n.briefe || []), ...briefe];
-    return { stand: n, jetzt, briefe, ersterSieg: vorher === 0 && jetzt > 0, neueAnfuehrer: rules.anfuehrerFrei(n).filter((a) => !freiVorher.includes(a)) };
+    return { stand: n, jetzt, briefe, finale, kapitelFertig, ersterSieg: vorher === 0 && jetzt > 0, neueAnfuehrer: rules.anfuehrerFrei(n).filter((a) => !freiVorher.includes(a)) };
   },
   /** Ein Konter wurde in einer Partie gesehen: ins Lexikon, und bei jedem fünften Eintrag ein Siegelbrief. */
   entdecke(s, lutherId, kircheId, gegnerId) {
@@ -231,7 +238,9 @@ export function view(el, schritt, ctx, fertig) {
     if (!frei.includes(stand.anfuehrer)) neu({ ...stand, anfuehrer: 'a-luther' });
     setzeInhalt(el, h('div', { class: 'kamp' },
       h('div', { class: 'kamp-kopf' },
-        h('div', {}, h('p', { class: 'kicker' }, t.kampKicker), h('p', {}, t.kampText)),
+        h('div', {}, h('p', { class: 'kicker' }, t.kampKicker), h('p', {}, t.kampText),
+          stand.durchgespielt ? h('p', { class: 'kamp-durch' }, h('span', { class: 'kamp-durch-marke' }, t.kampDurchgespielt), ' ', t.kampDurchZiele,
+            ' ', knopf(t.kampUrkundeAnsehen, () => zeigeFinale({ t, stand, besitz: besitz(), figuren: ctx.figuren }), 'still klein')) : null),
         h('div', { class: 'kamp-kopf-rechts' },
           h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 })),
           knopf(t.kampSoGehts, einfuehrung, 'still klein'))),
@@ -329,6 +338,8 @@ export function view(el, schritt, ctx, fertig) {
       h('div', { class: 'reihe fuss' }, knopf(t.duellNochmal, () => spiel(id), 'still'),
         knopf(t.kampZurUebersicht, uebersicht, 'haupt'))));
     zeichne();
+    if (r.finale) zeigeFinale({ t, stand, besitz: besitz(), figuren: ctx.figuren });
+    else if (r.kapitelFertig != null) zeigeKapitelAbschluss({ t, kapitel: r.kapitelFertig, stand, figuren: ctx.figuren });
   }
 
   /** Alle ungeöffneten Siegelbriefe nacheinander öffnen. */

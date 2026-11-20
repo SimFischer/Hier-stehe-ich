@@ -50,3 +50,34 @@ test('Werkstatt: Prachtausgabe in zwei Stufen, nur für eigene Karten', () => {
   assert.equal(b.pracht[id], 2); assert.equal(b.wachs, 20 - W.pracht[0] - W.pracht[1]);
   assert.equal(rules.kaufe(b, { art: 'pracht', id }, story), null, 'höchste Stufe erreicht');
 });
+
+test('Abschluss: erster Sieg gegen den letzten Gegner zählt als durchgespielt, nur einmal', () => {
+  const sieg = { sieger: 'luther', runden: [{ sieger: 'luther' }, { sieger: 'luther' }], log: [] };
+  const verloren = { sieger: 'kirche', runden: [{ sieger: 'kirche' }], log: [] };
+  const letzter = reihenfolge.at(-1);
+  let s = neuerKampagnenStand();
+  assert.equal(rules.eintragen(s, reihenfolge[0], sieg, 12).finale, false, 'andere Gegner: kein Abschluss');
+  assert.equal(rules.eintragen(s, letzter, verloren, 12).finale, false, 'Niederlage: kein Abschluss');
+  const r = rules.eintragen(s, letzter, sieg, 12, '2026-11-20');
+  assert.equal(r.finale, true); assert.equal(r.stand.durchgespielt, '2026-11-20');
+  const nochmal = rules.eintragen(r.stand, letzter, sieg, 12, '2026-12-01');
+  assert.equal(nochmal.finale, false, 'nur beim ersten Mal'); assert.equal(nochmal.stand.durchgespielt, '2026-11-20');
+  // Der Ausklang ordnet historisch ein und erfindet kein Zitat
+  assert.ok(kampagne.finale.ausklang.join(' ').includes('nicht'), 'Ausklang sagt, dass Luther Rom nicht besiegt hat');
+});
+
+test('Kapitel-Abschluss: genau dann, wenn der dritte Gegner eines Kapitels zum ersten Mal besiegt ist', () => {
+  const sieg = { sieger: 'luther', runden: [{ sieger: 'luther' }, { sieger: 'luther' }], log: [] };
+  const [a, b, c] = kampagne.kapitel[0].gegner;
+  let s = neuerKampagnenStand();
+  let r = rules.eintragen(s, a, sieg, 12); assert.equal(r.kapitelFertig, null); s = r.stand;
+  r = rules.eintragen(s, b, sieg, 12); assert.equal(r.kapitelFertig, null); s = r.stand;
+  r = rules.eintragen(s, c, sieg, 12); assert.equal(r.kapitelFertig, 0, 'Kapitel 1 geschafft'); s = r.stand;
+  assert.equal(rules.eintragen(s, c, sieg, 12).kapitelFertig, null, 'nur beim ersten Mal');
+  // Letztes Kapitel: kein kleiner Abschluss, sondern das Finale
+  const letztes = kampagne.kapitel.at(-1).gegner;
+  const fast = { ...s, sterne: Object.fromEntries(reihenfolge.slice(0, -1).map((x) => [x, 1])) };
+  const ende = rules.eintragen(fast, letztes.at(-1), sieg, 12);
+  assert.equal(ende.kapitelFertig, null); assert.equal(ende.finale, true);
+  for (const k of kampagne.kapitel.slice(0, -1)) assert.ok(k.geschafft && k.weiter, `${k.titel}: Texte für den Abschluss`);
+});

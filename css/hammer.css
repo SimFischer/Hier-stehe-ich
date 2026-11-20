@@ -222,3 +222,73 @@
 @media (orientation: portrait) { .ke-werk-brief { grid-template-columns: auto minmax(0, 1fr); } .ke-werk-brief .ke-werk-kauf { grid-column: 1 / -1; } }
 /* In der Kartenreihe: Knopf schmal, Preis darf in eine zweite Zeile rutschen */
 .ke-werk-karte .ke-werk-kauf { flex-wrap: wrap; gap: 4px 6px; padding: 5px 6px; font-size: var(--text-klein); overflow: hidden; }
+
+/* ---------- Abschluss: Urkunde und Ausklang ---------- */
+.ke-finale-buehne { background: radial-gradient(ellipse at 50% 20%, #5a3d22 0%, #24180f 75%); }
+.ke-finale { width: min(860px, 100%); margin: 0 auto; display: grid; gap: var(--ab-3); justify-items: center; text-align: center; color: var(--pergament); }
+.ke-finale .kicker { margin: 0; color: var(--ocker-hell); }
+.ke-finale-titel { margin: 0; font-size: clamp(2rem, 5vw, 3rem); font-variant: small-caps; letter-spacing: 0.04em; color: #ffe08a;
+  text-shadow: 0 2px 0 #3a2717, 0 0 24px rgba(243, 210, 122, 0.45); animation: einblenden 0.8s ease-out both; }
+.ke-finale-einleitung { margin: 0; max-width: 40em; font-size: var(--text); }
+.ke-weg.erreicht .ke-weg-punkt.gipfel .ke-weg-bild { box-shadow: 0 0 16px rgba(243, 210, 122, 0.95); }
+.ke-weg.erreicht .ke-krone { color: #ffe08a; text-shadow: 0 0 8px rgba(243, 210, 122, 0.9); }
+
+/* Die Urkunde: Pergament mit doppeltem Rahmen in Druckerschwärze, innen eine rote Linie, oben und unten gerollte Kanten */
+.ke-urkunde { position: relative; width: min(720px, 100%); margin: 14px 0 6px; padding: 28px 36px 30px; color: var(--tinte); text-align: center;
+  background: radial-gradient(ellipse at 30% 30%, rgba(160, 120, 60, 0.12), transparent 60%), linear-gradient(180deg, #fbf5e6, #f1e3c2 70%, #e2cc9c);
+  border: 3px double #1f1a17; box-shadow: inset 0 0 0 6px #fbf5e6, inset 0 0 0 7px #b23a24, 0 12px 28px rgba(0, 0, 0, 0.55);
+  transform-origin: 50% 0; animation: urkunde-auf 0.9s cubic-bezier(0.2, 0.9, 0.3, 1) 0.3s both; }
+.ke-urkunde::before, .ke-urkunde::after { content: ""; position: absolute; left: -10px; right: -10px; height: 16px; border-radius: 8px;
+  background: linear-gradient(180deg, #e8d3a4, #b8955a 60%, #8a6a34); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45); }
+.ke-urkunde::before { top: -12px; }
+.ke-urkunde::after { bottom: -12px; }
+.ke-urkunde-kopf { margin: 0 0 10px; font-size: clamp(1.6rem, 3.6vw, 2.2rem); font-variant: small-caps; letter-spacing: 0.12em; }
+.ke-urkunde-kopf::first-letter { color: #b23a24; font-size: 1.3em; }
+.ke-urkunde-fuehrer { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--ab-3); text-align: left; }
+.ke-urkunde-fuehrer p { margin: 0; font-style: italic; line-height: 1.4; }
+.ke-urkunde-bild { display: block; width: 84px; aspect-ratio: 1; border-radius: 50%; overflow: hidden; border: 3px solid #b8860b; box-shadow: 0 0 0 2px #fbf5e6, 0 0 0 4px #1f1a17; }
+.ke-urkunde-bild img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.ke-urkunde-zahlen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 18px 0 8px; padding: 10px 0; list-style: none;
+  border-top: 1px solid rgba(31, 26, 23, 0.4); border-bottom: 1px solid rgba(31, 26, 23, 0.4); }
+.ke-urkunde-zahlen li { display: grid; gap: 2px; }
+.ke-urkunde-zahlen strong { font-size: 1.35rem; color: #7f2f1f; }
+.ke-urkunde-zahlen span { font-size: var(--text-klein); font-variant: small-caps; }
+.ke-urkunde-fuss { margin: 6px 0 0; padding-right: 90px; text-align: left; font-style: italic; color: var(--tinte-weich); min-height: 1.4em; }
+.ke-urkunde-siegel { position: absolute; right: 26px; bottom: 14px; width: 86px; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
+  animation: siegel-druck 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 1.2s both; }
+.ke-urkunde-siegel img { width: 100%; height: auto; display: block; }
+@keyframes urkunde-auf { from { transform: scaleY(0.05); opacity: 0; } 30% { opacity: 1; } to { transform: none; opacity: 1; } }
+
+/* Historischer Ausklang */
+.ke-ausklang { width: min(720px, 100%); padding: var(--ab-3) var(--ab-4); text-align: left; border-radius: 12px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(201, 163, 92, 0.4);
+  animation: einblenden 0.6s ease-out 1.6s both; }
+.ke-ausklang h3 { margin: 0 0 6px; color: #ffe08a; font-variant: small-caps; }
+.ke-ausklang p { margin: 0 0 8px; line-height: 1.5; }
+.ke-finale > .reihe { animation: einblenden 0.5s ease-out 1.8s both; }
+@media (prefers-reduced-motion: reduce) { .ke-finale-titel, .ke-urkunde, .ke-urkunde-siegel, .ke-ausklang, .ke-finale > .reihe { animation: none; } }
+@media (orientation: portrait) { .ke-urkunde-zahlen { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Übersicht: durchgespielt */
+.kamp-durch { margin: 6px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.kamp-durch-marke { padding: 2px 12px; border-radius: 12px; background: linear-gradient(#ffe08a, #d9a640); color: #2a1c14; font-weight: bold; }
+
+/* ---------- Kapitel geschafft ---------- */
+.ke-kapitel-sieger { display: flex; justify-content: center; gap: clamp(16px, 4vw, 48px); margin: 8px 0; }
+.ke-kapitel-gegner { display: grid; justify-items: center; gap: 4px; animation: siegel-druck 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) both; animation-delay: calc(0.3s + var(--i) * 0.25s); }
+.ke-kapitel-bild { position: relative; display: block; width: clamp(84px, 11vw, 120px); aspect-ratio: 1; border-radius: 50%; overflow: visible;
+  border: 4px solid #f3d27a; box-shadow: 0 0 16px rgba(243, 210, 122, 0.6); background: radial-gradient(circle at 50% 35%, #f3e6c8, #c7ab7b); }
+.ke-kapitel-bild img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; border-radius: 50%; }
+.ke-kapitel-bild .ke-haken { position: absolute; right: -4px; bottom: -4px; }
+.ke-kapitel-gegner strong { color: #ffe08a; font-variant: small-caps; }
+.ke-kapitel-gegner .k-sterne { font-size: 1.3rem; }
+.ke-kapitel-geschichte { max-width: 36em; margin: 4px 0; font-size: var(--text); line-height: 1.5; animation: einblenden 0.6s ease-out 1.1s both; }
+.ke-kapitel-weiter { width: min(620px, 100%); display: grid; gap: 4px; justify-items: center; padding: var(--ab-3) var(--ab-4); border-radius: 12px;
+  background: linear-gradient(#fbf5e6, #f1e3c2); color: var(--tinte); border: 3px double #1f1a17; box-shadow: inset 0 0 0 3px #fbf5e6, inset 0 0 0 4px #b23a24;
+  animation: einblenden 0.6s ease-out 1.4s both; }
+.ke-kapitel-weiter .kicker { margin: 0; color: #7f2f1f; }
+.ke-kapitel-weiter strong { font-size: 1.4rem; font-variant: small-caps; }
+.ke-kapitel-weiter em { font-size: var(--text-klein); color: var(--tinte-weich); }
+.ke-kapitel-weiter p { margin: 0; }
+.ke-kapitel-beute { margin-top: 4px !important; padding: 2px 12px; border-radius: 12px; font-weight: bold; background: #2a1c14; color: #fff3c4; }
+.ke-kapitel-beute.rar-episch { background: #4a2766; } .ke-kapitel-beute.rar-legendaer { background: #8a5d0e; }
+@media (prefers-reduced-motion: reduce) { .ke-kapitel-gegner, .ke-kapitel-geschichte, .ke-kapitel-weiter { animation: none; } }
