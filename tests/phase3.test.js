@@ -189,3 +189,19 @@ test('Gottesdienst: Suchbild trifft die drei Unterschiede, Blasen zählen richti
   assert.equal(blasenRules.punkte([{ gut: true }, { gut: true }, { gut: false }]), 1);
   assert.equal(blasenRules.gemeinde(bl, 0), bl.gemeinde[0]); assert.equal(blasenRules.gemeinde(bl, 13), bl.gemeinde[12]); assert.equal(blasenRules.gemeinde(bl, -2), bl.gemeinde[0]);
 });
+
+test('Entführung: beide Stufen auch mit menschlichem Sicherheitsabstand gut lösbar', async () => {
+  // Menschen fahren nicht auf den Punkt genau: Der Wagen ist groß gezeichnet, und man reagiert verzögert.
+  // Deshalb rechnet der Löser mit 50 px mehr Sichtweite und 8° breiterem Blick. Von jedem Rastplatz aus muss man
+  // bei den meisten Startzeiten ohne gesehen zu werden zum nächsten Rastplatz oder zur Burg kommen.
+  const { loese } = await import('./fahrt-loeser.js');
+  const basis = bonus.entfuehrung.schritte.find((x) => x.art === 'fahrt');
+  for (const [name, s0] of [['leicht', basis], ['schwer', { ...basis, ...basis.schwer }]]) {
+    const s = { ...s0, sicht: { weite: s0.sicht.weite + 50, winkel: s0.sicht.winkel + 8 } };
+    s.rast.forEach((r, i) => {
+      let ok = 0, n = 0;
+      for (let ab = 0; ab < 60; ab += 4) { n++; if (loese(s, { von: r, ab, bis: ab + 90, ziele: [...s.rast.slice(i + 1), { x: s.ziel.x - 45, y: s.ziel.y }] }).geschafft) ok++; }
+      assert.ok(ok / n >= 0.85, `${name}, ab Rastplatz ${i}: nur ${ok}/${n} Startzeiten lösbar`);
+    });
+  }
+});

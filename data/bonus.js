@@ -75,11 +75,11 @@ export const bonus = {
           { weg: [[1190, 252], [1190, 938]], tempo: 150 },
           { weg: [[406, 252], [1190, 252]], tempo: 110 }
         ],
-        // Schwer: schnellere Spitzel mit weiterem Blick, ein Reiter im Süden, zwei Posten an den Kreuzungen im Osten
-        // und nur zwei Rastplätze. Durch kommt, wer den Weg plant: über den Süden und dann durch die Mitte.
+        // Schwer: schnellere Spitzel, ein Reiter im Süden, zwei Posten an den Kreuzungen im Osten und weniger Rastplätze.
+        // Durch kommt, wer den Weg plant: über den Süden und dann durch die Mitte. Die Sichtweite bleibt wie bei Leicht:
+        // Mit 250 px / 34° war das Timing so knapp, dass es kaum zu schaffen war (Nachweis: tests/fahrt-loeser.js, Test in phase3).
         schwer: {
           rast: [{ x: 110, y: 598 }, { x: 406, y: 770 }, { x: 1350, y: 598 }],
-          sicht: { weite: 250, winkel: 34 },
           wachen: [
             { weg: [[406, 598], [1050, 598]], tempo: 175 },
             { weg: [[794, 252], [794, 938]], tempo: 150 },
@@ -103,7 +103,7 @@ export const bonus = {
         hilfen: [
           'Die gestrichelten Linien zeigen, wo die Spitzel reiten. Die roten Kegel zeigen, wohin sie schauen. Warte an einer Abzweigung, bis einer vorbei ist.',
           'Fahre hinter einem Spitzel her, dann sieht er dich nicht. Die hellen Kreise auf den Wegen sind Rastplätze.',
-          'Nimm den unteren Weg: erst nach unten, dann nach rechts bis zur Ecke, dann nach oben und zur Burg. Warte jeweils, bis der Spitzel auf der Kreuzung weitergeritten ist.'
+          'Leicht: erst nach unten, dann nach rechts bis zur Ecke, dann nach oben und zur Burg. Schwer: erst nach unten, dann nach rechts nur bis zur mittleren Kreuzung, dort hoch auf den mittleren Weg und geradeaus zur Burg. Warte an jeder Kreuzung, bis der Spitzel weitergeritten ist, und fahre hinter ihm her.'
         ] },
       { art: 'text', titel: 'Junker Jörg',
         absaetze: [
