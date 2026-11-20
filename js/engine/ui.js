@@ -1,8 +1,9 @@
 // Kleine Helfer für den Bildschirm. Keine Spielinhalte.
 import { glossary } from '../../data/glossary.js';
 import { t } from '../../data/ui.js';
-import { bildHtml, kartenBild, symbolHtml } from './bilder.js';
+import { bildHtml, bildUrl, kartenBild, symbolHtml } from './bilder.js';
 import { alleKarten } from '../../data/kartei.js';
+import { trenne } from '../../data/silben.js';
 
 /** Baut ein Element: h('button', { class: 'x', onclick: fn }, 'Text', kind) */
 export function h(tag, attrs = {}, ...kinder) {
@@ -104,10 +105,10 @@ export function kartenChip(karte, { gewaehlt = false, onclick = null, klein = fa
     class: `karte sammel gwent typ-${typ}${rar}${bild.kunst ? ' mit-kunst' : ''}${gewaehlt ? ' gewaehlt' : ''}${klein ? ' klein' : ''}${text ? ' mit-text' : ''} ${extra}`.trim(),
     'aria-pressed': onclick ? String(gewaehlt) : null, disabled: aus, onclick,
     'aria-label': [karte.titel, karte.staerke ? fuelle(t.kartenStaerke, { n: karte.staerke }) : '', karte.seltenheit ? t.seltenheit[karte.seltenheit] : '', ...faehigkeiten(karte), karte.text].filter(Boolean).join('. ') },
-    h('span', { class: 'k-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }),
+    h('span', { class: 'k-bild', 'aria-hidden': 'true', style: bild.kunst ? `--kunst: url("${bildUrl(bild.name)}")` : null, html: bildHtml(bild.name) }),
     h('span', { class: 'k-band', 'aria-hidden': 'true' }, staerke, h('span', { class: 'k-zeichen', html: symbolHtml(typ) })),
     karte.nr ? h('span', { class: 'k-nr', 'aria-hidden': 'true' }, String(karte.nr)) : null,
-    h('span', { class: 'k-schild', 'aria-hidden': 'true' }, h('strong', {}, karte.titel), text ? h('span', { class: 'k-kurz' }, karte.text) : null));
+    h('span', { class: 'k-schild', 'aria-hidden': 'true' }, h('strong', {}, trenne(karte.titel)), text ? h('span', { class: 'k-kurz' }, karte.text) : null));
 }
 
 /** Große Karte mit allem, was auf ihr steht: Bild, Name, Art, Seltenheit, Fähigkeiten, Kartentext.

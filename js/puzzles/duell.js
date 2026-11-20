@@ -4,6 +4,7 @@ import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle, melde } f
 import { bildHtml, figurHtml, portraetHtml, kartenBild, bildUrl } from '../engine/bilder.js';
 import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
+import { trenne } from '../../data/silben.js';
 import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, anzahl } from './duell-regeln.js';
 
 export { rules };
@@ -246,7 +247,7 @@ export function view(el, schritt, ctx, fertig) {
     return h('button', { type: 'button', class: klassen.filter(Boolean).join(' '), onclick: () => gross({ id: inst.id, seite, uid: inst.uid }),
       'aria-label': `${k.titel}, ${fuelle(t.kartenStaerke, { n: w })}${ent ? `, ${t.duellEntkraeftet}` : ''}` },
       h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(bild.name) }),
-      h('span', { class: 'bk-name' }, k.titel),
+      h('span', { class: 'bk-name' }, trenne(k.titel)),
       h('span', { class: 'bk-wert', 'aria-hidden': 'true' }, w !== k.staerke ? h('s', {}, String(k.staerke)) : null, String(w)),
       FAEHIG.some((x) => k[x]) ? h('span', { class: 'bk-faehig', 'aria-hidden': 'true', title: t.duellFaehig }, '✦') : null,
       ent ? h('span', { class: 'bk-riss', 'aria-hidden': 'true' }) : null);

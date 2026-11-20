@@ -47,7 +47,7 @@ export const kampagne = {
     { id: 'r20', typ: 'menschen', bild: 'fig-witwe', staerke: 4, seltenheit: 'episch', standhaft: true, entkraeftet: ['c-ingolstadt', 'c-widerrufe'],
       titel: 'Argula von Grumbach', text: '1523 verteidigt die bayerische Adlige einen Studenten gegen die Universität Ingolstadt, mit Bibelstellen. Ihr Brief wird oft gedruckt.' },
     { id: 'r21', typ: 'druck', bild: 'fig-handwerker', staerke: 2, seltenheit: 'gewoehnlich', bund: true, entkraeftet: ['c-spott'],
-      titel: 'Die Wittenber­gisch Nachtigall', text: '1523 besingt der Nürnberger Schuhmacher Hans Sachs Luther als Nachtigall, die den neuen Tag ankündigt.' },
+      titel: 'Die Wittenbergisch Nachtigall', text: '1523 besingt der Nürnberger Schuhmacher Hans Sachs Luther als Nachtigall, die den neuen Tag ankündigt.' },
     { id: 'r22', typ: 'menschen', bild: 'fig-stand-3', staerke: 4, seltenheit: 'selten', zieht: 1, entkraeftet: ['c-kurie'],
       titel: 'Ulrich von Hutten', text: 'Der Ritter und Gelehrte greift ab 1520 die Geldgier Roms an, und zwar auf Deutsch, damit alle es lesen können.' },
     { id: 'r23', typ: 'menschen', bild: 'fig-luther-junker', staerke: 5, seltenheit: 'episch', standhaft: true, entkraeftet: ['c-edikt', 'c-reichsacht', 'c-ketzerprozess'],
