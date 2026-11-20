@@ -52,3 +52,20 @@ test('Kirchen-Modus: Luthers Decks ohne Anachronismen-Lücken, Züge sind gülti
     assert.ok(qk > qn || qk === 1, `${id}: Nachdenken lohnt sich (klug ${qk}, naiv ${qn})`);
   }
 });
+
+test('Kirchen-Modus: Abzeichen und großer Siegelbrief nach dem letzten Luther', () => {
+  const sieg = { sieger: 'kirche', runden: [], log: [] };
+  let s = nachKapitel(3);
+  const [a, b, c] = kampagne.kirchenSeite.gegner;
+  const A = (id) => kampagne.abzeichen.find((x) => x.id === id);
+  assert.equal(kamp.abzeichenErfuellt(A('anwalt'), s, null), false);
+  let r = kamp.eintragenKirche(s, a, sieg); s = r.stand;
+  assert.equal(r.preis, false); assert.equal(kamp.abzeichenErfuellt(A('anwalt'), s, null), true);
+  assert.equal(kamp.abzeichenErfuellt(A('beide-seiten'), s, null), false);
+  s = kamp.eintragenKirche(s, b, sieg).stand;
+  r = kamp.eintragenKirche(s, c, sieg); s = r.stand;
+  assert.equal(r.preis, true, 'Preis nach dem letzten Luther');
+  assert.equal(s.briefe.filter((x) => x.art === 'gross').length, 1, 'ein großer Siegelbrief');
+  assert.equal(kamp.abzeichenErfuellt(A('beide-seiten'), s, null), true);
+  assert.equal(kamp.eintragenKirche(s, c, sieg).preis, false, 'Preis nur einmal');
+});

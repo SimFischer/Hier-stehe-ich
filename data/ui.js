@@ -104,6 +104,9 @@ export const t = {
   // Spielmodus des Kartenspiels: eigene Fläche über der ganzen Seite
   spielVerlassen: 'Spiel verlassen', spielVollbild: 'Vollbild', spielVollbildAus: 'Vollbild beenden', spielFlaeche: 'Spieltisch',
   duellFortsetzen: 'Zur Partie zurück', duellLaeuft: 'Deine Partie läuft noch. Du kannst sie fortsetzen oder neu beginnen.', duellImSpiel: 'Die Partie läuft im Spielmodus.',
+  warumTitelKirche: 'Luther hat deine Karte entkräftet. Warum?', warumFrageKirche: 'Mit welchem Argument hat Luther geantwortet?',
+  warumLohnKirche: 'Richtig erkannt: +{n} Siegellack.', warumRichtigKirche: 'Richtig! So hat Luther mit {karte} geantwortet. +{n} Siegellack.',
+  kirchePreis: 'Alle drei Stationen bestanden! Dafür gibt es einen großen Siegelbrief.',
   warumTitel: 'Warum wirkt dein Konter?', warumFrage: 'Welches Argument antwortet darauf?',
   warumLohn: 'Richtig begründet: +{n} Stärke für diese Runde.', warumRichtig: 'Richtig! {karte} bekommt in dieser Runde +{n} Stärke.',
   warumRichtigOhne: 'Richtig! (Die Runde ist schon vorbei, der Bonus entfällt.)', warumFalsch: 'Nicht ganz. Die richtige Antwort ist grün markiert: So antwortet {karte}.',

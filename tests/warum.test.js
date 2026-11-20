@@ -19,6 +19,7 @@ test('Warum-Frage: drei verschiedene Antworten, genau eine passt, falsche gehör
     for (const o of f.optionen.filter((x) => x.id !== l)) {
       assert.ok(!(K(o.id).entkraeftet || []).includes(c), `${o.id} entkräftet ${c} nicht`);
       assert.ok(!(K(o.id).entkraeftet || []).some((x) => K(x).gruppe === thema), `${o.id}: anderes Thema als ${c}`);
+      assert.notEqual(K(o.id).typ, K(l).typ, `${o.id}: andere Kartenart als ${l}`);
     }
   }
 });

@@ -146,8 +146,12 @@ export const rules = {
   eintragenKirche(s, id, z) {
     const sieg = z.sieger === 'kirche';
     const ersterSieg = sieg && !(s.kircheSiege || []).includes(id);
-    if (!ersterSieg) return { stand: s, sieg, ersterSieg };
-    return { stand: { ...s, kircheSiege: [...(s.kircheSiege || []), id], wachs: (s.wachs || 0) + kampagne.kirchenSeite.lackJeSieg }, sieg, ersterSieg };
+    if (!ersterSieg) return { stand: s, sieg, ersterSieg, preis: false };
+    const ks = kampagne.kirchenSeite;
+    // Abschlusspreis: erster Sieg gegen den letzten Luther bringt einen großen Siegelbrief
+    const preis = id === ks.gegner.at(-1);
+    const briefe = preis ? [...(s.briefe || []), { art: 'gross', gegner: ks.briefGegner }] : s.briefe || [];
+    return { stand: { ...s, kircheSiege: [...(s.kircheSiege || []), id], wachs: (s.wachs || 0) + ks.lackJeSieg, briefe }, sieg, ersterSieg, preis };
   },
 
   // ---------- Druckerwerkstatt ----------
@@ -194,6 +198,7 @@ export const rules = {
     const b = a.bed;
     const lexikon = new Set(s.lexikon || []);
     if (b.lexikonMin) return lexikon.size >= b.lexikonMin;
+    if (b.kircheSiege) return (s.kircheSiege || []).length >= b.kircheSiege;
     if (b.durchschaut) {
       const kirche = [...new Set(kampagne.gegner[b.durchschaut].deck)];
       return kirche.every((c) => [...lexikon].some((p) => p.endsWith(`>${c}`)));
@@ -305,6 +310,19 @@ export function view(el, schritt, ctx, fertig) {
     zeigeEinfuehrung({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, fertig: () => { if (!stand.intro) neu({ ...stand, intro: true }); } });
   }
 
+  /** Konter-Lexikon im Duell: neu? (dann fragt das Duell „Warum?“) und eintragen (Meldung, Briefe, Abzeichen). briefGegner: für Briefe aus dem Lexikon. */
+  const lexikonHaken = (briefGegner) => ({
+    konterNeu: (lutherId, kircheId) => rules.entdecke(stand, lutherId, kircheId, briefGegner).neu,
+    entdecke: (lutherId, kircheId) => {
+      const r = rules.entdecke(stand, lutherId, kircheId, briefGegner);
+      if (!r.neu) return;
+      neu(r.stand);
+      melde(fuelle(r.brief ? t.kampLexikonBrief : t.kampLexikonNeu, { karte: K(lutherId).titel, gegen: K(kircheId).titel }));
+      abzeichenMelden(rules.vergebeAbzeichen(stand));
+    }
+  });
+  const abzeichenMelden = (a) => { if (a.neue.length) { neu(a.stand); setTimeout(() => melde(fuelle(t.kampAbzNeu, { titel: a.neue.map((x) => x.titel).join(t.und), n: a.neue.length * ABZEICHEN_WACHS })), 2600); } };
+
   /** Perspektivwechsel: Abschnitt in der Übersicht (gesperrt bis Kapitel 3, dann Anführerwahl und drei Luther-Gegner). */
   function kircheAbschnitt() {
     const ks = kampagne.kirchenSeite;
@@ -334,6 +352,8 @@ export function view(el, schritt, ctx, fertig) {
     duellView(el, { art: 'duell', gegner: id, kampagne: {
       seite: 'kirche', besitz: rules.kircheBesitz(stand), anfuehrer, deck: stand.kircheDeck,
       merkeDeck: (deck) => neu({ ...stand, kircheDeck: [...deck] }),
+      ...lexikonHaken(kampagne.kirchenSeite.briefGegner),
+      lackBonus: () => neu({ ...stand, wachs: (stand.wachs || 0) + kampagne.kirchenSeite.lackWarum }),
       zurueck: uebersicht,
       ergebnis: (z) => auswertungKirche(id, z)
     } }, ctx, () => uebersicht());
@@ -344,19 +364,32 @@ export function view(el, schritt, ctx, fertig) {
     const g = kampagne.lutherGegner[id];
     const r = rules.eintragenKirche(stand, id, z);
     neu(r.stand);
+    const abz = rules.vergebeAbzeichen(stand);
+    neu(abz.stand);
     // Welche deiner Karten hat Luther entkräftet? (für das Gespräch)
     const getroffen = [...new Set(z.log.filter((e) => e.seite === 'luther' && e.treffer).flatMap((e) => e.treffer.map((c) => `${e.id}>${c}`)))];
-    setzeInhalt(el, h('div', { class: `d-ende ${r.sieg ? 'sieg' : 'niederlage'} kirche-ende` },
+    // Anzeige (auch nach dem Öffnen der Briefe erneut, ohne das Ergebnis noch einmal einzutragen)
+    const zeigen = () => setzeInhalt(el, h('div', { class: `d-ende ${r.sieg ? 'sieg' : 'niederlage'} kirche-ende` },
       h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
         h('div', {}, h('p', { class: 'kicker' }, `${t.kircheKicker} · ${g.ort}`), h('h3', { class: 'd-ende-titel' }, r.sieg ? t.duellSieg : t.duellNiederlage), h('p', {}, r.sieg ? g.sieg : g.niederlage))),
       h('ul', { class: 'd-runden' }, z.runden.map((x) => h('li', { class: x.sieger === 'kirche' ? 'luther' : 'kirche' }, fuelle(t.duellRundeZeile, { n: x.runde, du: x.kirche, er: x.luther }),
         ' ', h('strong', {}, x.sieger === 'kirche' ? t.duellGewonnen : t.duellVerloren)))),
       r.ersterSieg ? h('p', { class: 'kamp-neu' }, fuelle(t.kircheLack, { n: kampagne.kirchenSeite.lackJeSieg })) : null,
+      abz.neue.length ? h('div', { class: 'kamp-abz-neu', role: 'status' },
+        h('p', { class: 'kicker' }, abz.neue.length > 1 ? t.kampAbzNeuMehr : t.kampAbzNeuEins),
+        abz.neue.map((a) => h('div', { class: 'kamp-abz-zeile' }, siegelAbzeichen(a, true), h('div', {}, h('strong', {}, a.titel), h('span', {}, a.text)))),
+        h('p', { class: 'klein' }, fuelle(t.kampAbzLack, { n: abz.neue.length * ABZEICHEN_WACHS }))) : null,
+      r.preis ? h('p', { class: 'kamp-neu kirche-preis' }, t.kirchePreis) : null,
+      stand.briefe.length ? h('div', { class: 'kamp-briefe' },
+        h('button', { type: 'button', class: 'kamp-brief-knopf', onclick: () => briefeOeffnen(zeigen) },
+          h('span', { class: 'kamp-brief-bild', 'aria-hidden': 'true' }, stand.briefe.slice(0, 5).map((b) => h('span', { class: `mini-brief${b.art === 'gross' ? ' gross' : ''}` }))),
+          h('strong', {}, fuelle(t.kampBriefeOffen, { n: stand.briefe.length })))) : null,
       getroffen.length ? h('div', { class: 'kirche-getroffen' }, h('p', { class: 'kicker' }, t.kircheGetroffen),
         h('ul', {}, getroffen.map((p) => { const [l, c] = p.split('>'); return h('li', {}, h('strong', {}, K(c).titel), ' ← ', K(l).titel); }))) : null,
       h('div', { class: 'kirche-frage' }, h('p', { class: 'kicker' }, t.kircheFrageTitel), h('p', {}, g.frage)),
       h('div', { class: 'reihe fuss' }, knopf(t.duellNochmal, () => spielKirche(id, stand.kircheAnfuehrer || rules.kircheAnfuehrerFrei(stand)[0]), 'still'),
         knopf(t.kampZurUebersicht, uebersicht, 'haupt'))));
+    zeigen();
   }
 
   function spiel(id) {
@@ -371,17 +404,7 @@ export function view(el, schritt, ctx, fertig) {
       speichereDecks: (decks) => neu({ ...stand, decks }),
       zurueck: uebersicht,
       ergebnis: (z, deck) => auswertung(id, z, deck),
-      // Wäre dieser Konter neu im Lexikon? (Dann fragt das Duell zuerst „Warum?“)
-      konterNeu: (lutherId, kircheId) => rules.entdecke(stand, lutherId, kircheId, id).neu,
-      // Konter gesehen: ins Lexikon, kurze Meldung, bei jedem fünften ein Siegelbrief
-      entdecke: (lutherId, kircheId) => {
-        const r = rules.entdecke(stand, lutherId, kircheId, id);
-        if (!r.neu) return;
-        neu(r.stand);
-        melde(fuelle(r.brief ? t.kampLexikonBrief : t.kampLexikonNeu, { karte: K(lutherId).titel, gegen: K(kircheId).titel }));
-        const a = rules.vergebeAbzeichen(stand);
-        if (a.neue.length) { neu(a.stand); setTimeout(() => melde(fuelle(t.kampAbzNeu, { titel: a.neue.map((x) => x.titel).join(t.und), n: a.neue.length * ABZEICHEN_WACHS })), 2600); }
-      }
+      ...lexikonHaken(id)
     } }, ctx, () => uebersicht());
   }
 

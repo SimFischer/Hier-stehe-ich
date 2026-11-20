@@ -13,7 +13,8 @@ export function warumFrage(lutherId, kircheId, rnd = Math.random) {
   // Argumente gegen Karten derselben Themengruppe (zum Beispiel „ablass“) würden sonst womöglich auch passen.
   const thema = K(kircheId).gruppe;
   const gleichesThema = (k) => (k.entkraeftet || []).some((c) => c === kircheId || (thema && K(c)?.gruppe === thema));
-  const passt = (k) => k.id !== lutherId && k.text && k.text !== richtig.text && !gleichesThema(k);
+  // Auch Argumente derselben Kartenart (zum Beispiel „gnade“) klingen oft wie eine zweite richtige Antwort.
+  const passt = (k) => k.id !== lutherId && k.text && k.text !== richtig.text && !gleichesThema(k) && k.typ !== richtig.typ;
   const kandidaten = lutherKarten.filter((k) => passt(k) && (k.entkraeftet || []).length);
   const ablenker = [];
   const pool = [...kandidaten];

@@ -348,7 +348,7 @@ export function view(el, schritt, ctx, fertig) {
   function zeigeFrage() {
     if (!frage || !lebt()) return;
     const f = warumFrage(frage.luther, frage.kirche);
-    const ebene = h('div', { class: 'd-warum', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.warumTitel });
+    const ebene = h('div', { class: 'd-warum', role: 'dialog', 'aria-modal': 'true', 'aria-label': alsKirche ? t.warumTitelKirche : t.warumTitel });
     const fertig = () => {
       ebene.remove();
       const { luther, kirche } = frage; frage = null;
@@ -359,19 +359,23 @@ export function view(el, schritt, ctx, fertig) {
       const ja = id === f.luther;
       ebene.querySelectorAll('.d-warum-antwort').forEach((b) => { b.disabled = true; if (b.dataset.id === f.luther) b.classList.add('richtig'); });
       if (!ja) knopfEl.classList.add('falsch');
-      const inst = frage.uid && z.seiten.luther.reihe.find((x) => x.uid === frage.uid);
+      // Als Luther: +2 auf die Konterkarte für diese Runde. Als Kirche: Siegellack (Luthers Karte soll nicht stärker werden).
+      const inst = !alsKirche && frage.uid && z.seiten.luther.reihe.find((x) => x.uid === frage.uid);
       if (ja && inst) z = belohne(z, 'luther', frage.uid);
+      if (ja && alsKirche) kamp.lackBonus?.();
+      const lob = alsKirche ? fuelle(t.warumRichtigKirche, { karte: name(f.luther), n: kampagnenDaten.kirchenSeite.lackWarum })
+        : inst ? fuelle(t.warumRichtig, { karte: name(f.luther), n: WARUM_BONUS }) : t.warumRichtigOhne;
       setzeInhalt(ebene.querySelector('.d-warum-fuss'),
-        h('p', { class: ja ? 'gut' : 'schade' }, ja ? (inst ? fuelle(t.warumRichtig, { karte: name(f.luther), n: WARUM_BONUS }) : t.warumRichtigOhne) : fuelle(t.warumFalsch, { karte: name(f.luther) })),
+        h('p', { class: ja ? 'gut' : 'schade' }, ja ? lob : fuelle(t.warumFalsch, { karte: name(f.luther) })),
         knopf(t.weiter, fertig, 'haupt'));
       ebene.querySelector('.d-warum-fuss .knopf')?.focus();
     };
     setzeInhalt(ebene, h('div', { class: 'd-warum-karte' },
-      h('p', { class: 'kicker' }, t.warumTitel),
+      h('p', { class: 'kicker' }, alsKirche ? t.warumTitelKirche : t.warumTitel),
       h('p', { class: 'd-warum-kirche' }, h('strong', {}, `${name(f.kirche)}: `), f.frageText),
-      h('p', { class: 'd-warum-frage' }, fuelle(t.warumFrage, { karte: name(f.luther) })),
+      h('p', { class: 'd-warum-frage' }, alsKirche ? t.warumFrageKirche : fuelle(t.warumFrage, { karte: name(f.luther) })),
       h('div', { class: 'd-warum-antworten' }, f.optionen.map((o) => h('button', { type: 'button', class: 'd-warum-antwort', 'data-id': o.id, onclick: (e) => waehle(o.id, e.currentTarget) }, o.text))),
-      h('div', { class: 'd-warum-fuss' }, h('p', { class: 'klein' }, fuelle(t.warumLohn, { n: WARUM_BONUS })))));
+      h('div', { class: 'd-warum-fuss' }, h('p', { class: 'klein' }, alsKirche ? fuelle(t.warumLohnKirche, { n: kampagnenDaten.kirchenSeite.lackWarum }) : fuelle(t.warumLohn, { n: WARUM_BONUS })))));
     document.body.append(ebene);
     ebene.querySelector('.d-warum-antwort')?.focus();
   }
@@ -384,7 +388,7 @@ export function view(el, schritt, ctx, fertig) {
     if (z.phase === 'tausch') { tauschAnsicht(); return; }
     const l = z.seiten[ICH]; const k = z.seiten[ER]; // l: deine Seite, k: die Gegenseite
     // Konter-Lexikon (nur Kampagne): jedes Paar, das gerade wirkt
-    if (kamp?.entdecke && !alsKirche) for (const inst of k.reihe) {
+    if (kamp?.entdecke) for (const inst of z.seiten.kirche.reihe) {
       const durch = entkraeftet(z, 'kirche', inst); if (!durch) continue;
       const paar = `${durch}>${inst.id}`;
       if (kamp.konterNeu?.(durch, inst.id) && !gefragt.has(paar)) {

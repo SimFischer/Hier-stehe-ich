@@ -126,6 +126,9 @@ export const kampagne = {
   // Kirchenkarten nimmt, verliert später fast immer; wer Karten wählt, die Luther nicht entkräften kann, gewinnt meist (92/100, 18/77, 3/40 %).
   kirchenSeite: {
     abKapitel: 3, lackJeSieg: 3,
+    // Luthers Konter gegen deine Karten kommen ins Lexikon (mit „Warum?“-Frage, richtig: lackWarum Siegellack).
+    // Briefe daraus zählen wie Kapitel 3 (briefGegner). Nach dem ersten Sieg über den letzten Luther: ein großer Siegelbrief.
+    lackWarum: 1, briefGegner: 'k-albrecht',
     titel: 'Perspektivwechsel: Du bist die Kirche',
     text: 'Jetzt verteidigst du die Kirche gegen Martin Luther. Du spielst mit den Karten der Kirche, die du in deinen Disputationen kennengelernt hast. Achte darauf, welche deiner Karten Luther entkräften kann.',
     zu: 'Frei, sobald du Kapitel 3 „Der Streit der Schriften“ geschafft hast.',
@@ -166,7 +169,7 @@ export const kampagne = {
   // Siegel-Abzeichen: Aufgaben, die zu immer neuen Decks anregen. Jedes bringt Siegellack (js/puzzles/kampagne.js, ABZEICHEN_WACHS).
   // bed: gegner (nur gegen ihn), abKapitel (Gegner ab diesem Kapitel, 1–4), typMin/typMax (Karten einer Art im Deck), bundMin, deckMax,
   // trefferMin (Konter in einer Partie), zuNull (keine Runde verloren), ohneAnfuehrer, durchschaut (für jede Karte dieses Gegners
-  // einen Konter im Lexikon), lexikonMin. Alle Bedingungen außer durchschaut und lexikonMin verlangen einen Sieg.
+  // einen Konter im Lexikon), lexikonMin, kircheSiege (Siege als Kirche). Alle übrigen Bedingungen verlangen einen Sieg in einer Partie.
   abzeichen: [
     { id: 'thesen', symbol: 'these', titel: 'Thesenanschlag', text: 'Besiege Tetzel mit mindestens fünf Thesen im Deck.', bed: { gegner: 'k-tetzel', typMin: { these: 5 } } },
     { id: 'presse', symbol: 'druck', titel: 'Die Presse rollt', text: 'Besiege einen Gegner ab Kapitel 2 mit mindestens fünf Druck-Karten im Deck.', bed: { abKapitel: 2, typMin: { druck: 5 } } },
@@ -183,7 +186,9 @@ export const kampagne = {
     { id: 'eck-durchschaut', symbol: 'rom', titel: 'Eck durchschaut', text: 'Finde für jede Karte Johann Ecks einen Konter (Konter-Lexikon).', bed: { durchschaut: 'k-eck' } },
     { id: 'kaiser-durchschaut', symbol: 'rom', titel: 'Den Kaiser durchschaut', text: 'Finde für jede Karte Kaiser Karls einen Konter (Konter-Lexikon).', bed: { durchschaut: 'k-karl' } },
     { id: 'gelehrter', symbol: 'gnade', titel: 'Konter-Gelehrter', text: 'Entdecke 30 Konter im Konter-Lexikon.', bed: { lexikonMin: 30 } },
-    { id: 'rom', symbol: 'kirche', titel: 'Bis nach Rom', text: 'Besiege Papst Leo X.', bed: { gegner: 'k-leo' } }
+    { id: 'rom', symbol: 'kirche', titel: 'Bis nach Rom', text: 'Besiege Papst Leo X.', bed: { gegner: 'k-leo' } },
+    { id: 'anwalt', symbol: 'rom', titel: 'Anwalt der Kirche', text: 'Gewinne eine Partie als Kirche (Perspektivwechsel).', bed: { kircheSiege: 1 } },
+    { id: 'beide-seiten', symbol: 'gewissen', titel: 'Beide Seiten gehört', text: 'Besiege als Kirche alle drei Luther.', bed: { kircheSiege: 3 } }
   ],
   // Einführung beim ersten Start: sechs Tafeln mit Bild (art bestimmt das Bild, siehe js/puzzles/kampagne-extras.js)
   einfuehrung: [

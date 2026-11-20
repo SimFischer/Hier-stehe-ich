@@ -64,7 +64,7 @@ test('Abzeichen: Belohnung mit Siegellack, jedes nur einmal', () => {
 test('Abzeichen: jedes Sieg-Abzeichen ist mit der vollen Sammlung erreichbar', () => {
   const besitz = lutherKarten.flatMap((k) => Array(maxKopien(k.id)).fill(k.id));
   const regeln = kampagne.regeln;
-  for (const a of kampagne.abzeichen.filter((x) => !x.bed.durchschaut && !x.bed.lexikonMin)) {
+  for (const a of kampagne.abzeichen.filter((x) => !x.bed.durchschaut && !x.bed.lexikonMin && !x.bed.kircheSiege)) {
     const b = a.bed;
     const gegnerId = b.gegner || (b.abKapitel ? kampagne.kapitel[b.abKapitel - 1].gegner[0] : 'k-tetzel');
     const g = kampagne.gegner[gegnerId];
