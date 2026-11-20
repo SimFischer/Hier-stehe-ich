@@ -43,6 +43,8 @@ export function wert(z, seite, inst) {
     if (ok.staerkt && trifft(ok.staerkt.gruppe, k)) v += ok.staerkt.plus;
     if (k.bund && !ok.anfuehrer && gruppe(ok) === gruppe(k)) v += 1;
   }
+  // Bonus für diese Runde (zum Beispiel für eine richtig begründete Antwort im „Warum?“-Moment)
+  v += inst.plus || 0;
   if (!k.standhaft) for (const o of z.seiten[anders(seite)].reihe) {
     const ok = K(o.id);
     if (ok.schwaecht && !entkraeftet(z, anders(seite), o) && trifft(ok.schwaecht.gruppe, k)) v -= ok.schwaecht.minus;

@@ -282,3 +282,23 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .bk.pracht-1 { box-shadow: inset 0 0 0 2px #b23a24; }
 .bk.pracht-2 { border-color: #8a5d0e; background: linear-gradient(#fff6d2, #f0d47c 70%, #d9ab45); box-shadow: inset 0 0 0 2px #fff0b8, 0 0 10px rgba(243, 210, 122, 0.8); }
 .bk.pracht-2 .bk-name::first-letter { color: #b23a24; }
+
+/* ---------- „Warum?“-Moment ---------- */
+.d-warum { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; padding: 16px; background: rgba(20, 14, 10, 0.62); animation: einblenden 0.25s ease-out; }
+.d-warum-karte { width: min(680px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; display: grid; gap: 10px; padding: 20px 24px; color: var(--tinte);
+  background: linear-gradient(180deg, #fbf5e6, #f1e3c2 75%, #e6d3a8); border: 3px double #1f1a17; box-shadow: inset 0 0 0 5px #fbf5e6, inset 0 0 0 6px #b23a24, 0 14px 30px rgba(0, 0, 0, 0.55); }
+.d-warum-karte .kicker { margin: 0; color: #7f2f1f; font-variant: small-caps; font-size: 1.1rem; letter-spacing: 0.04em; }
+.d-warum-kirche { margin: 0; padding: 8px 12px; border-radius: 8px; background: #f3d6cc; border-left: 5px solid #a6432e; }
+.d-warum-frage { margin: 4px 0 0; font-weight: bold; }
+.d-warum-antworten { display: grid; gap: 8px; }
+.d-warum-antwort { min-height: 52px; padding: 10px 14px; border-radius: 10px; cursor: pointer; text-align: left; font: inherit; line-height: 1.35;
+  background: #fffaf0; color: var(--tinte); border: 2px solid #1f1a17; box-shadow: inset 0 0 0 2px #fffaf0, inset 0 0 0 3px rgba(31, 26, 23, 0.25); }
+.d-warum-antwort:hover:not(:disabled) { background: #fff1c9; }
+.d-warum-antwort:disabled { cursor: default; opacity: 0.6; }
+.d-warum-antwort.richtig { opacity: 1; background: #dbe7d6; border-color: #2f5a37; box-shadow: inset 0 0 0 2px #dbe7d6, inset 0 0 0 4px #2f5a37; }
+.d-warum-antwort.falsch { opacity: 1; background: #f3d6cc; border-color: #a6432e; text-decoration: line-through; }
+.d-warum-fuss { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; min-height: 48px; }
+.d-warum-fuss p { margin: 0; }
+.d-warum-fuss .gut { color: #24402c; font-weight: bold; }
+.d-warum-fuss .schade { color: #7f2f1f; font-weight: bold; }
+@media (prefers-reduced-motion: reduce) { .d-warum { animation: none; } }

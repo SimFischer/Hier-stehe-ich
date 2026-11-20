@@ -298,6 +298,8 @@ export function view(el, schritt, ctx, fertig) {
       speichereDecks: (decks) => neu({ ...stand, decks }),
       zurueck: uebersicht,
       ergebnis: (z, deck) => auswertung(id, z, deck),
+      // Wäre dieser Konter neu im Lexikon? (Dann fragt das Duell zuerst „Warum?“)
+      konterNeu: (lutherId, kircheId) => rules.entdecke(stand, lutherId, kircheId, id).neu,
       // Konter gesehen: ins Lexikon, kurze Meldung, bei jedem fünften ein Siegelbrief
       entdecke: (lutherId, kircheId) => {
         const r = rules.entdecke(stand, lutherId, kircheId, id);

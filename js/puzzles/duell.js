@@ -6,6 +6,7 @@ import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
 import { trenne } from '../../data/silben.js';
 import { prachtKlasse } from '../engine/pracht.js';
+import { warumFrage, belohne, WARUM_BONUS } from './warum.js';
 import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, startDeckGegen, anzahl } from './duell-regeln.js';
 
 export { rules };
@@ -244,6 +245,8 @@ export function view(el, schritt, ctx, fertig) {
   const FAEHIG = ['staerkt', 'schwaecht', 'bann', 'zieht', 'standhaft', 'bund', 'entkraeftet'];
   let konter = null; // Erklärung des letzten Konters: { nr: Länge des Logs, zeilen }
   let stempelBis = 0; // bis wann der Stempel steht (die Kirche wartet so lange)
+  let frage = null;   // offener „Warum?“-Moment: { luther, kirche, uid } (die Kirche wartet, bis er beantwortet ist)
+  const gefragt = new Set();
   let handVorher = new Set();
   let tauschWahl = new Set();
   let tauschNeu = new Set();
@@ -330,6 +333,38 @@ export function view(el, schritt, ctx, fertig) {
     setTimeout(() => s.remove(), STEMPEL_MS + 400);
   }
 
+  /** „Warum?“-Moment: welches Argument antwortet auf die Aussage der Kirche? Richtig: Bonus für diese Runde. Danach ins Lexikon. */
+  function zeigeFrage() {
+    if (!frage || !lebt()) return;
+    const f = warumFrage(frage.luther, frage.kirche);
+    const ebene = h('div', { class: 'd-warum', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.warumTitel });
+    const fertig = () => {
+      ebene.remove();
+      const { luther, kirche } = frage; frage = null;
+      kamp.entdecke(luther, kirche);
+      zeichne();
+    };
+    const waehle = (id, knopfEl) => {
+      const ja = id === f.luther;
+      ebene.querySelectorAll('.d-warum-antwort').forEach((b) => { b.disabled = true; if (b.dataset.id === f.luther) b.classList.add('richtig'); });
+      if (!ja) knopfEl.classList.add('falsch');
+      const inst = frage.uid && z.seiten.luther.reihe.find((x) => x.uid === frage.uid);
+      if (ja && inst) z = belohne(z, 'luther', frage.uid);
+      setzeInhalt(ebene.querySelector('.d-warum-fuss'),
+        h('p', { class: ja ? 'gut' : 'schade' }, ja ? (inst ? fuelle(t.warumRichtig, { karte: name(f.luther), n: WARUM_BONUS }) : t.warumRichtigOhne) : fuelle(t.warumFalsch, { karte: name(f.luther) })),
+        knopf(t.weiter, fertig, 'haupt'));
+      ebene.querySelector('.d-warum-fuss .knopf')?.focus();
+    };
+    setzeInhalt(ebene, h('div', { class: 'd-warum-karte' },
+      h('p', { class: 'kicker' }, t.warumTitel),
+      h('p', { class: 'd-warum-kirche' }, h('strong', {}, `${name(f.kirche)}: `), f.frageText),
+      h('p', { class: 'd-warum-frage' }, fuelle(t.warumFrage, { karte: name(f.luther) })),
+      h('div', { class: 'd-warum-antworten' }, f.optionen.map((o) => h('button', { type: 'button', class: 'd-warum-antwort', 'data-id': o.id, onclick: (e) => waehle(o.id, e.currentTarget) }, o.text))),
+      h('div', { class: 'd-warum-fuss' }, h('p', { class: 'klein' }, fuelle(t.warumLohn, { n: WARUM_BONUS })))));
+    document.body.append(ebene);
+    ebene.querySelector('.d-warum-antwort')?.focus();
+  }
+
   function zeichne() {
     if (!lebt()) { spielmodus(false); return; }
     clearTimeout(timer);
@@ -338,7 +373,14 @@ export function view(el, schritt, ctx, fertig) {
     if (z.phase === 'tausch') { tauschAnsicht(); return; }
     const l = z.seiten.luther; const k = z.seiten.kirche;
     // Konter-Lexikon (nur Kampagne): jedes Paar, das gerade wirkt
-    if (kamp?.entdecke) for (const inst of k.reihe) { const durch = entkraeftet(z, 'kirche', inst); if (durch) kamp.entdecke(durch, inst.id); }
+    if (kamp?.entdecke) for (const inst of k.reihe) {
+      const durch = entkraeftet(z, 'kirche', inst); if (!durch) continue;
+      const paar = `${durch}>${inst.id}`;
+      if (kamp.konterNeu?.(durch, inst.id) && !gefragt.has(paar)) {
+        if (!frage) { gefragt.add(paar); const l = z.seiten.luther.reihe.find((x) => x.id === durch); frage = { luther: durch, kirche: inst.id, uid: l?.uid };
+          setTimeout(() => zeigeFrage(), Math.max(400, stempelBis - Date.now())); }
+      } else if (!gefragt.has(paar) || !frage) kamp.entdecke(durch, inst.id);
+    }
     const letzte = z.log.at(-1);
     const letzteUid = letzte?.art === 'spiel' ? letzte.uid : null;
     const amZug = z.phase === 'spiel' && z.am === 'luther' && !banner && !tutErklaert();
@@ -408,7 +450,7 @@ export function view(el, schritt, ctx, fertig) {
     for (const s of ['luther', 'kirche']) for (const inst of z.seiten[s].reihe) werteVorher.set(inst.uid, wert(z, s, inst));
     handVorher = new Set(l.hand.map((x) => x.uid));
 
-    if (!banner && z.phase === 'spiel' && z.am === 'kirche') timer = setTimeout(kiZug, Math.max(PAUSE_KI, stempelBis - Date.now()));
+    if (!banner && !frage && z.phase === 'spiel' && z.am === 'kirche') timer = setTimeout(kiZug, Math.max(PAUSE_KI, stempelBis - Date.now()));
   }
 
   // ---------- Kartentausch vor dem Start ----------

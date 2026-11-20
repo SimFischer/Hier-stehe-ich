@@ -104,6 +104,9 @@ export const t = {
   // Spielmodus des Kartenspiels: eigene Fläche über der ganzen Seite
   spielVerlassen: 'Spiel verlassen', spielVollbild: 'Vollbild', spielVollbildAus: 'Vollbild beenden', spielFlaeche: 'Spieltisch',
   duellFortsetzen: 'Zur Partie zurück', duellLaeuft: 'Deine Partie läuft noch. Du kannst sie fortsetzen oder neu beginnen.', duellImSpiel: 'Die Partie läuft im Spielmodus.',
+  warumTitel: 'Warum wirkt dein Konter?', warumFrage: 'Welches Argument antwortet darauf?',
+  warumLohn: 'Richtig begründet: +{n} Stärke für diese Runde.', warumRichtig: 'Richtig! {karte} bekommt in dieser Runde +{n} Stärke.',
+  warumRichtigOhne: 'Richtig! (Die Runde ist schon vorbei, der Bonus entfällt.)', warumFalsch: 'Nicht ganz. Die richtige Antwort ist grün markiert: So antwortet {karte}.',
   duellStempel: 'Entkräftet!', duellStempelPaar: '{karte} antwortet auf {gegen}',
   duellKonter: '{karte} entkräftet {gegen}: {vorher} → {jetzt}', duellSofort: '{gegen} ist sofort entkräftet, denn {karte} liegt schon: {vorher} → 1',
   duellTrefferKurz: 'Treffer!', duellEntkraeftetDurch: 'Entkräftet durch {karte}.', duellWarte: 'Ausspielen kannst du, sobald du am Zug bist.', duellFaehig: 'Fähigkeit',
