@@ -1,96 +1,110 @@
-/* Obere Leiste im Stil des Spiels: dunkler Holzbalken mit Messingkante, Knöpfe wie Lederreiter,
-   der Titel auf einem Pergamentband, die Platten in einer eingelassenen Schatulle, darunter ein Pergamentstreifen. */
-:root { --messing: #c9a35c; --messing-dunkel: #8a6a34; --holz: #3b2a1d; --holz-dunkel: #24180f; --leder: #5a3a24; }
+/* Obere Leiste wie der Kopf eines Flugblatts um 1520: Papier, Druckerschwärze, doppelte Zierlinie, Rot nur als Auszeichnung.
+   Knöpfe sind gedruckte Felder mit schwarzem Rahmen; die Symbole sind Holzschnitte (leiste-*.png, docs/ASSET-PROMPTS-7.md),
+   bis dahin Strichsymbole in Druckerschwärze. Eine Zierleiste (leiste-zier) ersetzt später die gezeichnete Linie. */
+:root { --papier: #f4ead2; --papier-hell: #fbf5e6; --papier-schatten: #e2d2ae; --schwaerze: #1f1a17; --zinnober: #b23a24; }
 
 .leiste {
-  position: relative; z-index: 2;
+  position: relative; z-index: 2; color: var(--schwaerze);
   background:
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.09) 0 2px, transparent 2px 9px, rgba(255, 220, 170, 0.035) 9px 11px, transparent 11px 23px),
-    linear-gradient(180deg, #4a3423 0%, var(--holz) 45%, var(--holz-dunkel) 100%);
-  border-top: 2px solid var(--messing-dunkel);
-  border-bottom: 3px solid var(--messing);
-  box-shadow: inset 0 1px 0 rgba(255, 230, 180, 0.18), inset 0 -6px 10px rgba(0, 0, 0, 0.35), 0 3px 0 var(--holz-dunkel), 0 6px 12px rgba(0, 0, 0, 0.35);
+    radial-gradient(ellipse at 12% 30%, rgba(160, 120, 60, 0.10), transparent 55%),
+    radial-gradient(ellipse at 70% 80%, rgba(160, 120, 60, 0.08), transparent 50%),
+    linear-gradient(180deg, var(--papier-hell), var(--papier) 70%, var(--papier-schatten));
+  /* doppelte Linie unten wie ein gedruckter Rahmen: dick, Papier, dünn */
+  border-bottom: 3px solid var(--schwaerze);
+  box-shadow: 0 3px 0 var(--papier), 0 4px 0 var(--schwaerze), 0 7px 8px rgba(31, 26, 23, 0.2);
+}
+.leiste::before { /* dünne Linie oben */
+  content: ""; position: absolute; left: 0; right: 0; top: 3px; height: 1px; background: var(--schwaerze); opacity: 0.8; pointer-events: none;
+}
+/* Holzschnitt-Zierleiste, sobald das Bild da ist (gesetzt in main.js) */
+.leiste.mit-zier { border-bottom: 0; box-shadow: 0 6px 8px rgba(31, 26, 23, 0.18); }
+.leiste.mit-zier::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -14px; height: 16px; pointer-events: none;
+  background: var(--zier) repeat-x left center / auto 100%;
 }
 
-/* Knöpfe: Lederreiter mit Messingrand */
+/* Knöpfe: gedruckte Felder mit Rahmen in Druckerschwärze */
 .leisten-knopf {
-  color: #f3e6c8; font-weight: bold; letter-spacing: 0.01em;
-  background: linear-gradient(180deg, #6b462c, var(--leder) 55%, #432a19);
-  border: 2px solid var(--messing-dunkel); border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 225, 170, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.3), 0 2px 0 var(--holz-dunkel);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
-  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+  color: var(--schwaerze); font-variant: small-caps; font-weight: bold; letter-spacing: 0.03em;
+  background: rgba(251, 245, 230, 0.6);
+  border: 2px solid var(--schwaerze); border-radius: 3px;
+  box-shadow: inset 0 0 0 2px var(--papier-hell), inset 0 0 0 3px rgba(31, 26, 23, 0.35);
+  transition: background 0.12s, transform 0.12s;
 }
-.leisten-knopf svg { color: var(--messing); filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.6)); }
-.leisten-knopf:hover { border-color: var(--messing); transform: translateY(-1px); background: linear-gradient(180deg, #7a5134, #613f27 55%, #4a2f1c); }
-.leisten-knopf:active { transform: translateY(1px); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); }
-.leisten-knopf[aria-pressed="true"] {
-  background: linear-gradient(180deg, var(--pergament-hell), var(--pergament-dunkel)); color: var(--tinte); border-color: var(--messing);
-  text-shadow: none;
-}
-.leisten-knopf[aria-pressed="true"] svg { color: var(--rot-dunkel); filter: none; }
+.leisten-knopf svg { color: var(--schwaerze); }
+.leisten-knopf svg path { stroke-width: 2.4; }
+.leisten-knopf .l-bild { width: 34px; height: 34px; object-fit: contain; display: block; margin: -4px -2px; }
+.leisten-knopf:hover { background: rgba(200, 150, 62, 0.22); }
+.leisten-knopf:active { transform: translateY(1px); }
+/* Geöffnet: wie mit Ocker von Hand koloriert */
+.leisten-knopf[aria-pressed="true"] { background: rgba(200, 150, 62, 0.45); color: var(--schwaerze); border-color: var(--schwaerze); }
 /* Zahl am Beutel: rotes Wachssiegel */
 .leisten-knopf .zahl {
-  display: inline-grid; place-items: center; min-width: 1.75em; height: 1.75em; padding: 0 0.25em;
+  display: inline-grid; place-items: center; min-width: 1.75em; height: 1.75em; padding: 0 0.25em; font-variant: normal;
   background: radial-gradient(circle at 35% 30%, #c4583f, var(--rot-dunkel) 75%); color: #fff1c9;
-  border: 1px solid #5c1f12; border-radius: 50%; font-size: 0.8125rem; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 200, 160, 0.15);
+  border: 1px solid #5c1f12; border-radius: 50%; font-size: 0.8125rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* Titel: Pergamentband mit eingeschnittenen Enden */
-#titel { gap: 2px; padding: 4px var(--ab-2); }
+/* Titel: gedruckte Kopfzeile mit roter Initiale, darunter Ort in Kursive */
+#titel { gap: 0; padding: 2px var(--ab-2); color: var(--schwaerze); }
 #titel > strong {
-  position: relative; display: block; padding: 2px 2.2em 3px; color: var(--tinte); font-variant: small-caps; letter-spacing: 0.06em; line-height: 1.2;
-  background: linear-gradient(180deg, var(--pergament-hell), var(--pergament) 60%, var(--pergament-dunkel));
-  clip-path: polygon(0 0, 100% 0, calc(100% - 0.9em) 50%, 100% 100%, 0 100%, 0.9em 50%);
-  filter: drop-shadow(0 2px 0 var(--holz-dunkel));
+  position: relative; display: block; padding: 0 1.6em; line-height: 1.15; color: var(--schwaerze);
+  font-variant: small-caps; letter-spacing: 0.08em; font-size: 1.45rem;
 }
-#titel > strong::before, #titel > strong::after { content: "\2766"; position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.7em; color: var(--rot); }
-#titel > strong::before { left: 1.25em; transform: translateY(-50%) scaleX(-1); }
-#titel > strong::after { right: 1.25em; }
-#titel:hover > strong { background: linear-gradient(180deg, #fffaf0, var(--pergament-hell) 60%, var(--pergament)); }
-#ort { color: var(--messing); font-style: italic; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+#titel > strong::first-letter { color: var(--zinnober); }
+#titel > strong::before, #titel > strong::after { content: "\2766"; position: absolute; top: 50%; transform: translateY(-50%); font-size: 0.75em; color: var(--zinnober); }
+#titel > strong::before { left: 0.2em; transform: translateY(-50%) scaleX(-1); }
+#titel > strong::after { right: 0.2em; }
+#titel:hover > strong { text-decoration: underline 1px; text-underline-offset: 4px; }
+#ort { color: var(--tinte-weich); font-style: italic; }
 
-/* Platten: eingelassene Schatulle */
+/* Platten: eingedruckter Kasten mit Doppelrahmen */
 #platten {
-  padding: 5px 7px; gap: 5px; border-radius: 8px;
-  background: linear-gradient(180deg, var(--holz-dunkel), #1a110a);
-  border: 1px solid var(--messing-dunkel);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 225, 170, 0.15);
+  padding: 4px 6px; gap: 4px; border-radius: 2px;
+  background: rgba(226, 210, 174, 0.55);
+  border: 2px solid var(--schwaerze);
+  box-shadow: inset 0 0 0 2px var(--papier-hell), inset 0 0 0 3px rgba(31, 26, 23, 0.35);
 }
-.platte:not(.mit-bild) { border-color: rgba(201, 163, 92, 0.45); }
+.platte:not(.da) { border-color: rgba(31, 26, 23, 0.35); }
 
-/* Darunter: Pergamentstreifen statt gelber Fläche */
+/* Darunter: Zielzeile wie eine gedruckte Unterzeile, ohne eigenen Kasten */
 #ziel {
-  position: relative; z-index: 1; color: var(--tinte); font-weight: bold;
-  background:
-    radial-gradient(ellipse at 20% 40%, rgba(160, 120, 60, 0.12), transparent 60%),
-    radial-gradient(ellipse at 80% 70%, rgba(160, 120, 60, 0.1), transparent 55%),
-    linear-gradient(180deg, var(--pergament-hell), var(--pergament) 70%, var(--pergament-dunkel));
-  border-bottom: 1px solid #b89c6a;
-  box-shadow: 0 3px 6px rgba(31, 26, 23, 0.18);
+  position: relative; z-index: 1; color: var(--schwaerze); font-weight: bold; font-style: italic;
+  background: linear-gradient(180deg, var(--papier) 0%, var(--papier-hell) 100%);
+  border-bottom: 1px solid rgba(31, 26, 23, 0.45);
+  box-shadow: 0 3px 6px rgba(31, 26, 23, 0.12);
+  padding-top: calc(var(--ab-2) + 3px);
 }
-#ziel:not(:empty)::before, #ziel:not(:empty)::after { content: "\2767"; color: var(--rot); font-weight: normal; margin: 0 0.6em; }
+#ziel:not(:empty)::before, #ziel:not(:empty)::after { content: "\2767"; color: var(--zinnober); font-weight: normal; font-style: normal; margin: 0 0.6em; }
 #ziel:not(:empty)::before { display: inline-block; transform: scaleX(-1); }
 
 /* Das Band bleibt einzeilig; wird es eng, rücken Knöpfe und Platten zusammen. */
 #titel > strong, #ort { white-space: nowrap; }
 @media (max-width: 1280px) {
-  .leiste { gap: var(--ab-2); }
-  .leisten-knopf { font-weight: normal; padding: 0 9px; gap: 6px; }
-  #titel > strong { padding: 2px 1.5em 3px; font-size: 1.1rem; }
-  #titel > strong::before, #titel > strong::after { display: none; }
-  #platten { gap: 3px; padding: 4px 5px; }
-  .platte.mit-bild { width: 26px; height: 28px; }
+  .leiste { gap: 4px; padding-left: 6px; padding-right: 6px; }
+  .leiste nav { gap: 5px; }
+  .leisten-knopf { padding: 0 6px; gap: 4px; letter-spacing: 0; font-size: 0.875rem; }
+  .leisten-knopf svg { width: 22px; height: 22px; }
+  #titel { padding: 2px 0; }
+  #titel > strong { font-size: 1.2rem; }
+  #ort { font-size: 0.875rem; }
+  #platten { gap: 2px; padding: 3px 4px; }
+  .platte.mit-bild { width: 22px; height: 26px; }
 }
-@media (max-width: 900px) { #titel > strong { padding: 2px 1.2em 3px; font-size: 1rem; } }
+@media (max-width: 900px) { #titel > strong { padding: 0 1.2em; font-size: 1rem; } }
 
-/* Nach dem Finale: „Hammer & Siegel“ ist das eigentliche Spiel – goldener Reiter und Knopf im Zielstreifen */
-.leisten-knopf.hs-frei { background: linear-gradient(#ffe08a, #d9a640); color: #2a1c14; border-color: #fff3c4; font-weight: bold;
-  box-shadow: 0 0 0 2px #7f2f1f, 0 0 14px rgba(255, 210, 110, 0.7); animation: hs-leuchten 2.4s ease-in-out 4; }
+/* Nach dem Finale: „Hammer & Siegel“ ist das eigentliche Spiel – rot ausgezeichnet wie eine Rubrik im Druck */
+.leisten-knopf.hs-frei { background: var(--zinnober); color: var(--papier-hell); border-color: var(--schwaerze);
+  box-shadow: inset 0 0 0 2px #d9846a, 0 0 0 0 rgba(178, 58, 36, 0.5); animation: hs-leuchten 2.4s ease-in-out 4; }
+.leisten-knopf.hs-frei svg { color: var(--papier-hell); }
+.leisten-knopf.hs-frei .l-bild { background: var(--papier-hell); border-radius: 50%; padding: 2px; } /* rotes Siegel nicht auf Rot */
 .leisten-knopf.hs-frei span:nth-child(2) { display: inline; }
-@keyframes hs-leuchten { 50% { box-shadow: 0 0 0 2px #7f2f1f, 0 0 26px rgba(255, 210, 110, 1); } }
+.leisten-knopf.hs-frei:hover { background: #c2442c; }
+@keyframes hs-leuchten { 50% { box-shadow: inset 0 0 0 2px #d9846a, 0 0 0 6px rgba(178, 58, 36, 0.25); } }
 @media (prefers-reduced-motion: reduce) { .leisten-knopf.hs-frei { animation: none; } }
-.ziel-hs { min-height: 34px; margin: -4px 0; padding: 2px 16px; vertical-align: middle; border-radius: 20px; cursor: pointer; font: inherit; font-weight: bold;
-  background: linear-gradient(#ffe08a, #d9a640); color: #2a1c14; border: 2px solid #7f2f1f; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+.ziel-hs { min-height: 34px; margin: -4px 0; padding: 2px 16px; vertical-align: middle; border-radius: 3px; cursor: pointer; font: inherit; font-style: normal; font-weight: bold;
+  font-variant: small-caps; letter-spacing: 0.03em;
+  background: var(--zinnober); color: var(--papier-hell); border: 2px solid var(--schwaerze); box-shadow: inset 0 0 0 2px #d9846a; }
+.ziel-hs:hover { background: #c2442c; }
 #ziel:has(.ziel-hs)::after { content: none; }
