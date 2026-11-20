@@ -314,3 +314,4 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .kirche-frage p { margin: 0; }
 .kirche-frage .kicker { color: #7f2f1f; margin-bottom: 4px; }
 .kirche-frage p:last-child { font-size: var(--text); font-weight: bold; }
+.d-warum-hintergrund { margin: 0; padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.55); border-left: 5px solid #c8963e; line-height: 1.45; }

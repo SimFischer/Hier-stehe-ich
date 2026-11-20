@@ -115,3 +115,10 @@ Jede Kirchenkarte hat jetzt mindestens zwei Konter, damit verschiedene Decks mö
 | Die Messe auf Latein | Deutsche Lieder | die Gemeinde singt auf Deutsch mit |
 | Ehelos bleiben | Freiheit eines Christenmenschen | ein Christ ist frei; Gelübde machen nicht gerecht |
 | Der Ablassprediger, Tetzels Predigt | Nicht käuflich | Gnade lässt sich weder verkaufen noch herbeipredigen (Thesen 27 und 35/36: Vergebung schenkt Gott dem, der bereut) |
+
+## „Warum?“-Fragen in Hammer & Siegel (21.11.2026)
+
+Wirkt ein Konter zum ersten Mal, erscheint eine Frage. Alle Texte stehen in `data/warum.js` und sollten fachlich geprüft werden:
+
+- **kirche:** je Kirchenkarte eine Sacherklärung („Zum Hintergrund“) und zwei falsche Antworten. Die falschen Antworten sind bewusst typische Missverständnisse zum selben Thema (zum Beispiel „Der Ablass ist in Ordnung, er ist nur zu teuer“). Sie dürfen nicht als Luthers Position durchgehen.
+- **antwort:** je Konter-Paar die richtige Antwort mit Kartennamen. Thesen sind sinngemäß wiedergegeben (27, 32, 36, 43, 86), das Wort von Worms ebenfalls sinngemäß.

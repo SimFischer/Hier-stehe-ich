@@ -373,6 +373,7 @@ export function view(el, schritt, ctx, fertig) {
     setzeInhalt(ebene, h('div', { class: 'd-warum-karte' },
       h('p', { class: 'kicker' }, alsKirche ? t.warumTitelKirche : t.warumTitel),
       h('p', { class: 'd-warum-kirche' }, h('strong', {}, `${name(f.kirche)}: `), f.frageText),
+      f.erklaerung ? h('p', { class: 'd-warum-hintergrund' }, h('strong', {}, `${t.warumHintergrund} `), f.erklaerung) : null,
       h('p', { class: 'd-warum-frage' }, alsKirche ? t.warumFrageKirche : fuelle(t.warumFrage, { karte: name(f.luther) })),
       h('div', { class: 'd-warum-antworten' }, f.optionen.map((o) => h('button', { type: 'button', class: 'd-warum-antwort', 'data-id': o.id, onclick: (e) => waehle(o.id, e.currentTarget) }, o.text))),
       h('div', { class: 'd-warum-fuss' }, h('p', { class: 'klein' }, alsKirche ? fuelle(t.warumLohnKirche, { n: kampagnenDaten.kirchenSeite.lackWarum }) : fuelle(t.warumLohn, { n: WARUM_BONUS })))));

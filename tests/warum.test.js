@@ -4,24 +4,29 @@ import assert from 'node:assert/strict';
 import { warumFrage, belohne, WARUM_BONUS } from '../js/puzzles/warum.js';
 import { rules, K, wert } from '../js/puzzles/duell-regeln.js';
 import { lutherKarten } from '../data/kartei.js';
+import { warum } from '../data/warum.js';
 import { zufall } from './helfer.js';
 
 const paare = lutherKarten.flatMap((l) => (l.entkraeftet || []).map((c) => [l.id, c]));
 
-test('Warum-Frage: drei verschiedene Antworten, genau eine passt, falsche gehören zu anderen Themen', () => {
+test('Warum-Frage: für jeden Konter Erklärung, richtige Antwort und zwei falsche zum selben Thema', () => {
   const rnd = zufall(95);
-  for (const [l, c] of paare) for (let i = 0; i < 3; i++) {
+  for (const [l, c] of paare) {
+    const info = warum.kirche[c];
+    assert.ok(info?.erklaerung && info.erklaerung.length > 40, `${c}: Sacherklärung`);
+    assert.equal(info.falsch.length, 2, `${c}: zwei falsche Antworten`);
+    assert.ok(warum.antwort[`${l}>${c}`], `${l}>${c}: richtige Antwort`);
+    assert.ok(warum.antwort[`${l}>${c}`].includes(`„${K(l).titel}“`), `${l}>${c}: Antwort nennt die Karte`);
     const f = warumFrage(l, c, rnd);
-    assert.equal(f.optionen.length, 3, `${l}>${c}`);
+    assert.equal(f.optionen.length, 3);
     assert.equal(new Set(f.optionen.map((o) => o.text)).size, 3, 'keine doppelten Texte');
     assert.equal(f.optionen.filter((o) => o.id === l).length, 1, 'die richtige ist dabei');
-    const thema = K(c).gruppe;
-    for (const o of f.optionen.filter((x) => x.id !== l)) {
-      assert.ok(!(K(o.id).entkraeftet || []).includes(c), `${o.id} entkräftet ${c} nicht`);
-      assert.ok(!(K(o.id).entkraeftet || []).some((x) => K(x).gruppe === thema), `${o.id}: anderes Thema als ${c}`);
-      assert.notEqual(K(o.id).typ, K(l).typ, `${o.id}: andere Kartenart als ${l}`);
-    }
+    assert.ok(f.erklaerung);
+    assert.ok(f.optionen.every((o) => !o.text.startsWith('„')), 'keine Antwort beginnt mit einem Kartennamen (würde die Lösung verraten)');
   }
+  // Keine überflüssigen Einträge (Tippfehler in Schlüsseln)
+  const gibt = new Set(paare.map(([l, c]) => `${l}>${c}`));
+  for (const p of Object.keys(warum.antwort)) assert.ok(gibt.has(p), `${p} ist kein Konter-Paar`);
 });
 
 test('Warum-Bonus: +2 auf das Exemplar in der Reihe, nach der Runde vorbei', () => {
