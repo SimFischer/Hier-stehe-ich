@@ -45,6 +45,8 @@ export function wert(z, seite, inst) {
   }
   // Bonus für diese Runde (zum Beispiel für eine richtig begründete Antwort im „Warum?“-Moment)
   v += inst.plus || 0;
+  // Kirchen-Modus: Luthers Argumente überzeugen viele (lutherPlus aus den Regeln des Gegners)
+  if (seite === 'luther' && z.regeln?.lutherPlus && !k.anfuehrer) v += z.regeln.lutherPlus;
   if (!k.standhaft) for (const o of z.seiten[anders(seite)].reihe) {
     const ok = K(o.id);
     if (ok.schwaecht && !entkraeftet(z, anders(seite), o) && trifft(ok.schwaecht.gruppe, k)) v -= ok.schwaecht.minus;
@@ -111,14 +113,15 @@ export const rules = {
     const n = { phase: 'tausch', runde: 1, am: 'luther', seed: seed >>> 0, uid: 0, tausch: regeln.tausch, regeln, gegner: gegner.id, log: [], runden: [], sieger: null, skript: gegner.skript || null, skriptPos: 0 };
     n.seiten = { luther: neueSeite(n, fest ? gegner.deckLuther : deckLuther, anfuehrer, !fest), kirche: neueSeite(n, gegner.deck, gegner.anfuehrer, !fest) };
     // handKirche: Späte Gegner der Kampagne beginnen mit mehr Karten als Luther.
-    ziehe(n, 'luther', regeln.handStart); ziehe(n, 'kirche', regeln.handKirche || regeln.handStart);
+    // handLuther: Im Kirchen-Modus beginnt der Computer-Luther mit mehr Karten.
+    ziehe(n, 'luther', regeln.handLuther || regeln.handStart); ziehe(n, 'kirche', regeln.handKirche || regeln.handStart);
     return n;
   },
-  /** Vor dem Spiel: eine Handkarte zurück ins Deck, dafür eine neue ziehen. */
-  tausche(z, uid) {
-    if (z.phase !== 'tausch' || z.tausch < 1 || !z.seiten.luther.deck.length) return z;
+  /** Vor dem Spiel: eine Handkarte zurück ins Deck, dafür eine neue ziehen. seite: wer tauscht (im Kirchen-Modus die Kirche). */
+  tausche(z, uid, seite = 'luther') {
+    if (z.phase !== 'tausch' || z.tausch < 1 || !z.seiten[seite].deck.length) return z;
     const n = structuredClone(z);
-    const s = n.seiten.luther;
+    const s = n.seiten[seite];
     const i = s.hand.findIndex((x) => x.uid === uid);
     if (i < 0) return z;
     const [alt] = s.hand.splice(i, 1);
@@ -188,6 +191,29 @@ export const rules = {
     if (!mussGewinnen && k.siege === 0 && vorne < -8 && k.hand.length <= l.hand.length + 1) return { art: 'passe' };
     const beste = optionen.reduce((a, b) => (b.nach > a.nach ? b : a));
     return { art: 'spiele', uid: beste.uid };
+  },
+  /** Der Zug Luthers, wenn der Computer ihn spielt (Perspektivwechsel: Man spielt die Kirche).
+   *  Er kontert, wo er kann, spart Konter für später und setzt seinen Anführer in Runden, die zählen. */
+  kiZugLuther(z) {
+    const l = z.seiten.luther; const k = z.seiten.kirche;
+    if (!l.hand.length) return l.anfuehrer && rules.vorsprungNach(z, 'luther', l.anfuehrer.uid) > 0 ? { art: 'spiele', uid: l.anfuehrer.uid } : { art: 'passe' };
+    const vorne = summe(z, 'luther') - summe(z, 'kirche');
+    const opt = l.hand.map((x) => ({ uid: x.uid, k: K(x.id), nach: rules.vorsprungNach(z, 'luther', x.uid) }));
+    const konter = opt.filter((o) => (o.k.entkraeftet || []).some((id) => k.reihe.some((c) => c.id === id && !entkraeftet(z, 'kirche', c))));
+    const mussGewinnen = k.siege > l.siege || (k.siege === 1 && l.siege === 1);
+    if (k.gepasst) {
+      if (vorne > 0) return { art: 'passe' };
+      const reicht = opt.filter((o) => o.nach > 0).sort((a, b) => a.k.staerke - b.k.staerke);
+      if (reicht.length) return { art: 'spiele', uid: (konter.find((o) => o.nach > 0) || reicht[0]).uid };
+      return l.anfuehrer && rules.vorsprungNach(z, 'luther', l.anfuehrer.uid) > 0 ? { art: 'spiele', uid: l.anfuehrer.uid } : { art: 'passe' };
+    }
+    if (konter.length) return { art: 'spiele', uid: konter.reduce((a, b) => (b.nach > a.nach ? b : a)).uid };
+    if (l.anfuehrer && (mussGewinnen || z.runde >= 2)) { const nach = rules.vorsprungNach(z, 'luther', l.anfuehrer.uid); if (nach > 0 && mussGewinnen) return { art: 'spiele', uid: l.anfuehrer.uid }; }
+    if (!mussGewinnen && l.siege === 0 && vorne < -12 && l.reihe.length >= 1) return { art: 'passe' };
+    if (!mussGewinnen && vorne >= 3 && l.reihe.length >= 2 && l.hand.length <= k.hand.length) return { art: 'passe' };
+    const frei = opt.filter((o) => !(o.k.entkraeftet || []).length);
+    const pool = frei.length ? frei : opt;
+    return { art: 'spiele', uid: pool.reduce((a, b) => (b.nach > a.nach ? b : a)).uid };
   },
   fuehreAus(z, zug, seite = 'kirche') {
     const n = zug.art === 'passe' ? rules.passe(z, seite) : rules.spiele(z, seite, zug.uid);

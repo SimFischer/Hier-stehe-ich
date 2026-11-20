@@ -302,3 +302,15 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .d-warum-fuss .gut { color: #24402c; font-weight: bold; }
 .d-warum-fuss .schade { color: #7f2f1f; font-weight: bold; }
 @media (prefers-reduced-motion: reduce) { .d-warum { animation: none; } }
+
+/* ---------- Perspektivwechsel: als Kirche spielen ---------- */
+.d-konter-marke.gefahr { background: #7f2f1f; color: #fff3c4; border-color: #f3b7a5; }
+.d-auswahl-konter.gefahr { background: #7f2f1f; color: #fff3c4; }
+.d-kirche-tipp { margin: 6px 0; padding: 8px 12px; border-radius: 10px; background: #fff3c4; border: 1px solid #c8963e; }
+.kirche-getroffen, .kirche-frage { padding: 10px 14px; border-radius: 12px; }
+.kirche-getroffen { background: #f3d6cc; border: 1px solid #a6432e; }
+.kirche-getroffen ul { margin: 4px 0 0; padding-left: 1.2em; }
+.kirche-frage { background: linear-gradient(#fbf5e6, #f1e3c2); border: 3px double #1f1a17; box-shadow: inset 0 0 0 3px #fbf5e6, inset 0 0 0 4px #b23a24; }
+.kirche-frage p { margin: 0; }
+.kirche-frage .kicker { color: #7f2f1f; margin-bottom: 4px; }
+.kirche-frage p:last-child { font-size: var(--text); font-weight: bold; }

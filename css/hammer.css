@@ -292,3 +292,9 @@
 .ke-kapitel-beute { margin-top: 4px !important; padding: 2px 12px; border-radius: 12px; font-weight: bold; background: #2a1c14; color: #fff3c4; }
 .ke-kapitel-beute.rar-episch { background: #4a2766; } .ke-kapitel-beute.rar-legendaer { background: #8a5d0e; }
 @media (prefers-reduced-motion: reduce) { .ke-kapitel-gegner, .ke-kapitel-geschichte, .ke-kapitel-weiter { animation: none; } }
+
+/* Perspektivwechsel in der Übersicht */
+.kamp-kirche { border-top: 3px double #a6432e; padding-top: var(--ab-3); }
+.kamp-kirche.zu { opacity: 0.75; }
+.kamp-kirche-fuehrer .kamp-fuehrer em { font-size: var(--text-klein); }
+.ke-kapitel-kirche { margin: 0; padding: 6px 14px; border-radius: 12px; background: #7f2f1f; color: #fff3c4; animation: einblenden 0.6s ease-out 1.6s both; }

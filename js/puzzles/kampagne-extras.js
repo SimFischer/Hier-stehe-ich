@@ -345,6 +345,7 @@ export function zeigeKapitelAbschluss({ t, kapitel, stand, figuren, weiter = () 
       h('strong', {}, naechstes.titel, h('em', {}, ` ${naechstes.zeit}`)),
       h('p', {}, kap.weiter),
       h('p', { class: `ke-kapitel-beute rar-${['selten', 'episch', 'legendaer', 'legendaer'][kapitel + 1]}` }, t.kampBeute[kapitel + 1])) : null,
+    kapitel + 1 === kampagne.kirchenSeite.abKapitel ? h('p', { class: 'ke-kapitel-kirche' }, h('strong', {}, `${t.kircheNeuFrei} `), kampagne.kirchenSeite.titel) : null,
     h('div', { class: 'reihe mitte' }, knopf(naechstes ? fuelle(t.kampKapitelLos, { titel: naechstes.titel }) : t.weiter, zu, 'haupt gross'))));
   document.body.append(buehne);
   buehne.querySelector('.knopf')?.focus();

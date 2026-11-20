@@ -12,7 +12,8 @@ import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeich
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {}, durchgespielt: null });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {}, durchgespielt: null,
+  kircheSiege: [], kircheDeck: [], kircheAnfuehrer: null });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
@@ -132,6 +133,23 @@ export const rules = {
     const kap = Math.max(0, kampagne.kapitel.findIndex((k) => k.gegner.includes(gegnerId)));
     return { groesse: kampagne.startDeck.groesse[kap], offenLassen: kampagne.startDeck.offen };
   },
+  // ---------- Perspektivwechsel: die Kirche spielen ----------
+  /** Frei, sobald das Kapitel kirchenSeite.abKapitel geschafft ist (alle drei Gegner besiegt). */
+  kircheFrei: (s) => kampagne.kapitel[kampagne.kirchenSeite.abKapitel - 1].gegner.every((id) => (s.sterne[id] || 0) > 0),
+  /** Karten der Kirche, die man kennt: aus den Decks aller Gegner, gegen die man gespielt hat (ohne Anführer). */
+  kircheBesitz: (s) => [...new Set((s.gesehen || []).flatMap((id) => kampagne.gegner[id]?.deck || []))].filter((c) => !K(c).anfuehrer),
+  /** Anführer der Kirche: die Kirchenvertreter, die man besiegt hat. */
+  kircheAnfuehrerFrei: (s) => reihenfolge.filter((id) => (s.sterne[id] || 0) > 0).map((id) => kampagne.gegner[id].anfuehrer).filter(Boolean),
+  /** Der erste Luther ist offen, jeder weitere nach einem Sieg gegen den vorigen. */
+  kircheOffen: (s, id) => { const l = kampagne.kirchenSeite.gegner; const i = l.indexOf(id); return i === 0 || (s.kircheSiege || []).includes(l[i - 1]); },
+  /** Ergebnis einer Partie als Kirche: erster Sieg gegen diesen Luther bringt Siegellack. */
+  eintragenKirche(s, id, z) {
+    const sieg = z.sieger === 'kirche';
+    const ersterSieg = sieg && !(s.kircheSiege || []).includes(id);
+    if (!ersterSieg) return { stand: s, sieg, ersterSieg };
+    return { stand: { ...s, kircheSiege: [...(s.kircheSiege || []), id], wachs: (s.wachs || 0) + kampagne.kirchenSeite.lackJeSieg }, sieg, ersterSieg };
+  },
+
   // ---------- Druckerwerkstatt ----------
   /** Höchste Seltenheit, die man drucken darf: wie bei den Siegelbriefen nach dem weitesten offenen Kapitel. */
   hoechsteDruckbar(s) {
@@ -275,6 +293,7 @@ export function view(el, schritt, ctx, fertig) {
             // Besiegte Gegner lohnen sich weiter: jeder Sieg bringt einen Siegelbrief
             stand.sterne[id] ? h('span', { class: 'kamp-nochmal' }, t.kampNochmalBrief) : null);
         })))),
+      kircheAbschnitt(),
       h('div', { class: 'reihe fuss' }, h('span', {}), knopf(t.kampBeenden, () => fertig({}), 'still'))));
   }
 
@@ -284,6 +303,59 @@ export function view(el, schritt, ctx, fertig) {
   /** Einführung (beim ersten Start von selbst, sonst über „So funktioniert’s“). */
   function einfuehrung() {
     zeigeEinfuehrung({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, fertig: () => { if (!stand.intro) neu({ ...stand, intro: true }); } });
+  }
+
+  /** Perspektivwechsel: Abschnitt in der Übersicht (gesperrt bis Kapitel 3, dann Anführerwahl und drei Luther-Gegner). */
+  function kircheAbschnitt() {
+    const ks = kampagne.kirchenSeite;
+    if (!rules.kircheFrei(stand)) return h('section', { class: 'kamp-kapitel kamp-kirche zu' },
+      h('h3', {}, ks.titel), h('p', { class: 'klein' }, h('span', { 'aria-hidden': 'true' }, '🔒 '), ks.zu));
+    const fuehrer = rules.kircheAnfuehrerFrei(stand);
+    const gewaehlt = fuehrer.includes(stand.kircheAnfuehrer) ? stand.kircheAnfuehrer : fuehrer[0];
+    return h('section', { class: 'kamp-kapitel kamp-kirche' },
+      h('h3', {}, ks.titel), h('p', {}, ks.text),
+      h('p', { class: 'kicker' }, t.kircheAnfuehrerWahl),
+      h('div', { class: 'kamp-anfuehrer kamp-kirche-fuehrer' }, fuehrer.map((a) => h('button', { type: 'button', class: `kamp-fuehrer kamp-kirche-wahl${a === gewaehlt ? ' gewaehlt' : ''}`, 'aria-pressed': String(a === gewaehlt),
+        onclick: () => { neu({ ...stand, kircheAnfuehrer: a }); uebersicht(); } },
+        h('span', { class: 'bk-bild', 'aria-hidden': 'true', html: bildHtml(kartenBild(K(a)).name) }), h('strong', {}, K(a).titel), h('em', {}, fuelle(t.kartenStaerke, { n: K(a).staerke }))))),
+      h('div', { class: 'kamp-gegner' }, ks.gegner.map((id) => {
+        const g = kampagne.lutherGegner[id];
+        const offen = rules.kircheOffen(stand, id);
+        const besiegt = (stand.kircheSiege || []).includes(id);
+        return h('button', { type: 'button', class: `kamp-tafel${offen ? '' : ' zu'}${besiegt ? ' besiegt' : ''}`, disabled: !offen, onclick: () => spielKirche(id, gewaehlt) },
+          h('span', { class: 'kamp-bild', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
+          h('strong', {}, g.name), h('span', { class: 'klein' }, g.ort),
+          h('span', { class: 'klein' }, besiegt ? t.kircheGeschafft : offen ? t.kircheOffen : t.kampGesperrt));
+      })));
+  }
+
+  function spielKirche(id, anfuehrer) {
+    duellView(el, { art: 'duell', gegner: id, kampagne: {
+      seite: 'kirche', besitz: rules.kircheBesitz(stand), anfuehrer, deck: stand.kircheDeck,
+      merkeDeck: (deck) => neu({ ...stand, kircheDeck: [...deck] }),
+      zurueck: uebersicht,
+      ergebnis: (z) => auswertungKirche(id, z)
+    } }, ctx, () => uebersicht());
+  }
+
+  /** Ergebnis als Kirche: Runden, Siegellack beim ersten Sieg und die Gesprächsfrage (ohne Bewertung). */
+  function auswertungKirche(id, z) {
+    const g = kampagne.lutherGegner[id];
+    const r = rules.eintragenKirche(stand, id, z);
+    neu(r.stand);
+    // Welche deiner Karten hat Luther entkräftet? (für das Gespräch)
+    const getroffen = [...new Set(z.log.filter((e) => e.seite === 'luther' && e.treffer).flatMap((e) => e.treffer.map((c) => `${e.id}>${c}`)))];
+    setzeInhalt(el, h('div', { class: `d-ende ${r.sieg ? 'sieg' : 'niederlage'} kirche-ende` },
+      h('div', { class: 'd-gegner-kopf' }, h('span', { class: 'd-portrait', 'aria-hidden': 'true', html: portraetHtml(g, ctx.figuren[g.figur] || {}) }),
+        h('div', {}, h('p', { class: 'kicker' }, `${t.kircheKicker} · ${g.ort}`), h('h3', { class: 'd-ende-titel' }, r.sieg ? t.duellSieg : t.duellNiederlage), h('p', {}, r.sieg ? g.sieg : g.niederlage))),
+      h('ul', { class: 'd-runden' }, z.runden.map((x) => h('li', { class: x.sieger === 'kirche' ? 'luther' : 'kirche' }, fuelle(t.duellRundeZeile, { n: x.runde, du: x.kirche, er: x.luther }),
+        ' ', h('strong', {}, x.sieger === 'kirche' ? t.duellGewonnen : t.duellVerloren)))),
+      r.ersterSieg ? h('p', { class: 'kamp-neu' }, fuelle(t.kircheLack, { n: kampagne.kirchenSeite.lackJeSieg })) : null,
+      getroffen.length ? h('div', { class: 'kirche-getroffen' }, h('p', { class: 'kicker' }, t.kircheGetroffen),
+        h('ul', {}, getroffen.map((p) => { const [l, c] = p.split('>'); return h('li', {}, h('strong', {}, K(c).titel), ' ← ', K(l).titel); }))) : null,
+      h('div', { class: 'kirche-frage' }, h('p', { class: 'kicker' }, t.kircheFrageTitel), h('p', {}, g.frage)),
+      h('div', { class: 'reihe fuss' }, knopf(t.duellNochmal, () => spielKirche(id, stand.kircheAnfuehrer || rules.kircheAnfuehrerFrei(stand)[0]), 'still'),
+        knopf(t.kampZurUebersicht, uebersicht, 'haupt'))));
   }
 
   function spiel(id) {

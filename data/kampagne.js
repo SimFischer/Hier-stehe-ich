@@ -119,6 +119,35 @@ export const kampagne = {
   bestesDeckNach: 2,
   // Druckerwerkstatt: Siegellack ausgeben. Ein Siegelbrief ist am günstigsten; Wunschkarten (nur Konter gegen Karten,
   // die man schon kennt) kosten nach Seltenheit; Prachtausgaben verschönern eigene Karten (Stufe 1 koloriert, Stufe 2 mit Gold).
+  // Perspektivwechsel: Man spielt die Kirche gegen einen Computer-Luther. Frei, sobald Kapitel 3 geschafft ist (abKapitel).
+  // Karten: alle Kirchenkarten, denen man in der Kampagne begegnet ist; Anführer: die Kirchenvertreter, die man besiegt hat.
+  // Luthers Decks enthalten nur Argumente, die es im jeweiligen Jahr schon gab. frage: Gesprächsanlass nach der Partie (ohne Bewertung).
+  // Balance (Simulation, Kirche spielt klug): lutherPlus macht Luthers Argumente stärker („sie überzeugen viele“). Wer nur die stärksten
+  // Kirchenkarten nimmt, verliert später fast immer; wer Karten wählt, die Luther nicht entkräften kann, gewinnt meist (92/100, 18/77, 3/40 %).
+  kirchenSeite: {
+    abKapitel: 3, lackJeSieg: 3,
+    titel: 'Perspektivwechsel: Du bist die Kirche',
+    text: 'Jetzt verteidigst du die Kirche gegen Martin Luther. Du spielst mit den Karten der Kirche, die du in deinen Disputationen kennengelernt hast. Achte darauf, welche deiner Karten Luther entkräften kann.',
+    zu: 'Frei, sobald du Kapitel 3 „Der Streit der Schriften“ geschafft hast.',
+    gegner: ['l-moench', 'l-leipzig', 'l-worms']
+  },
+  lutherGegner: {
+    'l-moench': { id: 'l-moench', figur: 'luther', name: 'Der junge Luther', wen: 'den jungen Luther', wer: 'der junge Luther', ort: 'Wittenberg, 1517', seite: 'luther', regeln: { handLuther: 8, handKirche: 6, lutherPlus: 2 },
+      deck: ['k2', 'k3', 'k4', 'w1', 'w2', 'w3', 'k6', 't27', 't36', 't43', 'n1'],
+      einleitung: 'Ein Mönch und Professor in Wittenberg greift den Ablasshandel an. Halte dagegen, was die Kirche lehrt.',
+      sieg: 'Der junge Mönch kommt mit seinen Thesen nicht durch.', niederlage: 'Seine Thesen überzeugen. Welche deiner Karten hat er entkräftet?',
+      frage: 'Welches Argument der Kirche war in dieser Partie am stärksten? Warum hat es Luther trotzdem nicht überzeugt?' },
+    'l-leipzig': { id: 'l-leipzig', figur: 'luther', name: 'Professor Luther', wen: 'Professor Luther', wer: 'Professor Luther', ort: 'Leipzig, 1519', seite: 'luther', anfuehrer: 'a-melanchthon', regeln: { handLuther: 8, handKirche: 6, lutherPlus: 3 },
+      deck: ['k5', 'k9', 'k8', 'n2', 'k12', 'k3', 'w2', 'k7', 'r18', 'k2', 'w1'],
+      einleitung: 'In Leipzig streitet Luther über Papst und Konzilien. An seiner Seite: Philipp Melanchthon.',
+      sieg: 'Du hast die Lehre der Kirche verteidigt. Luther bleibt trotzdem bei seiner Meinung.', niederlage: 'Luther beruft sich auf die Bibel. Welche deiner Karten konnte er damit entkräften?',
+      frage: 'Die Kirche beruft sich auf Papst, Konzilien und Tradition, Luther auf die Bibel. Welche Begründung findest du überzeugender, und warum?' },
+    'l-worms': { id: 'l-worms', figur: 'luther', portrait: 'kunst-a-luther', name: 'Luther in Worms', wen: 'Luther in Worms', wer: 'Luther', ort: 'Worms, 1521', seite: 'luther', anfuehrer: 'a-friedrich',
+      deck: ['k10', 'r15', 'r10', 'r11', 'r9', 'k13', 'r13', 'r22', 'k12', 'k5', 'k9', 'r2'], regeln: { handLuther: 8, handKirche: 6, lutherPlus: 2 },
+      einleitung: 'Vor Kaiser und Reich soll Luther widerrufen. Er hat starke Argumente und einen mächtigen Beschützer.',
+      sieg: 'Die Kirche behält das letzte Wort, auf diesem Reichstag. Doch Luthers Schriften sind längst gedruckt.', niederlage: 'Luther widerruft nicht. Welches seiner Argumente war am schwersten zu beantworten?',
+      frage: 'Stell dir vor, du bist ein Vertreter der Kirche in Worms. Was hättest du Luther gesagt? Und was hätte er geantwortet?' }
+  },
   // Abschluss nach dem ersten Sieg gegen den Papst: Urkunde (nur zum Ansehen) und ein historischer Ausklang.
   // Wichtig: Luther hat Rom nicht „besiegt“. Der Ausklang ordnet ein, was seine Argumente bewirkt haben.
   finale: {
