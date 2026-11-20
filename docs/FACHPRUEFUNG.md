@@ -64,3 +64,30 @@ Geprüft wurde: kein seitliches Scrollen, kein Scrollen im Rätselblatt, Schrift
 Die Schätzung aus Textmenge (130 Wörter pro Minute) und Bedienschritten ergibt für den Kernpfad **45 Minuten** (Prolog 1,4 · Kirche 3,8 · Kloster 3,5 · Turmzimmer 5,2 · Jüterbog 6,5 · Thesen 8,0 · Worms 7,3 · Wartburg 4,6 · Flugschrift 4,7). Das Ziel aus dem Konzept waren rund 40 Minuten.
 
 Für eine Einzelstunde bedeutet das: Langsame Gruppen werden wahrscheinlich nicht fertig. Das Kompendium empfiehlt, in der nächsten Stunde mit dem Fortsetzungscode weiterzumachen oder im Lehrkraftmodus über Station 1 und 2 zu springen. Ob die Schätzung stimmt, zeigt erst eine Erprobung mit einer Klasse.
+
+
+## 7. Neue Karten in „Hammer & Siegel“ (20.11.2026)
+
+Siebzehn Karten kamen dazu. Jede hat einen gesicherten historischen Kern; die Texte sind Nacherzählungen, keine Zitate. Wo eine Karte eine andere entkräftet, passt der Inhalt zueinander (Konter-Lexikon).
+
+| Karte | Kern | Entkräftet |
+|---|---|---|
+| Loci communes | 1521, Melanchthons erste geordnete Darstellung der evangelischen Lehre, als Lehrbuch genutzt | (stärkt Bibel und Wissen) |
+| Argula von Grumbach | 1523, Brief an die Universität Ingolstadt zur Verteidigung des Studenten Arsacius Seehofer, vielfach gedruckt | Abschwören! |
+| Die Wittenbergisch Nachtigall | 1523, Spruchgedicht des Nürnberger Schuhmachers Hans Sachs | Der große lutherische Narr |
+| Ulrich von Hutten | ab 1520 deutschsprachige Schriften gegen die römische Kurie | Die Kurie in Rom |
+| Junker Jörg | 1521/22 Wartburgaufenthalt in Verkleidung, Übersetzung des Neuen Testaments | Das Wormser Edikt |
+| Die ganze Bibel auf Deutsch | 1534, Vollbibel in Wittenberg, mit Mitarbeitern wie Melanchthon | Die Bibel auf Latein |
+| Die Deutsche Messe | 1526, „Deutsche Messe und Ordnung des Gottesdiensts“ | Die Messe auf Latein |
+| Pfarrer dürfen heiraten | 1525, Heirat mit Katharina von Bora | Ehelos bleiben |
+| Schulen für alle | 1524, Schrift „An die Ratsherren aller Städte deutschen Landes …“, Schulen auch für Mädchen | (stärkt Wissen) |
+| Die Protestation | 1529, Protestation der evangelischen Stände auf dem Reichstag zu Speyer; Herkunft des Namens „Protestanten“ | Das Wormser Edikt |
+| Das Augsburger Bekenntnis | 1530, Confessio Augustana, verfasst von Melanchthon, dem Kaiser vorgelegt | Ketzer! |
+| Die Gemeinde urteilt | 1523, Schrift über das Recht einer Gemeinde, Lehre zu beurteilen und Prediger zu berufen | Nur geweihte Priester |
+| Das Wormser Edikt (Kirche) | Mai 1521, Reichsacht, Verbot von Druck, Verkauf und Lektüre der Schriften | |
+| Abschwören! (Kirche) | 1523, erzwungener Widerruf des Studenten Arsacius Seehofer in Ingolstadt | |
+| Der große lutherische Narr (Kirche) | 1522, Spottschrift des Franziskaners Thomas Murner | |
+| Die Messe auf Latein (Kirche) | lateinische Messe vor der Reformation | |
+| Ehelos bleiben (Kirche) | Zölibat für Priester, Mönche und Nonnen | |
+
+Zuordnung zu den Gegnern: Abschwören! bei Eck (Professor in Ingolstadt), der Narr bei Emser (ebenfalls Streitschriftsteller gegen Luther), das Edikt bei Kaiser Karl und Herzog Georg, Messe und Zölibat bei Albrecht, Georg und Leo. Spätere Ereignisse (1524 bis 1534) erscheinen nur als Karten Luthers: was aus der Reformation wurde.
