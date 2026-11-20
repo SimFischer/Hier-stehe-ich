@@ -1,6 +1,6 @@
 # Bildprompts, Teil 6: Neue Karten für „Hammer & Siegel“
 
-Stand: 20.11.2026. Es gibt 17 neue Karten (12 für Luther, 5 der Kirche). Bis die Bilder da sind, zeigt das Spiel vorhandene Motive als Ersatz.
+Stand: 20.11.2026. Es gibt 17 neue Karten (12 für Luther, 5 der Kirche). Erledigt: Alle 17 Bilder sind am 20.11.2026 eingebaut (auf 600 × 450 verkleinert, `assets/kunst-*.jpg`).
 
 ## So vorgehen
 
