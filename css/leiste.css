@@ -17,11 +17,16 @@
   content: ""; position: absolute; left: 0; right: 0; top: 3px; height: 1px; background: var(--schwaerze); opacity: 0.8; pointer-events: none;
 }
 /* Holzschnitt-Zierleiste, sobald das Bild da ist (gesetzt in main.js) */
-.leiste.mit-zier { border-bottom: 0; box-shadow: 0 6px 8px rgba(31, 26, 23, 0.18); }
+/* Die Bordüre sitzt mittig auf der Kante zur Zielzeile; beide geben ihr etwas Platz. */
+.leiste.mit-zier { border-bottom: 0; box-shadow: none; padding-bottom: calc(var(--ab-2) + 6px); }
 .leiste.mit-zier::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -14px; height: 16px; pointer-events: none;
+  content: ""; position: absolute; left: 0; right: 0; bottom: -9px; height: 18px; pointer-events: none;
   background: var(--zier) repeat-x left center / auto 100%;
 }
+.leiste.mit-zier + #ziel { padding-top: calc(var(--ab-2) + 8px); box-shadow: 0 3px 6px rgba(31, 26, 23, 0.12); }
+/* Holzschnitt-Symbole statt Strichsymbolen */
+.leisten-knopf .l-symbol { display: grid; place-items: center; }
+.leisten-knopf.hs-frei .l-bild { width: 32px; height: 32px; }
 
 /* Knöpfe: gedruckte Felder mit Rahmen in Druckerschwärze */
 .leisten-knopf {
@@ -86,6 +91,8 @@
   .leiste nav { gap: 5px; }
   .leisten-knopf { padding: 0 6px; gap: 4px; letter-spacing: 0; font-size: 0.875rem; }
   .leisten-knopf svg { width: 22px; height: 22px; }
+  .leisten-knopf .l-bild { width: 32px; height: 32px; margin: -4px -5px -4px -4px; }
+  .leisten-knopf.hs-frei .l-bild { width: 28px; height: 28px; margin: -2px -2px -2px -1px; }
   #titel { padding: 2px 0; }
   #titel > strong { font-size: 1.2rem; }
   #ort { font-size: 0.875rem; }

@@ -1,6 +1,6 @@
 # Bildprompts, Teil 7: Obere Leiste im Holzschnitt-Stil
 
-Stand: 20.11.2026. Die obere Leiste ist jetzt wie der Kopf eines Flugblatts gestaltet: Papier, Druckerschwärze, doppelte Linie, Rot nur als Auszeichnung. Es fehlen noch echte Holzschnitt-Symbole für die Knöpfe und eine Zierleiste. Bis sie da sind, zeigt das Spiel einfache Strichsymbole. Sobald die Dateien eingetragen sind (`data/assets.js`), erscheinen sie automatisch.
+Stand: 20.11.2026. Die obere Leiste ist jetzt wie der Kopf eines Flugblatts gestaltet: Papier, Druckerschwärze, doppelte Linie, Rot nur als Auszeichnung. Erledigt: Die sechs Holzschnitt-Symbole (auf 96 × 96 verkleinert) und die Zierleiste (800 × 32) sind am 20.11.2026 eingebaut. Fehlt ein Bild, zeigt das Spiel ein einfaches Strichsymbol bzw. die gezeichnete Doppellinie.
 
 ## So vorgehen
 
