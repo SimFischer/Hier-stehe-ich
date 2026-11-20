@@ -270,3 +270,9 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 @keyframes stempel-auf { 0% { transform: scale(2.6) rotate(-14deg); opacity: 0; } 65% { transform: scale(0.94) rotate(-5deg); opacity: 1; } 100% { transform: rotate(-6deg); } }
 @keyframes stempel-weg { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .d-stempel, .d-stempel strong, .d-stempel span { animation: none; } }
+
+/* Startdeck und bestes Deck: das beste ist erst nach Niederlagen frei */
+.d-auto.bestes { background: linear-gradient(#e3efe0, #b9d3b3); border-color: #3e5b45; color: #24402c; }
+.d-auto-zu { display: inline-flex; align-items: center; min-height: 52px; padding: 6px 16px; border-radius: 26px; border: 2px dashed #8a6a34;
+  color: var(--tinte-weich); font-size: var(--text-klein); background: rgba(255, 255, 255, 0.4); max-width: 30em; }
+.d-deck-info .offen { margin: 8px 0 0; padding: 6px 10px; border-radius: 8px; background: #fff3c4; border: 1px solid #c8963e; color: var(--tinte); }

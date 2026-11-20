@@ -271,3 +271,47 @@ export function deckGegen(besitz, gegner, regeln = disputation.regeln) {
     && !besitz.some((id) => (K(id).entkraeftet || []).includes(c)) && lutherKarten.some((k) => (k.entkraeftet || []).includes(c)));
   return { deck, abgedeckt, fehlt };
 }
+
+// Startdeck: so viele der stärksten Gegnerkarten bleiben ohne Konter, so groß ist das Deck. Per Simulation gewählt:
+// Mit 10 Karten und 3 offenen gewinnt ein kluger Spieler im Schnitt etwa zwei von drei Partien, mit dem besten Deck fast immer.
+export const START_OFFEN = 3;
+export const START_GROESSE = 10;
+/**
+ * Startdeck gegen einen Gegner (zum Selberverbessern): Konter nur für etwa die Hälfte seiner Karten, und zwar für die schwächeren.
+ * Gegen die starken Karten muss man selbst Antworten finden. Aufgefüllt mit allgemein guten Karten (stärken andere, Bund, ziehen),
+ * die gegen diesen Gegner nichts entkräften. Genau so viele Karten wie nötig (deckMin).
+ * Gibt zusätzlich „offen“ zurück: Karten des Gegners ohne Konter im Deck, für die man in der Sammlung einen hätte.
+ */
+export function startDeckGegen(besitz, gegner, regeln = disputation.regeln, { offenLassen = START_OFFEN, groesse: g0 = START_GROESSE } = {}) {
+  const groesse = Math.min(g0, regeln.deckMax, besitz.length);
+  const kirche = [...new Set([...(gegner.deck || []), gegner.anfuehrer].filter(Boolean))];
+  const kontertIn = (id) => (K(id).entkraeftet || []).filter((c) => kirche.includes(c));
+  const moeglich = kirche.filter((c) => besitz.some((id) => kontertIn(id).includes(c)));
+  // Die schwächeren Karten bekommen Konter; die stärksten bleiben offen (offenLassen, bei wenigen Karten höchstens die Hälfte)
+  const offenZahl = Math.min(offenLassen, Math.floor(moeglich.length / 2));
+  const ziele = [...moeglich].sort((a, b) => K(a).staerke - K(b).staerke).slice(0, moeglich.length - offenZahl);
+  const frei = [...besitz]; const deck = [];
+  const nimm = (id) => { frei.splice(frei.indexOf(id), 1); deck.push(id); };
+  const gedeckt = () => new Set(deck.flatMap(kontertIn));
+  for (const c of ziele) {
+    if (gedeckt().has(c) || deck.length >= groesse) continue;
+    // Ein Konter, der möglichst nur dieses Ziel trifft (sonst verrät das Startdeck mehr als die Hälfte)
+    // Nur Konter, die keine der offenen (starken) Karten mittreffen; gibt es keinen, bleibt auch diese Karte offen.
+    const kand = [...new Set(frei)].filter((id) => kontertIn(id).includes(c) && kontertIn(id).every((x) => ziele.includes(x)))
+      .sort((a, b) => K(b).staerke - K(a).staerke);
+    if (kand.length) nimm(kand[0]);
+  }
+  // Auffüllen mit allgemein guten Karten, die gegen diesen Gegner nichts entkräften; nur wenn nötig auch mit anderen
+  const allgemein = (id) => { const k = K(id); return k.staerke + (k.staerkt ? 3 : 0) + (k.bund ? 2 : 0) + (k.zieht ? 1 : 0) + (k.standhaft ? 1 : 0); };
+  for (const nurOhne of [true, false]) {
+    while (deck.length < groesse) {
+      const id = [...new Set(frei)].filter((x) => !nurOhne || !kontertIn(x).length).sort((a, b) => allgemein(b) - allgemein(a))[0];
+      if (!id) break;
+      nimm(id);
+    }
+  }
+  const abgedeckt = kirche.filter((c) => gedeckt().has(c)).map((c) => ({ kirche: c, karte: deck.find((id) => kontertIn(id).includes(c)) }));
+  const offen = moeglich.filter((c) => !gedeckt().has(c));
+  const fehlt = kirche.filter((c) => !moeglich.includes(c) && lutherKarten.some((k) => (k.entkraeftet || []).includes(c)));
+  return { deck, abgedeckt, offen, fehlt, start: true };
+}

@@ -5,7 +5,7 @@ import { bildHtml, figurHtml, portraetHtml, kartenBild, bildUrl } from '../engin
 import { disputation } from '../../data/disputation.js';
 import { kampagne as kampagnenDaten } from '../../data/kampagne.js';
 import { trenne } from '../../data/silben.js';
-import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, anzahl } from './duell-regeln.js';
+import { rules, K, wert, summe, entkraeftet, deckVorschlag, deckGegen, startDeckGegen, anzahl } from './duell-regeln.js';
 
 export { rules };
 const PAUSE_KI = 950;
@@ -168,11 +168,19 @@ export function view(el, schritt, ctx, fertig) {
           h('h3', { class: `zwischen d-deck-titel${ok ? ' ok' : ''}` }, fuelle(t.duellDeinDeck, { n: deck.length, min: R.deckMin, max: R.deckMax })),
           // Werkzeuge: bestes Deck gegen diesen Gegner (nur aus eigenen Karten), Decks speichern und laden
           h('div', { class: 'd-deck-werkzeug' },
+            // Startdeck: ein Teil der Konter ist drin, den Rest sucht man selbst. Bestes Deck: erst nach Niederlagen (Kampagne).
             h('button', { type: 'button', class: 'd-auto', onclick: () => {
-              const r = deckGegen(besitz, g, R);
+              const r = startDeckGegen(besitz, g, R, kamp?.startDeck);
               deck = r.deck; autoInfo = r; vorbereitung();
               el.querySelector('.d-deck-info')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-            } }, h('span', { 'aria-hidden': 'true' }, '⚡'), fuelle(t.duellAuto, { name: wen })),
+            } }, h('span', { 'aria-hidden': 'true' }, '⚡'), fuelle(t.duellStartDeck, { name: wen })),
+            kamp ? (kamp.bestesDeckNoch > 0
+              ? h('span', { class: 'd-auto-zu' }, h('span', { 'aria-hidden': 'true' }, '🔒 '), fuelle(kamp.bestesDeckNoch === 1 ? t.duellBestesZuEins : t.duellBestesZu, { n: kamp.bestesDeckNoch }))
+              : h('button', { type: 'button', class: 'd-auto bestes', onclick: () => {
+                const r = deckGegen(besitz, g, R);
+                deck = r.deck; autoInfo = r; vorbereitung();
+                el.querySelector('.d-deck-info')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+              } }, h('span', { 'aria-hidden': 'true' }, '★'), fuelle(t.duellAuto, { name: wen }))) : null,
             kamp ? [
               (kamp.decks || []).map((d, i) => h('span', { class: 'd-gespeichert' },
                 h('button', { type: 'button', class: 'd-laden', onclick: () => {
@@ -194,8 +202,9 @@ export function view(el, schritt, ctx, fertig) {
             ] : null),
           // Nach dem automatischen Bauen: welcher Konter wogegen hilft und wofür noch einer fehlt
           autoInfo ? h('div', { class: 'd-deck-info' },
-            h('strong', {}, fuelle(t.duellAutoTitel, { name: wen })),
+            h('strong', {}, fuelle(autoInfo.start ? t.duellStartTitel : t.duellAutoTitel, { name: wen })),
             autoInfo.abgedeckt.length ? h('ul', {}, autoInfo.abgedeckt.map((a) => h('li', {}, h('span', { class: 'gegen' }, K(a.kirche).titel), ' ← ', h('span', { class: 'mit' }, K(a.karte).titel)))) : null,
+            autoInfo.offen?.length ? h('p', { class: 'offen' }, fuelle(t.duellStartOffen, { karten: autoInfo.offen.map((c) => `„${K(c).titel}“`).join(', ') })) : null,
             autoInfo.fehlt.length ? h('p', { class: 'fehlt' }, fuelle(t.duellAutoFehlt, { karten: autoInfo.fehlt.map((c) => `„${K(c).titel}“`).join(', ') })) : null) : null,
           h('p', { class: 'klein' }, t.duellDeckTextNeu, kamp ? [' ', t.kampKopienText] : null),
           h('div', { class: 'd-deck' },

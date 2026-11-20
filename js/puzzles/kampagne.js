@@ -11,7 +11,7 @@ import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeich
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
-export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [] });
+export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {} });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
@@ -97,6 +97,7 @@ export const rules = {
     const vorher = n.sterne[gegnerId] || 0;
     const jetzt = rules.sterneFuer(z, deckGroesse);
     n.sterne[gegnerId] = Math.max(vorher, jetzt);
+    if (!jetzt) n.niederlagen = { ...(n.niederlagen || {}), [gegnerId]: ((n.niederlagen || {})[gegnerId] || 0) + 1 };
     if (!n.gesehen.includes(gegnerId)) n.gesehen.push(gegnerId);
     const freiVorher = rules.anfuehrerFrei(s);
     // Siegelbriefe: nach jedem Sieg einer (beim ersten Sieg mit sicherer Belohnungskarte), beim ersten Mal mit 3 Sternen ein großer dazu
@@ -115,6 +116,13 @@ export const rules = {
     const brief = n.lexikon.length % LEXIKON_JE_BRIEF === 0;
     if (brief) n.briefe = [...(n.briefe || []), { art: 'klein', gegner: gegnerId, ausLexikon: true }];
     return { stand: n, neu: true, brief };
+  },
+  /** Wie viele Niederlagen fehlen noch, bis „Bestes Deck“ frei ist? 0: frei (auch, wenn man den Gegner schon besiegt hat). */
+  bestesDeckNoch: (s, gegnerId) => ((s.sterne[gegnerId] || 0) > 0 ? 0 : Math.max(0, kampagne.bestesDeckNach - ((s.niederlagen || {})[gegnerId] || 0))),
+  /** Einstellungen für das Startdeck gegen diesen Gegner (Größe nach Kapitel). */
+  startDeck: (gegnerId) => {
+    const kap = Math.max(0, kampagne.kapitel.findIndex((k) => k.gegner.includes(gegnerId)));
+    return { groesse: kampagne.startDeck.groesse[kap], offenLassen: kampagne.startDeck.offen };
   },
   /** Ist ein Abzeichen erfüllt? partie: { gegner, z, deck } nach einem Duell, sonst null (dann zählen nur Lexikon-Abzeichen). */
   abzeichenErfuellt(a, s, partie) {
@@ -231,6 +239,9 @@ export function view(el, schritt, ctx, fertig) {
     duellView(el, { art: 'duell', gegner: id, kampagne: {
       besitz: besitz(), anfuehrer: stand.anfuehrer, deck: stand.deck,
       merkeDeck: (deck) => neu({ ...stand, deck: [...deck] }),
+      // Deckbau: Startdeck immer, bestes Deck erst nach Niederlagen oder einem Sieg
+      startDeck: rules.startDeck(id),
+      bestesDeckNoch: rules.bestesDeckNoch(stand, id),
       // Gespeicherte Decks (Name und Karten), höchstens sechs
       get decks() { return stand.decks || []; },
       speichereDecks: (decks) => neu({ ...stand, decks }),

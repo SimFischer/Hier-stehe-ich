@@ -112,6 +112,11 @@ export const kampagne = {
   // Sterne: 1 für einen Sieg, 1 für einen Sieg ohne verlorene Runde, 1 für einen Sieg mit höchstens kleinDeck Karten.
   sterne: { kleinDeck: 10 },
   regeln: { deckMin: 8, deckMax: 12 },
+  // Deckbau: „Startdeck“ gibt es immer (Konter gegen die schwächeren Karten, die stärksten bleiben offen).
+  // Im ersten Kapitel etwas größer, damit der Einstieg gelingt. „Bestes Deck“ wird frei nach so vielen Niederlagen
+  // gegen diesen Gegner oder sobald man ihn einmal besiegt hat.
+  startDeck: { groesse: [11, 10, 10, 10], offen: 3 },
+  bestesDeckNach: 2,
   // Siegel-Abzeichen: Aufgaben, die zu immer neuen Decks anregen. Jedes bringt Siegellack (js/puzzles/kampagne.js, ABZEICHEN_WACHS).
   // bed: gegner (nur gegen ihn), abKapitel (Gegner ab diesem Kapitel, 1–4), typMin/typMax (Karten einer Art im Deck), bundMin, deckMax,
   // trefferMin (Konter in einer Partie), zuNull (keine Runde verloren), ohneAnfuehrer, durchschaut (für jede Karte dieses Gegners
