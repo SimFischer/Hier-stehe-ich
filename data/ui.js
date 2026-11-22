@@ -136,8 +136,8 @@ export const t = {
   duellStartOffen: 'Noch ohne Konter: {karten}. Das sind seine stärksten Karten. Findest du in deiner Sammlung eine Antwort darauf? (Karten hinzufügen → „Nur Konter gegen …“)', duellAutoTitel: 'So kontert dein Deck gegen {name}:', duellAutoFehlt: 'Noch ohne Konter in deiner Sammlung: {karten}. Neue Karten gibt es in Siegelbriefen.',
   duellDeckSpeichern: 'Deck speichern', duellSpeichern: 'Speichern', duellDeckName: 'Name für das Deck', duellDeckStandardName: 'Gegen {name}', duellDeckGespeichert: 'Deck „{name}“ gespeichert.', duellDeckLoeschen: 'Deck {name} löschen',
   duellDeckTextNeu: 'Das sind die Karten, die du mitnimmst. Mit − legst du eine Karte zurück, mit „Karten hinzufügen“ holst du neue aus deiner Sammlung. ⚔ heißt: Diese Karte entkräftet eine Karte deines Gegners.',
-  duellRausnehmen: '{titel} aus dem Deck nehmen', duellKartenHinzu: 'Karten hinzufügen', duellNurKonter: 'Nur Konter gegen {name}', duellFertig: 'Fertig',
-  duellAuswahlText: 'Tippe eine Karte an, um sie ins Deck zu nehmen. Karten mit ⚔ entkräften eine Karte deines Gegners. Mit „i“ siehst du eine Karte groß.',
+  duellRausnehmen: '{titel} aus dem Deck nehmen', duellDazuNehmen: '{titel} ins Deck nehmen', duellKartenHinzu: 'Karten hinzufügen', duellNurKonter: 'Nur Konter gegen {name}', duellFertig: 'Fertig',
+  duellAuswahlText: 'Tippe eine Karte oder + an, um sie ins Deck zu nehmen. Mit − nimmst du sie wieder heraus. Karten mit ⚔ entkräften eine Karte deines Gegners. Mit „i“ siehst du eine Karte groß.',
   duellSchonImDeck: '„{titel}“ ist schon so oft im Deck, wie du sie hast.', duellImDeck: 'im Deck', duellKontert: 'kontert {titel}', duellDeckVoll: 'Dein Deck ist voll. Nimm erst eine Karte heraus.', kampKopienText: 'Gewöhnliche und seltene Karten darfst du zweimal ins Deck nehmen. Tippe noch einmal für die zweite Kopie.',
   // Hammer & Siegel: Einführung, Ziele, Sammlung
   kampSoGehts: 'So funktioniert’s', kampIntroWeiter: 'Weiter', kampIntroZurueck: 'Zurück', kampIntroLos: 'Los geht’s!', kampIntroTafel: 'Tafel {n} von {von}',

@@ -315,3 +315,15 @@ details.d-tipps.zu[open] summary::before { transform: rotate(90deg); }
 .kirche-frage .kicker { color: #7f2f1f; margin-bottom: 4px; }
 .kirche-frage p:last-child { font-size: var(--text); font-weight: bold; }
 .d-warum-hintergrund { margin: 0; padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.55); border-left: 5px solid #c8963e; line-height: 1.45; }
+
+/* Karten hinzufügen: unter jeder Karte − Anzahl +, so lässt sich direkt hier tauschen */
+.d-auswahl-karte.voll .karte.sammel.gwent { filter: none; }
+.d-auswahl-steuer { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 4px; margin-top: 6px; }
+.d-auswahl-steuer button { height: 44px; border-radius: 50%; cursor: pointer; font: inherit; font-size: 1.6rem; font-weight: bold; line-height: 1; border: 3px solid #fff3c4; color: #fff; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); }
+.d-steuer-weg { background: #a6432e; }
+.d-steuer-dazu { background: #2f5a37; }
+.d-auswahl-steuer button:disabled { opacity: 0.3; cursor: default; box-shadow: none; }
+.d-steuer-zahl { display: grid; justify-items: center; line-height: 1.1; color: #fff3c4; }
+.d-steuer-zahl strong { font-size: 1.15rem; }
+.d-steuer-zahl small { font-size: 0.8125rem; color: var(--ocker-hell); }
+.d-auswahl-karte.im-deck .d-steuer-zahl strong { color: #ffe08a; }

@@ -142,13 +142,19 @@ export function view(el, schritt, ctx, fertig) {
           h('div', { class: 'd-auswahl-karten' }, liste.map((id) => {
             const imDeck = anzahl(deck, id), hat = anzahl(besitz, id), voll = imDeck >= hat;
             const konter = konterGegen(id);
-            return h('span', { class: `d-auswahl-karte${imDeck ? ' im-deck' : ''}${voll ? ' voll' : ''}` },
-              kartenChip(K(id), { klein: true, onclick: () => {
-                if (voll) { melde(fuelle(t.duellSchonImDeck, { titel: K(id).titel })); return; }
-                if (deck.length >= R.deckMax) { melde(t.duellDeckVoll); return; }
-                deck = [...deck, id]; autoInfo = null; zeichneAuswahl();
-              } }),
-              imDeck ? h('span', { class: 'd-auswahl-stand' }, voll ? `✓ ${t.duellImDeck}` : `${imDeck}/${hat} ${t.duellImDeck}`) : hat > 1 ? h('span', { class: 'd-auswahl-stand frei' }, `0/${hat}`) : null,
+            // Hinzufügen und Herausnehmen direkt hier: Antippen der Karte oder +, Herausnehmen mit −
+            const dazu = () => {
+              if (voll) { melde(fuelle(t.duellSchonImDeck, { titel: K(id).titel })); return; }
+              if (deck.length >= R.deckMax) { melde(t.duellDeckVoll); return; }
+              deck = [...deck, id]; autoInfo = null; zeichneAuswahl();
+            };
+            const weg = () => { if (!imDeck) return; deck.splice(deck.lastIndexOf(id), 1); deck = [...deck]; autoInfo = null; zeichneAuswahl(); };
+            return h('span', { class: `d-auswahl-karte${imDeck ? ' im-deck' : ''}` },
+              kartenChip(K(id), { klein: true, onclick: dazu }),
+              h('span', { class: 'd-auswahl-steuer' },
+                h('button', { type: 'button', class: 'd-steuer-weg', disabled: !imDeck, 'aria-label': fuelle(t.duellRausnehmen, { titel: K(id).titel }), onclick: weg }, '−'),
+                h('span', { class: 'd-steuer-zahl' }, h('strong', {}, `${imDeck}/${hat}`), h('small', {}, t.duellImDeck)),
+                h('button', { type: 'button', class: 'd-steuer-dazu', disabled: voll || deck.length >= R.deckMax, 'aria-label': fuelle(t.duellDazuNehmen, { titel: K(id).titel }), onclick: dazu }, '+')),
               konter.length ? h('span', { class: 'd-auswahl-konter' }, '⚔ ', fuelle(t.duellKontert, { titel: konter.map((c) => K(c).titel).join(', ') })) : null,
               lutherGegen(id).length ? h('span', { class: 'd-auswahl-konter gefahr' }, '⚠ ', fuelle(t.kircheGefahr, { titel: lutherGegen(id).map((c) => K(c).titel).join(', ') })) : null,
               h('button', { type: 'button', class: 'karte-info', 'aria-label': fuelle(t.kartenInfo, { titel: K(id).titel }), onclick: () => gross({ id }) }, 'i'));
