@@ -68,6 +68,8 @@ function aufbau() {
 start();
 // Prachtausgaben aus „Hammer & Siegel“ gelten überall, wo Karten gezeigt werden
 setzePracht(ladeStand().pracht);
+// Neuer Spielstand (Neu beginnen, Code): Prachtausgaben des neuen Stands zeigen, nicht die des alten
+beiAenderung(() => setzePracht(ladeStand().pracht));
 aufbau();
 beiAenderung(zeichnePlatten);
 zeichnePlatten();

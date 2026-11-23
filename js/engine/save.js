@@ -13,7 +13,11 @@ function laden() {
 
 export const store = { state: neuerStand(), vorhanden: false };
 
-export function start() { const s = laden(); store.vorhanden = Boolean(s && s.szene); if (s) store.state = s; }
+export function start() {
+  const s = laden(); store.vorhanden = Boolean(s && s.szene);
+  // Gleich speichern: So behält ein älterer Spielstand ohne spielId die Kennung, die er gerade bekommen hat.
+  if (s) { store.state = s; speichern(); }
+}
 function speichern() { try { localStorage.setItem(SCHLUESSEL, JSON.stringify(store.state)); } catch { /* privater Modus: Spiel läuft trotzdem */ } }
 
 /** Ändert den Spielstand, speichert und meldet es allen Anzeigen. */

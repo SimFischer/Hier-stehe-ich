@@ -4,8 +4,11 @@ import { scenes } from '../../data/scenes.js';
 import { puzzles } from '../../data/puzzles.js';
 import { disputation } from '../../data/disputation.js';
 
+// spielId: zufällige Kennung dieses Spielstands. „Hammer & Siegel“ speichert getrennt und gehört immer zu genau einer spielId:
+// Nach „Neu beginnen“ oder mit einem anderen Code beginnt die Kampagne leer, nie mit dem Fortschritt eines anderen.
+export const neueSpielId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 export const neuerStand = () => ({
-  v: 1, szene: null, done: [], flags: [], cards: [], thesen: [], rat: '',
+  v: 1, spielId: neueSpielId(), szene: null, done: [], flags: [], cards: [], thesen: [], rat: '',
   stufen: { markt: 0, druck: 0, verhoer: 0 }, bonus: [], hilfen: 0, zuZweit: false, flug: null, siege: [], deck: null
 });
 

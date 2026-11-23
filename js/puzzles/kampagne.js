@@ -8,12 +8,13 @@ import { lutherKarten } from '../../data/kartei.js';
 import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
 import { setzePracht } from '../engine/pracht.js';
+import { store } from '../engine/save.js';
 import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen, zeigeWerkstatt, zeigeFinale, zeigeKapitelAbschluss } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
 export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {}, durchgespielt: null,
-  kircheSiege: [], kircheDeck: [], kircheAnfuehrer: null });
+  kircheSiege: [], kircheDeck: [], kircheAnfuehrer: null, spielId: null });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
@@ -241,10 +242,18 @@ export const rules = {
   }
 };
 
+/** Fortschritt in „Hammer & Siegel“ für den aktuellen Spielstand. Gehört der gespeicherte Fortschritt zu einem anderen Spielstand
+ *  (nach „Neu beginnen“ oder einem anderen Code, etwa auf einem geteilten Schul-iPad), beginnt die Kampagne leer.
+ *  Ältere Fortschritte ohne Kennung übernimmt der aktuelle Spielstand einmal, damit nichts verloren geht. */
 export function ladeStand() {
-  try { return { ...neuerKampagnenStand(), ...JSON.parse(localStorage.getItem(SCHLUESSEL)) }; } catch { return neuerKampagnenStand(); }
+  const id = store.state?.spielId || null;
+  let s;
+  try { s = { ...neuerKampagnenStand(), ...JSON.parse(localStorage.getItem(SCHLUESSEL)) }; } catch { s = neuerKampagnenStand(); }
+  // Übernahme sofort speichern: Sonst würde nach einem Neubeginn der nächste Spielstand den alten Fortschritt erneut übernehmen.
+  if (!s.spielId) { if (id) { s.spielId = id; speichere(s); } return s; }
+  return s.spielId === id ? s : { ...neuerKampagnenStand(), spielId: id };
 }
-function speichere(s) { try { localStorage.setItem(SCHLUESSEL, JSON.stringify(s)); } catch { /* privater Modus: Spiel läuft trotzdem */ } }
+function speichere(s) { try { localStorage.setItem(SCHLUESSEL, JSON.stringify({ ...s, spielId: store.state?.spielId || s.spielId || null })); } catch { /* privater Modus: Spiel läuft trotzdem */ } }
 
 const sterneHtml = (n, von = 3) => h('span', { class: 'k-sterne', 'aria-hidden': 'true' }, Array.from({ length: von }, (_, i) => h('span', { class: i < n ? 'an' : '' }, '★')));
 
