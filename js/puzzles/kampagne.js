@@ -9,7 +9,8 @@ import { view as duellView } from './duell.js';
 import { zeigeSiegelbriefe } from './siegelbrief.js';
 import { setzePracht } from '../engine/pracht.js';
 import { store } from '../engine/save.js';
-import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen, zeigeWerkstatt, zeigeFinale, zeigeKapitelAbschluss } from './kampagne-extras.js';
+import { kodiereKampagne, liesKampagne } from './kampagnen-code.js';
+import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeichen, siegelAbzeichen, zeigeWerkstatt, zeigeFinale, zeigeKapitelAbschluss, zeigeKampagnenCode } from './kampagne-extras.js';
 
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
@@ -275,7 +276,10 @@ export function view(el, schritt, ctx, fertig) {
             ' ', knopf(t.kampUrkundeAnsehen, () => zeigeFinale({ t, stand, besitz: besitz(), figuren: ctx.figuren }), 'still klein')) : null),
         h('div', { class: 'kamp-kopf-rechts' },
           h('p', { class: 'kamp-summe' }, fuelle(t.kampSterne, { n: rules.sterneSumme(stand), von: reihenfolge.length * 3 })),
-          knopf(t.kampSoGehts, einfuehrung, 'still klein'))),
+          knopf(t.kampSoGehts, einfuehrung, 'still klein'),
+          // Fortschritt auf ein anderes Gerät mitnehmen (eigener Code, zusätzlich zum Code der Geschichte)
+          knopf(t.kampCodeKnopf, () => zeigeKampagnenCode({ t, code: kodiereKampagne(stand),
+            einlesen: (text) => { const r = liesKampagne(text); if (r.stand) { neu({ ...neuerKampagnenStand(), ...r.stand }); uebersicht(); } return r; } }), 'still klein'))),
       // Immer ein nächstes Ziel vor Augen: Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer
       zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }), onAbzeichen: () => zeigeAbzeichen({ t, stand }),
         onWerkstatt: () => zeigeWerkstatt({ t, lage: () => ({ stand, besitz: besitz() }), regeln: rules,

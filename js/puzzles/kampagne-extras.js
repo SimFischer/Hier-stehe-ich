@@ -1,7 +1,7 @@
 // „Hammer & Siegel“: alles, was zum Weiterspielen motiviert. Einführung beim ersten Start (Bildtafeln),
 // Fortschrittsleiste in der Übersicht (Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer) und die Sammlung.
 // Inhalte der Einführung: data/kampagne.js (einfuehrung). Regeln: js/puzzles/kampagne.js.
-import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle } from '../engine/ui.js';
+import { h, setzeInhalt, knopf, kartenChip, zeigeKartenDetail, fuelle, melde } from '../engine/ui.js';
 import { bildHtml, portraetHtml, kartenBild } from '../engine/bilder.js';
 import { kampagne } from '../../data/kampagne.js';
 import { lutherKarten } from '../../data/kartei.js';
@@ -347,6 +347,38 @@ export function zeigeKapitelAbschluss({ t, kapitel, stand, figuren, weiter = () 
       h('p', { class: `ke-kapitel-beute rar-${['selten', 'episch', 'legendaer', 'legendaer'][kapitel + 1]}` }, t.kampBeute[kapitel + 1])) : null,
     kapitel + 1 === kampagne.kirchenSeite.abKapitel ? h('p', { class: 'ke-kapitel-kirche' }, h('strong', {}, `${t.kircheNeuFrei} `), kampagne.kirchenSeite.titel) : null,
     h('div', { class: 'reihe mitte' }, knopf(naechstes ? fuelle(t.kampKapitelLos, { titel: naechstes.titel }) : t.weiter, zu, 'haupt gross'))));
+  document.body.append(buehne);
+  buehne.querySelector('.knopf')?.focus();
+}
+
+// ---------- Hammer-&-Siegel-Code ----------
+/** Zeigt den Code des Fortschritts und nimmt einen Code von einem anderen Gerät an (mit Rückfrage, weil er den Fortschritt hier ersetzt). */
+export function zeigeKampagnenCode({ t, code, einlesen }) {
+  const buehne = h('div', { class: 'ke-buehne', role: 'dialog', 'aria-modal': 'true', 'aria-label': t.kampCodeTitel });
+  const zu = () => buehne.remove();
+  const feld = h('input', { type: 'text', class: 'ke-code-feld', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': t.kampCodeEingabe, placeholder: 'XXXXX-XXXXX-…' });
+  const meldung = h('p', { class: 'ke-code-meldung', role: 'status' });
+  let bestaetigt = false;
+  const knopfEinlesen = knopf(t.kampCodeEinlesen, () => {
+    if (!feld.value.trim()) { meldung.textContent = t.kampCodeLeer; return; }
+    if (!bestaetigt) { bestaetigt = true; meldung.textContent = t.kampCodeWarnung; knopfEinlesen.textContent = t.kampCodeJa; return; }
+    const r = einlesen(feld.value);
+    if (r.fehler) { bestaetigt = false; knopfEinlesen.textContent = t.kampCodeEinlesen; meldung.textContent = t.kampCodeFehler[r.fehler]; return; }
+    zu(); melde(t.kampCodeGeladen);
+  }, 'haupt');
+  feld.addEventListener('input', () => { bestaetigt = false; knopfEinlesen.textContent = t.kampCodeEinlesen; meldung.textContent = ''; });
+  setzeInhalt(buehne, h('div', { class: 'ke-sammlung ke-code' },
+    h('div', { class: 'ke-sammlung-kopf' }, h('h2', {}, t.kampCodeTitel), knopf(t.schliessen, zu, 'haupt')),
+    h('section', { class: 'ke-werk-teil' },
+      h('h3', {}, t.kampCodeDeinTitel),
+      h('p', {}, t.kampCodeText),
+      h('p', { class: 'ke-code-anzeige', 'aria-label': code.split('').join(' ') }, code.split('-').map((g) => h('span', {}, g))),
+      h('p', { class: 'klein' }, t.kampCodeOhne)),
+    h('section', { class: 'ke-werk-teil' },
+      h('h3', {}, t.kampCodeAndererTitel),
+      h('p', {}, t.kampCodeAndererText),
+      h('div', { class: 'ke-code-eingabe' }, feld, knopfEinlesen),
+      meldung)));
   document.body.append(buehne);
   buehne.querySelector('.knopf')?.focus();
 }
