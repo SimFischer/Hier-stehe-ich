@@ -15,7 +15,7 @@ import { zeigeEinfuehrung, zielLeiste, zeigeSammlung, zeigeLexikon, zeigeAbzeich
 const SCHLUESSEL = 'hier-stehe-ich.kampagne.v1';
 export const reihenfolge = kampagne.kapitel.flatMap((k) => k.gegner);
 export const neuerKampagnenStand = () => ({ karten: [], sterne: {}, anfuehrer: 'a-luther', deck: [], gesehen: [], briefe: [], wachs: 0, intro: false, lexikon: [], decks: [], abzeichen: [], niederlagen: {}, pracht: {}, durchgespielt: null,
-  kircheSiege: [], kircheDeck: [], kircheAnfuehrer: null, spielId: null });
+  kircheSiege: [], kircheDeck: [], kircheAnfuehrer: null, spielId: null, lexikonGutschrift: 0 });
 // Konter-Lexikon: Jedes Paar „Luthers Karte entkräftet Kirchenkarte“, das in einer Partie wirkt, wird eingetragen. Je 5 Paare: ein Siegelbrief.
 export const LEXIKON_JE_BRIEF = 5;
 export const lexikonPaare = () => lutherKarten.flatMap((k) => (k.entkraeftet || []).map((c) => `${k.id}>${c}`));
@@ -124,7 +124,8 @@ export const rules = {
     const lexikon = s.lexikon || [];
     if (lexikon.includes(paar) || !lexikonPaare().includes(paar)) return { stand: s, neu: false, brief: false };
     const n = { ...s, lexikon: [...lexikon, paar] };
-    const brief = n.lexikon.length % LEXIKON_JE_BRIEF === 0;
+    // Gutschrift (nach einem Umzug per Hammer-&-Siegel-Code): Für Konter, die schon belohnt wurden, gibt es keinen zweiten Brief.
+    const brief = n.lexikon.length % LEXIKON_JE_BRIEF === 0 && n.lexikon.length > (s.lexikonGutschrift || 0);
     if (brief) n.briefe = [...(n.briefe || []), { art: 'klein', gegner: gegnerId, ausLexikon: true }];
     return { stand: n, neu: true, brief };
   },
@@ -279,7 +280,7 @@ export function view(el, schritt, ctx, fertig) {
           knopf(t.kampSoGehts, einfuehrung, 'still klein'),
           // Fortschritt auf ein anderes Gerät mitnehmen (eigener Code, zusätzlich zum Code der Geschichte)
           knopf(t.kampCodeKnopf, () => zeigeKampagnenCode({ t, code: kodiereKampagne(stand),
-            einlesen: (text) => { const r = liesKampagne(text); if (r.stand) { neu({ ...neuerKampagnenStand(), ...r.stand }); uebersicht(); } return r; } }), 'still klein'))),
+            einlesen: (text) => { const r = liesKampagne(text, { storyKarten: ctx.karten().map((k) => k.id) }); if (r.stand) { neu({ ...neuerKampagnenStand(), ...r.stand }); uebersicht(); } return r; } }), 'still klein'))),
       // Immer ein nächstes Ziel vor Augen: Weg zum Gipfel, Siegellack, Sammlung, nächster Anführer
       zielLeiste({ t, stand, besitz: besitz(), figuren: ctx.figuren, wachsJeBrief: WACHS_JE_BRIEF, onSammlung: () => zeigeSammlung({ t, besitz: besitz() }), onLexikon: () => zeigeLexikon({ t, stand }), onAbzeichen: () => zeigeAbzeichen({ t, stand }),
         onWerkstatt: () => zeigeWerkstatt({ t, lage: () => ({ stand, besitz: besitz() }), regeln: rules,
